@@ -1,4 +1,4 @@
-# basic model 0.5
+# basic model 0.5.1
 # main.py
 
 import agent
