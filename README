@@ -1,12 +1,12 @@
 Abstract:
 =========
 
-This software is the Cognitive model part of the CONCEPT project from the University of Plymouth.
+This software is the Cognitive Model part of the CONCEPT project from the University of Plymouth.
 The team involves :
 
 - Dr tony Belpaeme, Supervisor
-- frederic Delaunay, human-robot interaction
-- joachim De Greeff, conceptual modeling
+- Frederic Delaunay, human-robot interaction
+- Joachim De Greeff, conceptual modeling
 
 The project is expected to end around oct. 2011.
 In the meantime, you are welcomed to try the software and submit bugfixes.
@@ -19,4 +19,3 @@ Requirements:
 =============
 
 - python 2.5
-
