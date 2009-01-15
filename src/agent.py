@@ -43,36 +43,39 @@ class BasicAgent():
         self.cp.add_exemplar(exemplar_new, tag)
         
         
-    def add_concept(self, concept):
+    def add_concept(self, concept, label):
         """ adds a concept to the CP
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
         """                      
         concept_new = copy.deepcopy(concept)    # make a copy     
-        tag = aux.generateRandomTag(4)
-        self.cp.add_concept(concept, tag)
+        # label is known
+        if label in self.lex.get_labels():   
+            tag = self.lex.get_tag(label)
+        # label is not known
+        else:    
+            tag = aux.generateRandomTag(4)
+            self.lex.add_label(label, tag)
+        self.cp.add_concept(concept_new, tag)
         
         
-    def discrimination_game(self, context, topic_index, param = "add_label"):
+    def discrimination_game(self, context, topic_index, label = "empty0"):
         """ Discrimination game in which an agent has to distinguish the topic
             from the context. The game succeeds if the agent has a concept 
             which uniquely matches the topic and no other stimuli from the context.
             If this is not the case, a new concept is build, or the existing concepts
-            are shifted, provided the param is set to "add_label", if param has another value, nothing 
-            is done and the game fails
-            The return is either the concept tag, a string description of the action taken by the agent, or "fail"
+            are shifted with the given label. If no label is given, a new one will be generated.
+            The return is either the concept tag, a string description of the action taken by the agent
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
         context_new = copy.deepcopy(context)    # make a copy   
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
-            if param == "add_label":    # only add when label can be added
+            if label == "empty0":
                 label = aux.generateRandomLabel(5)
-                self.add_concept(context[topic_index], label)
-                answer = "concept_added"
-            else:
-                answer = "fail"
+            self.add_concept(context[topic_index], label)
+            answer = "concept_added"
         else:
             # select the best matching concept for every stimulus from the context (including the topic)
             best_matching_concepts = []
@@ -88,22 +91,18 @@ class BasicAgent():
             else:
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discriminano_tagtion_succes < cfg.adapt_threshold:
-                    if param == "add_label":    # only add when label can be added
+                    if label == "empty0":
                         label = aux.generateRandomLabel(5)
-                        self.add_concept(context[topic_index], label)
-                        answer = "concept_added"
-                    else:
-                        answer = "fail"
+                    self.add_concept(context[topic_index], label)
+                    answer = "concept_added"
                 # if agent discrimination success is above threshold, 
                 # topic is added as exemplar for the best matching concept, 
                 # i.e. the best matching concept is shifted towards the topic
                 else:
-                    if param == "add_label":    # only add when label can be added
+                    if label == "empty0":
                         label = self.lex.get_label(best_matching_concepts[topic_index])
-                        self.add_exemplar(context[topic_index], label)
-                        answer = "concept_shifted"
-                    else:
-                        answer = "fail"
+                    self.add_exemplar(context[topic_index], label)
+                    answer = "concept_shifted"
                     
         # calculate statistics
         self.n_discrimination_games += 1.0

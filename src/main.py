@@ -8,27 +8,15 @@ import random as ran
 def main():
     """ main run """
     agent1 = agent.BasicAgent("agent_one")
-    agent1.add_exemplar(data.exemplar1, "CONC1")
-    agent1.add_exemplar(data.exemplar2, "CONC1")
-    agent1.add_exemplar(data.exemplar3, "CONC1")
-    agent1.add_exemplar(data.exemplar4, "CONC1")
+    agent2 = agent.BasicAgent("agent_two")
     
-    agent1.add_exemplar(data.exemplar4, "CONC2")
-    agent1.add_exemplar(data.exemplar5, "CONC2")
-    agent1.add_exemplar(data.exemplar6, "CONC2")
-    agent1.add_exemplar(data.exemplar7, "CONC2")
-    agent1.add_exemplar(data.exemplar9, "CONC3")
-
-#    agent1.lex.add_label("test1", "adff")
-
-    print agent1.cp.prototype_data
-    print agent1.get_concepts()
-    print agent1.get_labels()
-
-    print agent1.discrimination_game(data.disc_game_data1, 0)
-    
-    agent1.print_matrix()
-    print agent1.get_concepts()
+#    agent1.add_exemplar(data.exemplar1, "CONC1")
+#    print agent1.cp.prototype_data
+#    print agent1.get_concepts()
+#    print agent1.get_labels()
+#    print agent1.discrimination_game(data.disc_game_data1, 0)
+#    agent1.print_matrix()
+#    print agent1.get_concepts()
     
 
 def guessing_game(agent1, agent2, context, topic_index = False):
@@ -56,7 +44,9 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             agent2.add_exemplar(context[topic_index], a1_topic_label) # shift cat towards topic
         # if agent2 does not know the communicated label
         elif a2_presumed_topic_index == "label_unknown":
-            a2_disc_result = agent2.discrimination_game(context, topic_index, "no_label_addition")
+            a2_disc_result = agent2.discrimination_game(context, topic_index, a1_topic_label)
+            if a2_disc_result != ("concept_added" or "concept_shifted"):
+                agent2.add_concept(context[topic_index], a1_topic_label)
         # if agent2 knows the label, but does not point to the right topic
         else:
             agent1.decrease_strength(a1_topic_label, a1_disc_result)
