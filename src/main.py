@@ -11,13 +11,13 @@ import globals as gl
 def main():
     """ main run """
     init()
-    training_data = aux.generateRGBTrainingDataUniform(100, 3)
+    training_data = aux.generateRGBTrainingDataUniform(100, 2)
     for i in gl.agent_set:
-        print gl.n_guessing_games
         for j in gl.agent_set:
             if i is not j:
                 for h in training_data:
                     guessing_game(i, j, h)
+        print gl.n_guessing_games
 
     
     
@@ -28,7 +28,7 @@ def main():
 #    print agent1.discrimination_game(data.disc_game_data1, 0)
     
     for i in gl.agent_set:
-        i.print_matrix()
+        #i.print_matrix()
         print i.lex.labels
         print i.lex.tags
         print len(i.lex.tags)
@@ -91,6 +91,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             agent1.decrease_strength(a1_topic_label, a1_disc_result)
             agent2.decrease_strength(a1_topic_label, a2_presumed_topic_index[1])
     
+    # statistics
     gl.n_guessing_games += 1
         
         
@@ -101,12 +102,13 @@ def calculate_agents_lexicon():
     for i in gl.agent_set:
         uniques = 0.0
         for j in i.lex.labels:
+            check = 0
             for k in gl.agent_set:
                 if i is not k:
                     if j in k.lex.labels:
-                        break
-                    else:
-                        uniques += 1
+                        check = 1
+            if not check:
+                uniques += 1
         matching -= (uniques/len(i.lex.labels)/len(gl.agent_set))
     return int(matching * 100)
             
