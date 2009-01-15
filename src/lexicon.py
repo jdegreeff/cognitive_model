@@ -2,6 +2,7 @@
 
 import numpy
 import aux_functions as aux
+import cfg
 
 
 class Lexicon():
@@ -66,8 +67,8 @@ class Lexicon():
         """
         label_index = self.labels.index(label)
         tag_index = self.tags.index(tag)
-        if self.matrix[label_index][cat_index] <= 0.9:
-            self.matrix[label_index][cat_index] += cfg.label_learning_rate
+        if self.matrix[label_index][tag_index] <= 0.9:
+            self.matrix[label_index][tag_index] += cfg.label_learning_rate
         #decrease competing connections if lateral_inhibition is used
         if cfg.lateral_inhibition:
             for count2, i in enumerate(self.matrix):
@@ -87,8 +88,8 @@ class Lexicon():
         """
         label_index = self.labels.index(label)
         tag_index = self.tags.index(tag)
-        if self.matrix[label_index][cat_index] >= 0.1:
-            self.matrix[label_index][cat_index] -= cfg.label_learning_rate
+        if self.matrix[label_index][tag_index] >= 0.1:
+            self.matrix[label_index][tag_index] -= cfg.label_learning_rate
             
             
     def get_tag(self, label):

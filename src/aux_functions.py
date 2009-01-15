@@ -53,3 +53,25 @@ def posMin(list):
             m = x
             index = i
     return index
+
+
+
+def generateRGBTrainingDataUniform(n_sets,  n_stimuli):
+    """ generates n_sets training data sets: context of n_stimuli 
+        space: RGB
+        values are drawn randomly from uniform distribution
+    """
+    training_data = []
+    count = 0
+    while count < n_sets:
+        count2 = 0
+        set = []
+        while count2 < n_stimuli:
+            stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
+            set.append(stimulus)
+            count2 += 1
+        training_data.append(set)
+        count += 1
+    return training_data
+
+

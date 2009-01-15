@@ -90,7 +90,7 @@ class BasicAgent():
                 answer = best_matching_concepts[topic_index]
             else:
                 # if agent discrimination success is below threshold a new concept is created
-                if self.discriminano_tagtion_succes < cfg.adapt_threshold:
+                if self.discrimination_succes < cfg.adapt_threshold:
                     if label == "empty0":
                         label = aux.generateRandomLabel(5)
                     self.add_concept(context[topic_index], label)
@@ -129,13 +129,13 @@ class BasicAgent():
     def increase_strength(self, label, tag):
         """ increases the association strength between the given label and tag
         """
-        self.lex.increase_strenth(label, tag)
+        self.lex.increase_strength(label, tag)
         
         
     def decrease_strength(self, label, tag):
         """ decreases the association strength between the given label and tag
         """
-        self.lex.decrease_strenth(label, tag)
+        self.lex.decrease_strength(label, tag)
             
 
     def get_concepts(self):
