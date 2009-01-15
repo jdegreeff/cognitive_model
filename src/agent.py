@@ -30,9 +30,16 @@ class BasicAgent():
         return self.agent_name
                             
                                 
-    def add_exemplar(self, exemplar):
-        """ adds exemplar data to the CP """
+    def add_exemplar(self, exemplar, label):
+        """ adds exemplar data to the CP and the label to the lexicon """
         exemplar_new = copy.deepcopy(exemplar)    # make a copy
+        # label is known
+        if label in self.lex.get_labels():   
+            tag = self.lex.get_tag(label)
+        # label is not known
+        else:                           
+            tag = aux.generateRandomTag(4)
+            self.lex.add_label(label, tag)
         self.cp.add_exemplar(exemplar_new, tag)
         
         
@@ -59,7 +66,8 @@ class BasicAgent():
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
-            self.add_concept(context[topic_index])
+            label = aux.generateRandomLabel(5)
+            self.add_concept(context[topic_index], label)
             answer = "concept_added"
         else:
             # select the best matching concept for every stimulus from the context (including the topic)
@@ -76,14 +84,15 @@ class BasicAgent():
             else:
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discrimination_succes < cfg.adapt_threshold:
-                    self.add_concept(context[topic_index])
+                    label = aux.generateRandomLabel(5)
+                    self.add_concept(context[topic_index], label)
                     answer = "concept_added"
                 # if agent discrimination success is above threshold, 
                 # topic is added as exemplar for the best matching concept, 
                 # i.e. the best matching concept is shifted towards the topic
                 else:
                     self.lex.get_label(best_matching_concepts[topic_index])
-                    self.add_exemplar(context[topic_index])
+                    self.add_exemplar(context[topic_index], label)
                     answer = "concept_shifted"
                     
         # calculate statistics
