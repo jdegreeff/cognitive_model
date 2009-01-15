@@ -11,7 +11,7 @@ import globals as gl
 def main():
     """ main run """
     init()
-    training_data = aux.generateRGBTrainingDataUniform(300, 3)
+    training_data = aux.generateRGBTrainingDataUniform(100, 3)
     for i in gl.agent_set:
         print gl.n_guessing_games
         for j in gl.agent_set:
@@ -28,6 +28,7 @@ def main():
 #    print agent1.discrimination_game(data.disc_game_data1, 0)
     
     for i in gl.agent_set:
+        i.print_matrix()
         print i.lex.labels
         print i.lex.tags
         print len(i.lex.tags)
