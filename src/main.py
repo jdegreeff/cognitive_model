@@ -55,11 +55,12 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             agent2.increase_strength(a1_topic_label, a2_presumed_topic_index[1])
             agent2.add_exemplar(context[topic_index], a1_topic_label) # shift cat towards topic
         # if agent2 does not know the communicated label
-        elif a2_presumed_topic_index == "no_tag":
-            pass
+        elif a2_presumed_topic_index == "label_unknown":
+            a2_disc_result = agent2.discrimination_game(context, topic_index, "no_label_addition")
         # if agent2 knows the label, but does not point to the right topic
         else:
-            pass
+            agent1.decrease_strength(a1_topic_label, a1_disc_result)
+            agent2.decrease_strength(a1_topic_label, a2_presumed_topic_index[1])
         
         
         

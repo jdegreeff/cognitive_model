@@ -81,6 +81,15 @@ class Lexicon():
                     if self.matrix[label_index][count] >= 0.1:
                         self.matrix[label_index][count] -= cfg.label_learning_rate
         
+        
+    def decrease_strength(self, label, tag):
+        """ decreases the association strength between the given label and tag
+        """
+        label_index = self.labels.index(label)
+        tag_index = self.tags.index(tag)
+        if self.matrix[label_index][cat_index] >= 0.1:
+            self.matrix[label_index][cat_index] -= cfg.label_learning_rate
+            
             
     def get_tag(self, label):
         """ retrieves the tag with the highest association for the given label 

@@ -53,22 +53,26 @@ class BasicAgent():
         self.cp.add_concept(concept, tag)
         
         
-    def discrimination_game(self, context, topic_index):
+    def discrimination_game(self, context, topic_index, param = "add_label"):
         """ Discrimination game in which an agent has to distinguish the topic
             from the context. The game succeeds if the agent has a concept 
             which uniquely matches the topic and no other stimuli from the context.
             If this is not the case, a new concept is build, or the existing concepts
-            are shifted.
-            The return is either the concept tag, or a string description of the action taken by the agent
+            are shifted, provided the param is set to "add_label", if param has another value, nothing 
+            is done and the game fails
+            The return is either the concept tag, a string description of the action taken by the agent, or "fail"
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
         context_new = copy.deepcopy(context)    # make a copy   
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
-            label = aux.generateRandomLabel(5)
-            self.add_concept(context[topic_index], label)
-            answer = "concept_added"
+            if param == "add_label":    # only add when label can be added
+                label = aux.generateRandomLabel(5)
+                self.add_concept(context[topic_index], label)
+                answer = "concept_added"
+            else:
+                answer = "fail"
         else:
             # select the best matching concept for every stimulus from the context (including the topic)
             best_matching_concepts = []
@@ -83,17 +87,23 @@ class BasicAgent():
                 answer = best_matching_concepts[topic_index]
             else:
                 # if agent discrimination success is below threshold a new concept is created
-                if self.discrimination_succes < cfg.adapt_threshold:
-                    label = aux.generateRandomLabel(5)
-                    self.add_concept(context[topic_index], label)
-                    answer = "concept_added"
+                if self.discriminano_tagtion_succes < cfg.adapt_threshold:
+                    if param == "add_label":    # only add when label can be added
+                        label = aux.generateRandomLabel(5)
+                        self.add_concept(context[topic_index], label)
+                        answer = "concept_added"
+                    else:
+                        answer = "fail"
                 # if agent discrimination success is above threshold, 
                 # topic is added as exemplar for the best matching concept, 
                 # i.e. the best matching concept is shifted towards the topic
                 else:
-                    self.lex.get_label(best_matching_concepts[topic_index])
-                    self.add_exemplar(context[topic_index], label)
-                    answer = "concept_shifted"
+                    if param == "add_label":    # only add when label can be added
+                        label = self.lex.get_label(best_matching_concepts[topic_index])
+                        self.add_exemplar(context[topic_index], label)
+                        answer = "concept_shifted"
+                    else:
+                        answer = "fail"
                     
         # calculate statistics
         self.n_discrimination_games += 1.0
@@ -108,7 +118,7 @@ class BasicAgent():
         """
         tag = self.get_tag(label)
         if tag == "no_tag":
-            return tag
+            return "label_unknown"
         else:
             context_distances = []
             for i in context:
@@ -121,6 +131,12 @@ class BasicAgent():
         """ increases the association strength between the given label and tag
         """
         self.lex.increase_strenth(label, tag)
+        
+        
+    def decrease_strength(self, label, tag):
+        """ decreases the association strength between the given label and tag
+        """
+        self.lex.decrease_strenth(label, tag)
             
 
     def get_concepts(self):
