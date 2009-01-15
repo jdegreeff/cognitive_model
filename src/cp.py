@@ -9,6 +9,7 @@ import random as ran
 from math import sqrt
 import math
 import copy
+import globals as gl
 
 
 class CP():

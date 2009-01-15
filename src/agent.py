@@ -5,6 +5,7 @@ import lexicon
 import aux_functions as aux
 import cfg
 import copy
+import globals as gl
 
 
 class BasicAgent():

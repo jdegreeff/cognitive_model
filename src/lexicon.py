@@ -3,6 +3,7 @@
 import numpy
 import aux_functions as aux
 import cfg
+import globals as gl
 
 
 class Lexicon():
@@ -86,7 +87,10 @@ class Lexicon():
     def decrease_strength(self, label, tag):
         """ decreases the association strength between the given label and tag
         """
-        label_index = self.labels.index(label)
+        try:
+            label_index = self.labels.index(label)
+        except ValueError:
+            pass
         tag_index = self.tags.index(tag)
         if self.matrix[label_index][tag_index] >= 0.1:
             self.matrix[label_index][tag_index] -= cfg.label_learning_rate
@@ -110,8 +114,8 @@ class Lexicon():
     
     
     def get_label(self, tag):
-        """ retrieves the label with the higest association for the given tag 
-            if there are more than one labels with the higest association value, 
+        """ retrieves the label with the highest association for the given tag 
+            if there are more than one labels with the highest association value, 
             the first one will be returned
         """
         tag_index = -1

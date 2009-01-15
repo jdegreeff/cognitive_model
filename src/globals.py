@@ -1,3 +1,4 @@
 # globals.py
 
-agent_set
+agent_set = []
+n_guessing_games = 0
