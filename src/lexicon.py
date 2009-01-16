@@ -4,6 +4,7 @@ import numpy
 import aux_functions as aux
 import cfg
 import globals as gl
+import copy
 
 
 class Lexicon():
@@ -41,10 +42,12 @@ class Lexicon():
             else:                       
                 length_labels = len(self.labels)
                 length_tags = len(self.tags)
-                new_zeros = numpy.zeros(length_labels)
-                new_zeros.shape = length_labels, 1
+                #new_zeros = numpy.zeros(length_labels)
+                new_zeros = numpy.array([0.0] * length_labels)
+                new_zeros.shape = (length_labels, 1)
                 self.matrix = numpy.hstack((self.matrix, new_zeros))
-                new = numpy.append(numpy.zeros(length_tags), 0.5)
+                #new = numpy.append(numpy.zeros(length_tags), 0.5)
+                new = numpy.append(numpy.array([0.0] * length_tags), 0.5)
                 self.matrix = numpy.vstack((self.matrix,new))
             # add label and tag
             self.labels.append(label)
@@ -54,6 +57,7 @@ class Lexicon():
             new = numpy.array([])
             for count, i in enumerate(self.matrix):
                 if count != self.labels.index(label):
+                    #new = numpy.hstack((new, [0.0]))
                     new = numpy.hstack((new, [0.0]))
                 else:
                     new = numpy.hstack((new, [0.5]))
@@ -142,7 +146,7 @@ class Lexicon():
         for i in self.labels:
             print "'", i,"'", 
             for k in self.matrix[j]:
-                    print " ",  k, "     ", 
+                    print " ",  '%.1f'% k, "     ", 
             print "\n"
             j += 1
         

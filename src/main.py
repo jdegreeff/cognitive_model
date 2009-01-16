@@ -11,7 +11,7 @@ import globals as gl
 def main():
     """ main run """
     init()
-    training_data = aux.generateRGBTrainingDataUniform(100, 2)
+    training_data = aux.generateRGBTrainingDataUniform(1000, 2)
     for i in gl.agent_set:
         for j in gl.agent_set:
             if i is not j:
