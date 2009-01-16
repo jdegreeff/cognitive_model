@@ -32,7 +32,7 @@ class BasicAgent():
                             
                                 
     def add_exemplar(self, exemplar, label):
-        """ adds exemplar data to the CP and the label to the lexicon """
+        """ adds exemplar data to the CP and the label to the lexicon """ 
         exemplar_new = copy.deepcopy(exemplar)    # make a copy
         # label is known
         if label in self.lex.get_labels():   
@@ -48,7 +48,7 @@ class BasicAgent():
         """ adds a concept to the CP
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
-        """                      
+        """                                
         concept_new = copy.deepcopy(concept)    # make a copy     
         # label is known
         if label in self.lex.get_labels():   

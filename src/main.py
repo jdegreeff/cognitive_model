@@ -7,25 +7,20 @@ import random as ran
 import aux_functions as aux
 import cfg
 import globals as gl
+import layout
+import copy
 
 def main():
     """ main run """
     init()
-    training_data = aux.generateRGBTrainingDataUniform(1000, 2)
+    training_data = aux.generateRGBTrainingDataUniform(400, 10)
     for i in gl.agent_set:
         for j in gl.agent_set:
             if i is not j:
                 for h in training_data:
                     guessing_game(i, j, h)
         print gl.n_guessing_games
-
-    
-    
-#    agent1.add_exemplar(data.exemplar1, "CONC1")
-#    print agent1.cp.prototype_data
-#    print agent1.get_concepts()
-#    print agent1.get_labels()
-#    print agent1.discrimination_game(data.disc_game_data1, 0)
+        
     
     for i in gl.agent_set:
         #i.print_matrix()
@@ -33,13 +28,15 @@ def main():
         print i.lex.tags
         print len(i.lex.tags)
         print len(i.lex.labels)
+    
+    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
+    layout.run(gl.agent_set, "rgb")
         
-    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"
+    
     
     
 def init():
     """ initialises various parameters and values """
-    
     # initialise agents
     i = 0
     while i < cfg.n_agents:
@@ -47,9 +44,9 @@ def init():
         ag = agent.BasicAgent(agent_name)
         gl.agent_set.append(ag)
         i += 1
-        
     gl.n_guessing_games = 0
     
+
 
 def guessing_game(agent1, agent2, context, topic_index = False):
     """ Guessing game which is played by two agents. Agent1 knows the topic, finds the closest
@@ -64,8 +61,8 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     a1_disc_result = agent1.discrimination_game(context, topic_index)
     if a1_disc_result == ("concept_added" or "concept_shifted"):
         guessing_game_result = 0
-    # if agent1 discrimination game succeeds
-    else:
+    # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
+    elif len(a1_disc_result) == 4:
         a1_topic_label = agent1.get_label(a1_disc_result)
         # if agent1 does not has a label for the topic
         if a1_topic_label == "no_label":
@@ -85,6 +82,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             a2_disc_result = agent2.discrimination_game(context, topic_index, a1_topic_label)
             if a2_disc_result != ("concept_added" or "concept_shifted"):
                 agent2.add_concept(context[topic_index], a1_topic_label)
+            agent1.decrease_strength(a1_topic_label, a1_disc_result)
         # if agent2 knows the label, but does not point to the right topic
         else:
             guessing_game_result = 0

@@ -1,7 +1,5 @@
-#!/usr/bin/python
-# colors.py
+# layout.py
 
-import basic_model
 import sys, random
 from PyQt4 import QtGui, QtCore
 
@@ -10,39 +8,54 @@ colour_white = QtGui.QColor(255, 255, 255, 255)
 pen = QtGui.QPen(colour_black)
 
 class ColorWindow(QtGui.QWidget):
-    def __init__(self, agent,  space,  parent=None):
+    def __init__(self, agents,  space,  parent=None):
         QtGui.QWidget.__init__(self, parent)
-        self.ag = agent
+        self.ag = agents
         self.space = space
-        self.setGeometry(300, 100, 600, 500)
-        title = 'Categories of "' + self.ag.agent_name + '"'
+        self.setGeometry(300, 100, 1200, 700)
+        title = 'Categories'
         self.setWindowTitle(title)
 
     def paintEvent(self, event):
         paint = QtGui.QPainter()
         paint.begin(self)
-        text = "Number of categories: " + str(self.ag.give_ncategories())
-        paint.drawText(440, 20, text)
+#        text = "Number of categories: " + str(len(self.ag.get_tags()))
+#        paint.drawText(440, 20, text)
         
         #RGB colour space
         if self.space == "rgb":
-            x = 0
-            y = 0
-            count = 0
-            while count < len(self.ag.structure):
-                r = self.ag.structure[count][1][3]
-                g = self.ag.structure[count+1][1][3]
-                b = self.ag.structure[count+2][1][3]
-                color = QtGui.QColor(r, g, b, 255)
-                paint.setPen(colour_black)
-                paint.setBrush(color)
-                paint.drawRect(15+x, 15+y, 30, 20)
-                if x < 360:
-                    x += 40   
-                else:
-                    x = 0
-                    y += 30
-                count += 3
+            y2 = 0
+            for i in self.ag:
+                text = 'Categories of "' + i.agent_name + '"'
+                paint.drawText(900, 20 + y2, text)
+                count = 0
+                x = 0
+                y = 0
+                y += y2
+                data_list = i.cp.get_all_concept_coordinates()
+                label_list = i.get_labels()
+                print len(data_list), len(label_list)
+                while count < len(data_list):
+                    r = data_list[count][0][1]
+                    g = data_list[count][1][1]
+                    b = data_list[count][2][1]
+                    color = QtGui.QColor(r, g, b, 255)
+                    paint.setPen(colour_black)
+                    paint.setBrush(color)
+                    paint.drawRect(15+x, 15+y, 30, 20)
+                    try:
+                        label = label_list[count]
+                    except IndexError:
+                        print "Error"
+                    paint.drawText(15+x, 50+y, label)
+                    if x < 800:
+                        x += 50   
+                    else:
+                        x = 0
+                        y += 50
+                    count += 1
+                
+                y2 += 250
             
         # 4D figure space
         if self.space == "4df":
@@ -111,7 +124,7 @@ class ColorWindow(QtGui.QWidget):
                 paint.drawLine( 20+x, 20+y, 35+x, 8+y ) #neck
                 pen.setWidth(tail)
                 paint.setPen(pen)
-                paint.drawLine( 15+x, 17+y, 12+x, 15+y ) #tail
+                paint.drawLine( 15+x, 17+y, 12+x, 15+yi ) #tail
                 pen.setWidth(ears)
                 paint.setPen(pen)
                 paint.drawLine( 34+x, 4+y, 34+x, 0+y ) # ear
@@ -130,9 +143,9 @@ class ColorWindow(QtGui.QWidget):
         paint.end()
 
 
-def run(agent,  space):
+def run(agents,  space):
     app = QtGui.QApplication(sys.argv)
-    dt = ColorWindow(agent,  space)
+    dt = ColorWindow(agents,  space)
     dt.show()
     app.exec_()
 
