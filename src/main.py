@@ -13,11 +13,10 @@ import copy
 def main():
     """ main run """
     init()
-    training_data = aux.generateRGBTrainingDataUniform(400, 10)
     for i in gl.agent_set:
         for j in gl.agent_set:
             if i is not j:
-                for h in training_data:
+                for h in gl.training_data:
                     guessing_game(i, j, h)
         print gl.n_guessing_games
         
@@ -30,7 +29,7 @@ def main():
         print len(i.lex.labels)
     
     print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
-    layout.run(gl.agent_set, "rgb")
+    layout.run(gl.agent_set, cfg.space)
         
     
     
@@ -45,6 +44,7 @@ def init():
         gl.agent_set.append(ag)
         i += 1
     gl.n_guessing_games = 0
+    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     
 
 
@@ -107,7 +107,11 @@ def calculate_agents_lexicon():
                         check = 1
             if not check:
                 uniques += 1
-        matching -= (uniques/len(i.lex.labels)/len(gl.agent_set))
+        if len(i.lex.labels) == 0:
+            length = 1
+        else: 
+            length = len(i.lex.labels)
+        matching -= (uniques/length/len(gl.agent_set))
     return int(matching * 100)
             
         
