@@ -37,6 +37,11 @@ class BasicAgent():
         self.cp.add_concept(concept_new, tag)
         
         
+    def add_label(self, label, tag):
+        """ adds a label for the given tag the given tag """ 
+        self.lex.add_label(label, tag)
+        
+        
     def discrimination_game(self, context, topic_index):
         """ Discrimination game in which an agent has to distinguish the topic
             from the context. The game succeeds if the agent has a concept 
@@ -77,10 +82,10 @@ class BasicAgent():
                 else:
                     tag = best_matching_concepts[topic_index]
                     self.add_exemplar(context[topic_index], tag)
-                    answer = "concept_shifted"
+                    answer = tag
                     
         # calculate statistics
-        print self.n_discrimination_games, self.discrimination_succes
+        # print self.n_discrimination_games, self.discrimination_succes
         self.n_discrimination_games += 1.0
         self.discrimination_succes = self.n_succes_games/self.n_discrimination_games
         return answer
@@ -92,8 +97,8 @@ class BasicAgent():
             the presumed topic index is communicated to the other agent.
         """
         tag = self.get_tag(label)
-        if tag == "no_tag":
-            return "label_unknown"
+        if tag == "label_unknown":
+            return tag
         else:
             context_distances = []
             for i in context:

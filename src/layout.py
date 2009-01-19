@@ -46,8 +46,7 @@ class ColorWindow(QtGui.QWidget):
                         label = label_list[count]
                         paint.drawText(15+x, 50+y, label)
                     except IndexError:
-                        print "No labels"
-                    
+                        print "Error"                    
                     if x < 800:
                         x += 50   
                     else:
@@ -100,7 +99,7 @@ class ColorWindow(QtGui.QWidget):
                         label = label_list[count] + ":"
                         paint.drawText(15+x, 50+y, label)
                     except IndexError:
-                        print "No labels"
+                        pass
                     text = str((count/4)+1)
                     paint.drawText(x + 67, y + 50, text)
 

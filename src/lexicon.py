@@ -12,7 +12,6 @@ class Lexicon():
         and a associative matrix from lexicon to concept
     """
     
-    
     def __init__(self, name):
         """ initiate variables """
         self.holder_name = name        # name of the agent holding this CP
@@ -34,7 +33,7 @@ class Lexicon():
     def add_label(self, label, tag):
         """ adds a new label to the repertoire, and/or updates the associative matrix """
         # if label is not known
-        if label not in self.labels:
+        if (label not in self.labels and tag not in self.tags):
             # create new matrix is none exists
             if len(self.matrix) == 0:   
                 self.matrix = [[0.5]]
@@ -52,12 +51,15 @@ class Lexicon():
             # add label and tag
             self.labels.append(label)
             self.tags.append(tag)
+        # if tag is already known
+        elif label not in self.labels:
+        # TODO: modify so that when the tag is known, it will not be added again to the tag list
+            pass
         # if label is already known
         else:
             new = numpy.array([])
             for count, i in enumerate(self.matrix):
                 if count != self.labels.index(label):
-                    #new = numpy.hstack((new, [0.0]))
                     new = numpy.hstack((new, [0.0]))
                 else:
                     new = numpy.hstack((new, [0.5]))
@@ -94,7 +96,7 @@ class Lexicon():
         try:
             label_index = self.labels.index(label)
         except ValueError:
-            pass
+            print "agent.lex.decrease_strength Error"
         tag_index = self.tags.index(tag)
         if self.matrix[label_index][tag_index] >= 0.1:
             self.matrix[label_index][tag_index] -= cfg.label_learning_rate
@@ -111,7 +113,7 @@ class Lexicon():
                 label_index = count
                 break
         if label_index == -1:
-            return "no_tag"
+            return "label_unknown"
         else:
             max = aux.posMax(self.matrix[label_index])
             return self.tags[max]
@@ -128,7 +130,7 @@ class Lexicon():
                 tag_index = count
                 break
         if tag_index == -1:
-            return "no_label"
+            return "tag_unknown"
         else:
             value_list = []
             for i in self.matrix:
