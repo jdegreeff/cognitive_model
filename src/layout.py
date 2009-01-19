@@ -34,7 +34,6 @@ class ColorWindow(QtGui.QWidget):
                 y += y2
                 data_list = i.cp.get_all_concept_coordinates()
                 label_list = i.get_labels()
-                print len(data_list), len(label_list)
                 while count < len(data_list):
                     r = data_list[count][0][1]
                     g = data_list[count][1][1]
@@ -45,9 +44,10 @@ class ColorWindow(QtGui.QWidget):
                     paint.drawRect(15+x, 15+y, 30, 20)
                     try:
                         label = label_list[count]
+                        paint.drawText(15+x, 50+y, label)
                     except IndexError:
-                        print "Error"
-                    paint.drawText(15+x, 50+y, label)
+                        print "No labels"
+                    
                     if x < 800:
                         x += 50   
                     else:
@@ -98,9 +98,9 @@ class ColorWindow(QtGui.QWidget):
                     paint.setBrush(colour_black)
                     try:
                         label = label_list[count] + ":"
+                        paint.drawText(15+x, 50+y, label)
                     except IndexError:
-                        print "Error"
-                    paint.drawText(15+x, 50+y, label)
+                        print "No labels"
                     text = str((count/4)+1)
                     paint.drawText(x + 67, y + 50, text)
 

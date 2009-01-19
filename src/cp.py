@@ -32,12 +32,17 @@ class CP():
         self.holder_name = name     # name of the agent holding this CP
         self.dimensions = []        # list of CP dimensions
         self.concepts = []          # list of names and coordinates of concepts the CP holds
-        self.prototype_data = []    # data from which the prototypes are extracted
+        self.prototype_data = []    # data from which the prototypes are extractednt
 
 
     def get_concepts(self):
         """ returns the list of concepts currently in CP """
         return self.concepts
+    
+    
+    def get_n_concepts(self):
+        """ returns the number of concepts currently in CP """
+        return len(self.concepts)
     
     
     def get_all_concept_coordinates(self):
@@ -107,7 +112,7 @@ class CP():
                                 for k in self.prototype_data[count][1]:
                                      if k[0] == i[0]:
                                         number += 1
-                        # if there is prototyical data 
+                        # if there is prototypical data 
                         if number > 1:
                             difference = (i[1] - j[1])/ number      # calculate difference
                             mean = j[1] + difference

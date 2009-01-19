@@ -20,47 +20,24 @@ class BasicAgent():
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
         self.n_succes_games = 0                     # number of successful discrimination games
         self.discrimination_succes = 0.0            # agents discrimination success ratio
-
-
-    def get_cp(self):
-        """ Returns the conceptual space of the agent """
-        return self.cp
-    
-    
-    def get_name(self):
-        return self.agent_name
                             
                                 
-    def add_exemplar(self, exemplar, label):
-        """ adds exemplar data to the CP and the label to the lexicon """ 
-        exemplar_new = copy.deepcopy(exemplar)    # make a copy
-        # label is known
-        if label in self.lex.get_labels():   
-            tag = self.lex.get_tag(label)
-        # label is not known
-        else:                           
-            tag = aux.generateRandomTag(4)
-            self.lex.add_label(label, tag)
+    def add_exemplar(self, exemplar, tag):
+        """ adds exemplar data to the concept of the given tag """ 
+        exemplar_new = copy.deepcopy(exemplar)    # make a copy                          
         self.cp.add_exemplar(exemplar_new, tag)
         
         
-    def add_concept(self, concept, label):
+    def add_concept(self, concept, tag):
         """ adds a concept to the CP
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
         """                                
         concept_new = copy.deepcopy(concept)    # make a copy     
-        # label is known
-        if label in self.lex.get_labels():   
-            tag = self.lex.get_tag(label)
-        # label is not known
-        else:    
-            tag = aux.generateRandomTag(4)
-            self.lex.add_label(label, tag)
         self.cp.add_concept(concept_new, tag)
         
         
-    def discrimination_game(self, context, topic_index, label = "empty0"):
+    def discrimination_game(self, context, topic_index):
         """ Discrimination game in which an agent has to distinguish the topic
             from the context. The game succeeds if the agent has a concept 
             which uniquely matches the topic and no other stimuli from the context.
@@ -73,10 +50,9 @@ class BasicAgent():
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
-            if label == "empty0":
-                label = aux.generateRandomLabel(5)
-            self.add_concept(context[topic_index], label)
-            answer = "concept_added"
+            tag = aux.generateRandomTag(4)
+            self.add_concept(context[topic_index], tag)
+            answer = tag
         else:
             # select the best matching concept for every stimulus from the context (including the topic)
             best_matching_concepts = []
@@ -92,20 +68,19 @@ class BasicAgent():
             else:
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discrimination_succes < cfg.adapt_threshold:
-                    if label == "empty0":
-                        label = aux.generateRandomLabel(5)
-                    self.add_concept(context[topic_index], label)
-                    answer = "concept_added"
+                    tag = aux.generateRandomTag(4)
+                    self.add_concept(context[topic_index], tag)
+                    answer = tag
                 # if agent discrimination success is above threshold, 
                 # topic is added as exemplar for the best matching concept, 
                 # i.e. the best matching concept is shifted towards the topic
                 else:
-                    if label == "empty0":
-                        label = self.lex.get_label(best_matching_concepts[topic_index])
-                    self.add_exemplar(context[topic_index], label)
+                    tag = best_matching_concepts[topic_index]
+                    self.add_exemplar(context[topic_index], tag)
                     answer = "concept_shifted"
                     
         # calculate statistics
+        print self.n_discrimination_games, self.discrimination_succes
         self.n_discrimination_games += 1.0
         self.discrimination_succes = self.n_succes_games/self.n_discrimination_games
         return answer
@@ -137,10 +112,24 @@ class BasicAgent():
         """ decreases the association strength between the given label and tag
         """
         self.lex.decrease_strength(label, tag)
-            
+        
+        
+    def get_name(self):
+        return self.agent_name
+    
+        
+    def get_cp(self):
+        """ Returns the whole conceptual space of the agent """
+        return self.cp
+    
 
     def get_concepts(self):
         return self.cp.get_concepts()
+    
+    
+    def get_n_concepts(self):
+        """ returns the number of concepts currently in CP """
+        return self.cp.get_n_concepts()
        
        
     def get_labels(self):

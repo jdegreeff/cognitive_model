@@ -13,23 +13,40 @@ import copy
 def main():
     """ main run """
     init()
-    for i in gl.agent_set:
-        for j in gl.agent_set:
-            if i is not j:
-                for h in gl.training_data:
-                    guessing_game(i, j, h)
-        print gl.n_guessing_games
+    
+    for i in gl.training_data:
+        gl.agent_set[0].discrimination_game(i, 0)
         
+    print gl.agent_set[0].get_concepts()
+    print gl.agent_set[0].get_n_concepts()
     
-    for i in gl.agent_set:
-        #i.print_matrix()
-        print i.lex.labels
-        print i.lex.tags
-        print len(i.lex.tags)
-        print len(i.lex.labels)
-    
-    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
     layout.run(gl.agent_set, cfg.space)
+    
+    
+
+#    gl.agent_set[0].add_exemplar(data.exemplar1, "concept1")
+#    gl.agent_set[0].add_exemplar(data.exemplar2, "concept1")
+#    gl.agent_set[0].add_exemplar(data.exemplar3, "concept1")
+#    print gl.agent_set[0].get_concepts()
+
+    
+    # discrimination game section
+#    for i in gl.agent_set:
+#        for j in gl.agent_set:
+#            if i is not j:
+#                for h in gl.training_data:
+#                    guessing_game(i, j, h)
+#        print gl.n_guessing_games
+#        
+#    for i in gl.agent_set:
+#        #i.print_matrix()
+#        print i.lex.labels
+#        print i.lex.tags
+#        print len(i.lex.tags)
+#        print len(i.lex.labels)
+#    
+#    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
+#    layout.run(gl.agent_set, cfg.space)
         
     
     
