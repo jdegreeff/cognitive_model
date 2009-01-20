@@ -10,6 +10,8 @@ from math import sqrt
 import math
 import copy
 import globals as gl
+import aux_functions as aux
+import cfg
 
 
 class CP():
@@ -32,7 +34,7 @@ class CP():
         self.holder_name = name     # name of the agent holding this CP
         self.dimensions = []        # list of CP dimensions
         self.concepts = []          # list of names and coordinates of concepts the CP holds
-        self.prototype_data = []    # data from which the prototypes are extractednt
+        self.prototype_data = []    # data from which the prototypes are extracted
 
 
     def get_concepts(self):
@@ -174,9 +176,32 @@ class CP():
         return e**(-sensitivity * distance)
         
             
-            
-            
-            
+    def merge_concepts(self):
+        """ merges existing concepts in the CP if two concepts are close """
+        # currently only works for matching RGB dimensions!!
+        concept_coors = self.get_all_concept_coordinates()
+        max_dis = aux.calculate_max_dis()
+        for count, i in enumerate(concept_coors):
+            for count2, j in enumerate(concept_coors):
+                if i is not j:
+                    #calculate distance
+                    distance = (self.calculate_distance(i, j)/max_dis)
+                    # if distance is within threshold, merge concepts
+                    if distance < cfg.merging_rate:
+                        tag1 = self.concepts[count][0]
+                        tag2 = self.concepts[count2][0] 
+                        new_concept = [ ["r", (i[0][1] + j[0][1])/2], ["g", (i[1][1] + j[1][1])/2], ["b", (i[2][1] + j[2][1])/2] ]
+                        # SD info is forfeit
+                        for count3, h in enumerate(self.concepts):
+                            if h[0] == tag1:
+                                self.concepts.pop(count3)
+                        for count3, h in enumerate(self.concepts):
+                            if h[0] == tag2:
+                                self.concepts.pop(count3)
+                        self.add_concept(new_concept, aux.generateRandomTag(4))
+                        print "merged"
+                        
+
             
             
             

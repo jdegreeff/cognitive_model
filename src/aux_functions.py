@@ -2,6 +2,8 @@
 
 import random as ran
 import data
+import cfg
+from math import sqrt
 
 
 def generateRandomTag(length):
@@ -58,16 +60,17 @@ def posMin(list):
 def generateTrainingData(space, n_sets, context_size, type = 0):
     training_dataset = []
     if space == "rgb":
-        training_dataset = generateRGBTrainingDataUniform(n_sets, context_size)
+        training_dataset = generateRGBTrainingDataUniform(n_sets, context_size, cfg.sample_minimum_distance)
     if space == "4df":
         training_dataset = generate4DFigureTrainingData(n_sets, context_size, type)
     return training_dataset
 
 
-def generateRGBTrainingDataUniform(n_sets,  n_stimuli):
-    """ generates n_sets training data sets: context of n_stimuli 
+def generateRGBTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
+    """ generates n_sets training data sets: context of n_stimuli
         space: RGB
-        values are drawn randomly from uniform distribution
+        values are drawn randomly from uniform distribution,
+        minimum distance between values is taken into account
     """
     training_data = []
     count = 0
@@ -75,11 +78,23 @@ def generateRGBTrainingDataUniform(n_sets,  n_stimuli):
         count2 = 0
         set = []
         while count2 < n_stimuli:
-            stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
+            check = True
+            while check:
+                stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
+                if set == []:
+                    check = False
+                else:
+                    for i in set:
+                        distance = calculate_distance_general(i, stimulus)
+                        if distance > sample_minimum_distance:
+                            check = False
+                        else:
+                            check = True
             set.append(stimulus)
             count2 += 1
         training_data.append(set)
         count += 1
+    print "training data created"
     return training_data
 
 
@@ -115,3 +130,28 @@ def generate4DFigureTrainingData(n_sets,  n_stimuli, type = 0):
     return training_data
 
 
+def calculate_max_dis():
+    """ calculates the maximum distance based on the range of the current space """
+    if cfg.space == "rgb":
+        return 441.67
+    
+    
+    
+def calculate_distance_general(point1, point2, list_salience = "empty" ):
+    """ calculates the distance between two given points
+        only matching dimensions are taken into account
+        point1 used as reference, list of salience should be according to 
+        dimensions of point1, if non given, default salience of 1 is used
+        point = [ [d1, value], [d2, value], ..., [dn, value] ]
+        list_salience = [s1, s2,...,sn]
+    """
+    distance = 0
+    if list_salience == "empty":
+        list_salience = [1] * len(point1)
+    for count, i in enumerate(point1):
+        for j in point2:
+            if i[0] == j[0]:
+                distance += ( list_salience[count] * ((i[1] - j[1])**2) )
+    return sqrt(distance)
+    
+    

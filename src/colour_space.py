@@ -37,6 +37,11 @@ def xyz2lab(xyz_image):
     b = 200 * ( f(yy) - f(zz) )
     return [l, a, b]
 
+def calculate_CIELAB_distance(standard, trial):
+    """ calculates the euclidean distance between two CIELAB colour coordinates of the form [L, a, b]
+    """
+    return (((standard[0] - trial[0])**2) + ((standard[1] - trial[1])**2) + ((standard[2] - trial[2])**2)) ** (1.0/2.0)
+
     
 # help function for xyz2lab
 def f(x):
@@ -47,13 +52,18 @@ def f(x):
     
 
 im = Image.open("test_blue.png")
+im2 = Image.open("test_red.png")
 # print im.format, im.size, im.mode
 
 pix = im.load()
+pix2 = im2.load()
 print "\n RGB: " + str(pix[0, 0])
+print "\n RGB: " + str(pix2[0, 0])
 
 xyz_image = rgb2xyz(pix)
+xyz_image2 = rgb2xyz(pix2)
 lab_image = xyz2lab(xyz_image)
+lab_image2 = xyz2lab(xyz_image2)
     
 x_value = (xyz_image[0] + 0.0)/(xyz_image[0] + xyz_image[1] + xyz_image[2])
 y_value = (xyz_image[1] + 0.0)/(xyz_image[0] + xyz_image[1] + xyz_image[2])
@@ -62,4 +72,7 @@ print "\n Yxy values - x: " + str(x_value), "y: " + str(y_value), "Y: " + str(xy
 
 print "\n L*a*b* values - L: " + str(lab_image[0]), "a: " + str(lab_image[1]), "b: " + \
         str(lab_image[2])
+        
+print "distance: " + str(calculate_CIELAB_distance(lab_image, lab_image2))
+
 

@@ -14,6 +14,17 @@ def main():
     """ main run """
     init()
     
+#    gl.agent_set[0].add_concept(data.exemplar1, "CONC1")
+#    gl.agent_set[0].add_exemplar(data.exemplar2, "CONC1")
+#    gl.agent_set[0].add_exemplar(data.exemplar3, "CONC1")
+#    
+#    gl.agent_set[0].add_exemplar(data.exemplar4, "CONC2")
+#    gl.agent_set[0].add_exemplar(data.exemplar5, "CONC2")
+#    
+#    concept_coors = gl.agent_set[0].cp.get_all_concept_coordinates()
+#    print gl.agent_set[0].cp.calculate_distance(concept_coors[0], concept_coors[1])
+#    print gl.agent_set[0].cp.calculate_distance(data.test_points[0], data.test_points[1])
+    
     # discrimination game section
     for i in gl.agent_set:
         for j in gl.training_data:
@@ -24,7 +35,6 @@ def main():
         print i.get_n_concepts()
         print i.cp.prototype_data
         print len(i.cp.prototype_data)
-    
     layout.run(gl.agent_set, cfg.space)
 
     
@@ -40,10 +50,11 @@ def main():
 #        print gl.n_guessing_games
 #        
 #    for i in gl.agent_set:
-#        #i.print_matrix()
+#        i.print_matrix()
 #        print i.lex.labels
 #        print i.lex.tags
 #        print i.get_concepts()
+#        print i.cp.prototype_data
 #        print len(i.lex.tags)
 #        print len(i.get_concepts())
 #        print len(i.lex.labels)
