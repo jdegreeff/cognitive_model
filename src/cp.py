@@ -188,7 +188,10 @@ class CP():
                     distance = (self.calculate_distance(i, j)/max_dis)
                     # if distance is within threshold, merge concepts
                     if distance < cfg.merging_rate:
-                        tag1 = self.concepts[count][0]
+                        try:
+                            tag1 = self.concepts[count][0]
+                        except IndexError:
+                            pass
                         tag2 = self.concepts[count2][0] 
                         new_concept = [ ["r", (i[0][1] + j[0][1])/2], ["g", (i[1][1] + j[1][1])/2], ["b", (i[2][1] + j[2][1])/2] ]
                         # SD info is forfeit
@@ -200,6 +203,7 @@ class CP():
                                 self.concepts.pop(count3)
                         self.add_concept(new_concept, aux.generateRandomTag(4))
                         print "merged"
+                    break
                         
 
             
