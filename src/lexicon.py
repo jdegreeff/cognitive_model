@@ -32,7 +32,7 @@ class Lexicon():
     
     def add_label(self, label, tag):
         """ adds a new label to the repertoire, and/or updates the associative matrix """
-        # if label is not known
+        # if label and tag are not known
         if (label not in self.labels and tag not in self.tags):
             # create new matrix is none exists
             if len(self.matrix) == 0:   
@@ -44,18 +44,28 @@ class Lexicon():
                 #new_zeros = numpy.zeros(length_labels)
                 new_zeros = numpy.array([0.0] * length_labels)
                 new_zeros.shape = (length_labels, 1)
-                self.matrix = numpy.hstack((self.matrix, new_zeros))
+                try:
+                    self.matrix = numpy.hstack((self.matrix, new_zeros))
+                except ValueError:
+                    pass
                 #new = numpy.append(numpy.zeros(length_tags), 0.5)
                 new = numpy.append(numpy.array([0.0] * length_tags), 0.5)
-                self.matrix = numpy.vstack((self.matrix,new))
+                try:
+                    self.matrix = numpy.vstack((self.matrix,new))
+                except ValueError:
+                    pass
             # add label and tag
             self.labels.append(label)
             self.tags.append(tag)
-        # if tag is already known
+        # if tag is already known, a new label is added
         elif label not in self.labels:
-        # TODO: modify so that when the tag is known, it will not be added again to the tag list
-            pass
-        # if label is already known
+            new = numpy.array([0.0] * len(self.tags))
+            for count, i in enumerate(new):
+                if count == self.tags.index(tag):
+                    new[count] = 0.5
+            self.matrix = numpy.vstack((self.matrix,new))
+            self.labels.append(label)
+        # if label is already known, a new tag is added
         else:
             new = numpy.array([])
             for count, i in enumerate(self.matrix):

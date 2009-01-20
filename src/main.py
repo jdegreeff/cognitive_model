@@ -15,36 +15,41 @@ def main():
     init()
     
     # discrimination game section
-#    for i in gl.training_data:
-#        gl.agent_set[0].discrimination_game(i, 0)
-#        
-#    print gl.agent_set[0].get_concepts()
-#    print gl.agent_set[0].get_n_concepts()
-#    
-#    layout.run(gl.agent_set, cfg.space)
+    for i in gl.agent_set:
+        for j in gl.training_data:
+            i.discrimination_game(j, 0)
+        
+    print gl.agent_set[0].get_concepts()
+    for i in gl.agent_set:
+        print i.get_n_concepts()
+        print i.cp.prototype_data
+        print len(i.cp.prototype_data)
+    
+    layout.run(gl.agent_set, cfg.space)
 
     
     # guessing game section
-    for i in gl.agent_set:
-        for j in gl.agent_set:
-            if i is not j:
-                for h in gl.training_data:
-                    if gl.training_counter % 2:
-                        guessing_game(i, j, h)
-                    else:
-                        guessing_game(j, i, h)
-        print gl.n_guessing_games
-        
-    for i in gl.agent_set:
-        i.print_matrix()
-        print i.lex.labels
-        print i.lex.tags
-        print len(i.lex.tags)
-        print len(i.get_concepts())
-        print len(i.lex.labels)
-    
-    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
-    layout.run(gl.agent_set, cfg.space)
+#    for i in gl.agent_set:
+#        for j in gl.agent_set:
+#            if i is not j:
+#                for h in gl.training_data:
+#                    if gl.training_counter % 2:
+#                        guessing_game(i, j, h)
+#                    else:
+#                        guessing_game(j, i, h)
+#        print gl.n_guessing_games
+#        
+#    for i in gl.agent_set:
+#        #i.print_matrix()
+#        print i.lex.labels
+#        print i.lex.tags
+#        print i.get_concepts()
+#        print len(i.lex.tags)
+#        print len(i.get_concepts())
+#        print len(i.lex.labels)
+#    
+#    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
+#    layout.run(gl.agent_set, cfg.space)
         
     
     
@@ -83,8 +88,6 @@ def guessing_game(agent1, agent2, context, topic_index = False):
         # if agent1 does not has a label for the topic, a new label is created and added to the lexicon
         if a1_topic_label == "tag_unknown":
             label = aux.generateRandomLabel(5)
-            if len(agent1.cp.concepts) < len(agent1.lex.tags):
-                pass
             agent1.add_label(label, a1_disc_result)
             a1_topic_label = label
         a2_guessing_game_answer = agent2.answer_gg(a1_topic_label, context)
@@ -93,15 +96,11 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             guessing_game_result = 1
             agent1.increase_strength(a1_topic_label, a1_disc_result)
             agent2.increase_strength(a1_topic_label, a2_guessing_game_answer[1])
-            if len(agent2.cp.concepts) < len(agent2.lex.tags):
-                pass
             agent2.add_exemplar(context[topic_index], a2_guessing_game_answer[1]) # shift cat towards topic
         # if agent2 does not know the communicated label
         elif a2_guessing_game_answer == "label_unknown":
             guessing_game_result = 0
             a2_disc_result = agent2.discrimination_game(context, topic_index)
-            if len(agent2.cp.concepts) < len(agent2.lex.tags):
-                pass
             agent2.add_label(a1_topic_label, a2_disc_result)
             agent1.decrease_strength(a1_topic_label, a1_disc_result)
         # if agent2 knows the label, but points to the wrong topic

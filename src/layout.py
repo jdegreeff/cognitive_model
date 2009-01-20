@@ -19,8 +19,6 @@ class ColorWindow(QtGui.QWidget):
     def paintEvent(self, event):
         paint = QtGui.QPainter()
         paint.begin(self)
-#        text = "Number of categories: " + str(len(self.ag.get_tags()))
-#        paint.drawText(440, 20, text)
         
         #RGB colour space
         if self.space == "rgb":
@@ -46,7 +44,7 @@ class ColorWindow(QtGui.QWidget):
                         label = label_list[count]
                         paint.drawText(15+x, 50+y, label)
                     except IndexError:
-                        print "Error"                    
+                        pass                   
                     if x < 800:
                         x += 50   
                     else:
