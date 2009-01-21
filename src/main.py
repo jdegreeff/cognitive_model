@@ -26,41 +26,41 @@ def main():
 #    print gl.agent_set[0].cp.calculate_distance(data.test_points[0], data.test_points[1])
     
     # discrimination game section
-    for i in gl.agent_set:
-        for j in gl.training_data:
-            i.discrimination_game(j, 0)
-        
-    print gl.agent_set[0].get_concepts()
-    for i in gl.agent_set:
-        print i.get_n_concepts()
-        print i.cp.prototype_data
-        print len(i.cp.prototype_data)
-    layout.run(gl.agent_set, cfg.space)
+#    for i in gl.agent_set:
+#        for j in gl.training_data:
+#            i.discrimination_game(j, 0)
+#        
+#    print gl.agent_set[0].get_concepts()
+#    for i in gl.agent_set:
+#        print i.get_n_concepts()
+#        print i.cp.prototype_data
+#        print len(i.cp.prototype_data)
+#    layout.run(gl.agent_set, cfg.space)
 
     
     # guessing game section
-#    for i in gl.agent_set:
-#        for j in gl.agent_set:
-#            if i is not j:
-#                for h in gl.training_data:
-#                    if gl.training_counter % 2:
-#                        guessing_game(i, j, h)
-#                    else:
-#                        guessing_game(j, i, h)
-#        print gl.n_guessing_games
-#        
-#    for i in gl.agent_set:
+    for i in gl.agent_set:
+        for j in gl.agent_set:
+            if i is not j:
+                for h in gl.training_data:
+                    if gl.training_counter % 2:
+                        guessing_game(i, j, h)
+                    else:
+                        guessing_game(j, i, h)
+        print gl.n_guessing_games
+        
+    for i in gl.agent_set:
 #        i.print_matrix()
 #        print i.lex.labels
 #        print i.lex.tags
 #        print i.get_concepts()
 #        print i.cp.prototype_data
-#        print len(i.lex.tags)
-#        print len(i.get_concepts())
-#        print len(i.lex.labels)
-#    
-#    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
-#    layout.run(gl.agent_set, cfg.space)
+        print len(i.lex.tags)
+        print len(i.get_concepts())
+        print len(i.lex.labels)
+    
+    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
+    layout.run(gl.agent_set, cfg.space)
         
     
     

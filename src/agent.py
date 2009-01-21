@@ -92,7 +92,7 @@ class BasicAgent():
         # print self.n_discrimination_games, self.discrimination_succes
         self.n_discrimination_games += 1.0
         self.discrimination_succes = self.n_succes_games/self.n_discrimination_games
-        print self.discrimination_succes, len(self.cp.concepts)
+        #print self.discrimination_succes, len(self.cp.concepts)
         return answer
         
         

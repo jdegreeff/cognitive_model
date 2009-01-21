@@ -15,12 +15,9 @@ def rgb2xyz(rgb_image):
     # [x y z] = [r g b] * [11   12  13]
     #                     [21   22  23]
     #                     [31   32  33]
-    x_value = (tmp[0] * 0.430587 + tmp[1] * 0.341545  + \
-               tmp[2] * 0.178336)
-    y_value = (tmp[0] * 0.222021 + tmp[1] * 0.706645 + \
-               tmp[2] * 0.0713342)
-    z_value = (tmp[0] * 0.0201837 + tmp[1] * 0.129551 + \
-               tmp[2] * 0.939234)
+    x_value = (tmp[0] * 0.430587  + tmp[1] * 0.341545 + tmp[2] * 0.178336)
+    y_value = (tmp[0] * 0.222021  + tmp[1] * 0.706645 + tmp[2] * 0.0713342)
+    z_value = (tmp[0] * 0.0201837 + tmp[1] * 0.129551 + tmp[2] * 0.939234)
     return [x_value, y_value, z_value]
     
 
@@ -36,6 +33,7 @@ def xyz2lab(xyz_image):
     a = 500 * ( f(xx) - f(yy) )
     b = 200 * ( f(yy) - f(zz) )
     return [l, a, b]
+
 
 def calculate_CIELAB_distance(standard, trial):
     """ calculates the euclidean distance between two CIELAB colour coordinates of the form [L, a, b]
