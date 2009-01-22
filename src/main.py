@@ -43,10 +43,11 @@ def main():
         for j in gl.agent_set:
             if i is not j:
                 for h in gl.training_data:
-                    if gl.training_counter % 2:
-                        guessing_game(i, j, h)
-                    else:
-                        guessing_game(j, i, h)
+                    guessing_game(i, j, h)
+#                    if gl.training_counter % 2:
+#                        guessing_game(i, j, h)
+#                    else:
+#                        guessing_game(j, i, h)
         print gl.n_guessing_games
         
     for i in gl.agent_set:
