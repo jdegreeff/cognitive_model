@@ -4,6 +4,7 @@ import random as ran
 import data
 import cfg
 from math import sqrt
+import globals as gl
 
 
 def generateRandomTag(length):
@@ -80,7 +81,9 @@ def generateRGBTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
         while count2 < n_stimuli:
             check = True
             while check:
-                stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
+                #stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
+                data = gl.data_tony[ran.randint(0, 24999)]
+                stimulus = [ ["r", data[0]*255], ["g", data[1]*255], ["b", data[2]*255] ] 
                 if set == []:
                     check = False
                 else:

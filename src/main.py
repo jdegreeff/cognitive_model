@@ -15,8 +15,6 @@ def main():
     """ main run """
     init()
     
-    print io.open_datafile("rgb")
-    
 #    gl.agent_set[0].add_concept(data.exemplar1, "CONC1")
 #    gl.agent_set[0].add_exemplar(data.exemplar2, "CONC1")
 #    gl.agent_set[0].add_exemplar(data.exemplar3, "CONC1")
@@ -42,29 +40,29 @@ def main():
 
     
     # guessing game section
-#    for i in gl.agent_set:
-#        for j in gl.agent_set:
-#            if i is not j:
-#                for h in gl.training_data:
-#                    guessing_game(i, j, h)
-##                    if gl.training_counter % 2:
-##                        guessing_game(i, j, h)
-##                    else:
-##                        guessing_game(j, i, h)
-#        print gl.n_guessing_games
-#        
-#    for i in gl.agent_set:
-##        i.print_matrix()
-##        print i.lex.labels
-##        print i.lex.tags
-##        print i.get_concepts()
-##        print i.cp.prototype_data
-#        print len(i.lex.tags)
-#        print len(i.get_concepts())
-#        print len(i.lex.labels)
-#    
-#    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
-#    layout.run(gl.agent_set, cfg.space)
+    for i in gl.agent_set:
+        for j in gl.agent_set:
+            if i is not j:
+                for h in gl.training_data:
+                    guessing_game(i, j, h)
+                    if gl.training_counter % 2:
+                        guessing_game(i, j, h)
+                    else:
+                        guessing_game(j, i, h)
+        print gl.n_guessing_games
+        
+    for i in gl.agent_set:
+#        i.print_matrix()
+#        print i.lex.labels
+#        print i.lex.tags
+#        print i.get_concepts()
+#        print i.cp.prototype_data
+        print len(i.lex.tags)
+        print len(i.get_concepts())
+        print len(i.lex.labels)
+    
+    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
+    layout.run(gl.agent_set, cfg.space)
         
     
     
@@ -79,8 +77,10 @@ def init():
         gl.agent_set.append(ag)
         i += 1
     gl.n_guessing_games = 0
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.data_tony = io.open_datafile("natural", "rgb")
+    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
     gl.training_counter = 0
+
     
 
 
