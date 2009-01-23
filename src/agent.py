@@ -1,5 +1,6 @@
 # agent.py
 
+from __future__ import division
 import cp
 import lexicon
 import aux_functions as aux
@@ -18,8 +19,11 @@ class BasicAgent():
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
-        self.n_succes_games = 0                     # number of successful discrimination games
+        self.n_succes_dg = 0                        # number of successful discrimination games
         self.discrimination_succes = 0.0            # agents discrimination success ratio
+        self.n_guessing_games = 0                   # number of guessing games played by the agent
+        self.n_succes_gg = 0                        # number of successful guessing games
+        self.guessing_succes = 0.0                  # agents guessing success ratio
                             
                                 
     def add_exemplar(self, exemplar, tag):
@@ -68,7 +72,7 @@ class BasicAgent():
                 best_matching_concept = self.cp.get_concepts_tags()[aux.posMin(distances)]
                 best_matching_concepts.append(best_matching_concept)
             if best_matching_concepts.count(best_matching_concepts[topic_index]) == 1:
-                self.n_succes_games += 1.0
+                self.n_succes_dg += 1.0
                 answer = best_matching_concepts[topic_index]
             else:
                 # if agent discrimination success is below threshold a new concept is created
@@ -91,7 +95,7 @@ class BasicAgent():
         # calculate statistics
         # print self.n_discrimination_games, self.discrimination_succes
         self.n_discrimination_games += 1.0
-        self.discrimination_succes = self.n_succes_games/self.n_discrimination_games
+        self.discrimination_succes = self.n_succes_dg/self.n_discrimination_games
         #print self.discrimination_succes, len(self.cp.concepts)
         return answer
         

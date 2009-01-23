@@ -1,5 +1,6 @@
 # lexicon.py
 
+from __future__ import division
 import numpy
 import aux_functions as aux
 import cfg

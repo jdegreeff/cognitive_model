@@ -5,6 +5,7 @@
 # where concept1 = "string", prototype = [ ["d1", value, SD], ["d2", value, SD],...]
 # based on Gardenfors, P. Conceptual Spaces: The Geometry of Thought. MIT Press, 2004
 
+from __future__ import division
 import random as ran
 from math import sqrt
 import math

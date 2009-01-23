@@ -1,5 +1,7 @@
 # io.py
 # input/output file
+
+from __future__ import division
 import csv
 
 

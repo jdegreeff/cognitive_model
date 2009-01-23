@@ -1,5 +1,6 @@
 # aux_functions.py
 
+from __future__ import division
 import random as ran
 import data
 import cfg

@@ -1,6 +1,11 @@
 # basic model 0.8
+# CONCEPT project
+# University of Plymouth
+# Joachim de Greeff
+# More information at http://www.tech.plym.ac.uk/SoCCE/CONCEPT/
 # main.py
 
+from __future__ import division
 import agent
 import data
 import random as ran
@@ -39,18 +44,9 @@ def main():
 #    layout.run(gl.agent_set, cfg.space)
 
     
-    # guessing game section
-    for i in gl.agent_set:
-        for j in gl.agent_set:
-            if i is not j:
-                for h in gl.training_data:
-                    guessing_game(i, j, h)
-                    if gl.training_counter % 2:
-                        guessing_game(i, j, h)
-                    else:
-                        guessing_game(j, i, h)
-        print gl.n_guessing_games
-        
+    #layout.run2()
+    main_loop()
+
     for i in gl.agent_set:
 #        i.print_matrix()
 #        print i.lex.labels
@@ -65,7 +61,24 @@ def main():
     layout.run(gl.agent_set, cfg.space)
         
     
-    
+def main_loop():
+    """ main loop """
+    for i in gl.agent_set:
+        for j in gl.agent_set:
+            if i is not j:
+                for h in gl.training_data:
+                    guessing_game(i, j, h)
+                    if gl.n_guessing_games % 2:
+                        guessing_game(i, j, h)
+                    else:
+                        guessing_game(j, i, h)
+                    # practical printout, may be reconsidered
+                    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
+                        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
+                        print "communication success: " + str(gl.guessing_succes)
+                    
+                    
+                    
     
 def init():
     """ initialises various parameters and values """
@@ -79,7 +92,6 @@ def init():
     gl.n_guessing_games = 0
     gl.data_tony = io.open_datafile("natural", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
-    gl.training_counter = 0
 
     
 
@@ -126,6 +138,15 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     
     # statistics
     gl.n_guessing_games += 1
+    agent1.n_guessing_games += 1
+    agent2.n_guessing_games += 1
+    if guessing_game_result:
+        agent1.n_succes_gg += 1
+        agent2.n_succes_gg += 1
+        gl.n_succes_gg += 1
+    agent1.guessing_succes = agent1.n_succes_gg/agent1.n_guessing_games
+    agent2.guessing_succes = agent1.n_succes_gg/agent1.n_guessing_games
+    gl.guessing_succes = gl.n_succes_gg/gl.n_guessing_games
         
         
 def calculate_agents_lexicon():

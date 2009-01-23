@@ -1,7 +1,10 @@
 # layout.py
 
+from __future__ import division
 import sys, random
 from PyQt4 import QtGui, QtCore
+import main
+import globals as gl
 
 colour_black = QtGui.QColor(0, 0, 0, 255)
 colour_white = QtGui.QColor(255, 255, 255, 255)
@@ -150,14 +153,47 @@ class ColorWindow(QtGui.QWidget):
 #                paint.drawText(x + 10, y + 50, text)
 #                
 #                x +=60
-                
-            
         paint.end()
+
+
+class ColorWindow2(QtGui.QWidget):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.setGeometry(300, 100, 1200, 700)
+        title = 'Test'
+        self.setWindowTitle(title)
+        
+
+    def paintEvent(self, event):
+        paint = QtGui.QPainter()
+        paint.begin(self)
+        
+        paint.drawLine( 50, 600, 850, 600 )
+        paint.drawLine( 50, 50, 50, 600 )
+        # start main loop
+        if gl.loop_start:
+            main.main_loop()
+            gl.loop_start = False
+        
+        ratio = str(gl.guessing_succes)
+        paint.drawText(60, 50, ratio)
+        
+        paint.end()
+    
+    
+
 
 
 def run(agents,  space):
     app = QtGui.QApplication(sys.argv)
     dt = ColorWindow(agents,  space)
+    dt.show()
+    app.exec_()
+    
+    
+def run2():
+    app = QtGui.QApplication(sys.argv)
+    dt = ColorWindow2()
     dt.show()
     app.exec_()
 
