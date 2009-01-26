@@ -1,4 +1,4 @@
-# basic model 0.8
+# basic model 0.8.5
 # CONCEPT project
 # University of Plymouth
 # Joachim de Greeff
@@ -18,18 +18,19 @@ import io
 
 def main():
     """ main run """
-    init()
     
-#    gl.agent_set[0].add_concept(data.exemplar1, "CONC1")
-#    gl.agent_set[0].add_exemplar(data.exemplar2, "CONC1")
-#    gl.agent_set[0].add_exemplar(data.exemplar3, "CONC1")
-#    
-#    gl.agent_set[0].add_exemplar(data.exemplar4, "CONC2")
-#    gl.agent_set[0].add_exemplar(data.exemplar5, "CONC2")
-#    
-#    concept_coors = gl.agent_set[0].cp.get_all_concept_coordinates()
-#    print gl.agent_set[0].cp.calculate_distance(concept_coors[0], concept_coors[1])
-#    print gl.agent_set[0].cp.calculate_distance(data.test_points[0], data.test_points[1])
+    om = agent.OmniAgent("om1")
+    
+    om.print_matrix()
+    print om.lex.labels
+    print om.lex.tags
+    print om.get_concepts()
+    print len(om.lex.tags)
+    print len(om.lex.labels)
+
+
+    # init()
+
     
     # discrimination game section
 #    for i in gl.agent_set:
@@ -43,22 +44,20 @@ def main():
 #        print len(i.cp.prototype_data)
 #    layout.run(gl.agent_set, cfg.space)
 
-    
-    #layout.run2()
-    main_loop()
+    #main_loop()
 
-    for i in gl.agent_set:
+#    for i in gl.agent_set:
 #        i.print_matrix()
 #        print i.lex.labels
 #        print i.lex.tags
 #        print i.get_concepts()
 #        print i.cp.prototype_data
-        print len(i.lex.tags)
-        print len(i.get_concepts())
-        print len(i.lex.labels)
-    
-    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
-    layout.run(gl.agent_set, cfg.space)
+#        print len(i.lex.tags)
+#        print len(i.get_concepts())
+#        print len(i.lex.labels)
+#    
+#    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
+#    layout.run(gl.agent_set, cfg.space)
         
     
 def main_loop():
@@ -151,6 +150,8 @@ def guessing_game(agent1, agent2, context, topic_index = False):
         
 def calculate_agents_lexicon():
     """ calculates the percentage of agents lexicon which matches the lexicon of other agents
+        TODO: modify this function so that it counts only proper labels,
+        right now it is taking all labels into account, also the ones which have a very low connection
     """
     matching = 1
     for i in gl.agent_set:

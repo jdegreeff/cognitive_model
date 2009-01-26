@@ -7,6 +7,7 @@ import aux_functions as aux
 import cfg
 import copy
 import globals as gl
+import data
 
 
 class BasicAgent():
@@ -167,6 +168,57 @@ class BasicAgent():
             
             
             
+            
+class OmniAgent():
+    """ Omniscient Agent used for training purpose. Agent has static knowledge of colour concept names.
+    """
+    
+    def __init__(self, name):
+        """ initiate variables """
+        self.agent_name = name                      # agent name
+        self.cp = cp.CP(self.agent_name)            # agents conceptual space
+        self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
+        self.load_knowledge("rgb")                  # loads existing body of conceptual knowledge into cp and lexicon
+        
+        
+    def load_knowledge(self, domain):
+        """ loads existing body of conceptual knowledge into cp and lexicon body
+            domain determines which type of knowledge is used. Knowledge is added as concepts, 
+            so no prototyping is done.
+            Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
+        """
+        if domain == "rgb":
+            knowledge = data.basic_colour_set
+        for i in knowledge:
+            tag = aux.generateRandomTag(4)
+            self.add_concept(i[1], tag)
+            self.add_label(i[0], tag)
+        for count, i in enumerate(self.lex.matrix):     # increase connections strength to 1
+            i[count] = 1.0
+            
+        
+        
+    def add_concept(self, concept, tag):
+        """ adds a concept to the CP
+            it is not be used for the prototype however, and hence the data 
+            will not be stored in the cp.prototype_data
+        """                                
+        concept_new = copy.deepcopy(concept)    # make a copy     
+        self.cp.add_concept(concept_new, tag)
+        
+        
+    def add_label(self, label, tag):
+        """ adds a label for the given tag the given tag """ 
+        self.lex.add_label(label, tag)
+        
+        
+    def print_matrix(self):
+        return self.lex.print_matrix()
+        
+
+    def get_concepts(self):
+        return self.cp.get_concepts
+        
             
             
             

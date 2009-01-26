@@ -22,7 +22,7 @@ class CP():
         There are two ways in which concepts can be added:
             1) through formation of prototypes: exemplars of concepts are used to 
                calculate a mean prototype, the SD can be used as a radius
-               if the label of a given exemplar is known, the concept with the higest association
+               if the label of a given exemplar is known, the concept with the highest association
                will be updated with the new exemplar data
             2) through direct addition of a concept. Coordinates of exemplar data
                are used for this, no prototype formation is used
