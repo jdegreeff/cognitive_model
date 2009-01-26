@@ -1,7 +1,9 @@
 # globals.py
 
 # global variables
-agent_set = []              # the collection of agents
+agent_set = []              # a collection of agents
+agent1 = []                 # an agent
+agent2 = []                 # an agent
 training_data = []          # training data
 data_tony =[]               # training data from Tony Belpaeme
 n_guessing_games = 0        # number of guessing games played all agents

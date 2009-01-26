@@ -118,50 +118,38 @@ class BasicAgent():
         
         
     def increase_strength(self, label, tag):
-        """ increases the association strength between the given label and tag
-        """
+        """ increases the association strength between the given label and tag """
         self.lex.increase_strength(label, tag)
         
-        
     def decrease_strength(self, label, tag):
-        """ decreases the association strength between the given label and tag
-        """
+        """ decreases the association strength between the given label and tag """
         self.lex.decrease_strength(label, tag)
-        
         
     def get_name(self):
         return self.agent_name
     
-        
     def get_cp(self):
         """ Returns the whole conceptual space of the agent """
         return self.cp
     
-
     def get_concepts(self):
         return self.cp.get_concepts()
-    
     
     def get_n_concepts(self):
         """ returns the number of concepts currently in CP """
         return self.cp.get_n_concepts()
        
-       
     def get_labels(self):
         return self.lex.get_labels()
     
-
     def get_label(self, tag):
         return self.lex.get_label(tag)
-    
     
     def get_tags(self):
         return self.lex.get_tags()
     
-    
     def get_tag(self, label):
         return self.lex.get_tag(label)
-    
     
     def print_matrix(self):
         return self.lex.print_matrix()
@@ -179,6 +167,12 @@ class OmniAgent():
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.load_knowledge("rgb")                  # loads existing body of conceptual knowledge into cp and lexicon
+        self.n_discrimination_games = 0             # number of discrimination games played by the agent
+        self.n_succes_dg = 0                        # number of successful discrimination games
+        self.discrimination_succes = 0.0            # agents discrimination success ratio
+        self.n_guessing_games = 0                   # number of guessing games played by the agent
+        self.n_succes_gg = 0                        # number of successful guessing games
+        self.guessing_succes = 0.0                  # agents guessing success ratio
         
         
     def load_knowledge(self, domain):
@@ -188,7 +182,7 @@ class OmniAgent():
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
         if domain == "rgb":
-            knowledge = data.basic_colour_set
+            knowledge = data.basic_colour_set_small
         for i in knowledge:
             tag = aux.generateRandomTag(4)
             self.add_concept(i[1], tag)
@@ -196,7 +190,41 @@ class OmniAgent():
         for count, i in enumerate(self.lex.matrix):     # increase connections strength to 1
             i[count] = 1.0
             
-        
+            
+    def discrimination_game(self, context, topic_index):
+        """ Discrimination game in which an agent has to distinguish the topic
+            from the context. The game succeeds if the agent has a concept 
+            which uniquely matches the topic and no other stimuli from the context.
+            If this is not the case, a new concept is build, or the existing concepts
+            are shifted with the given label. If no label is given, a new one will be generated.
+            The return is either the concept tag, a string description of the action taken by the agent
+            context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
+        """
+        context_new = copy.deepcopy(context)    # make a copy   
+        # select the best matching concept for every stimulus from the context (including the topic)
+        # get the coordinates of the current known concepts
+        known_concept_coors = self.cp.get_all_concept_coordinates()
+        best_matching_concepts = []
+        for i in context:
+            distances = []
+            for j in known_concept_coors:
+                distances.append(self.cp.calculate_distance(i, j))
+            best_matching_concept = self.cp.get_concepts_tags()[aux.posMin(distances)]
+            best_matching_concepts.append(best_matching_concept)
+        if best_matching_concepts.count(best_matching_concepts[topic_index]) == 1:
+            self.n_succes_dg += 1.0
+            answer = best_matching_concepts[topic_index]
+        else:
+            # print "discrimination fail"
+            answer = "concept_shifted" # method to cause the guessing game to fail and do nothing
+ 
+        # calculate statistics
+        # print self.n_discrimination_games, self.discrimination_succes
+        self.n_discrimination_games += 1.0
+        self.discrimination_succes = self.n_succes_dg/self.n_discrimination_games
+        #print self.discrimination_succes, len(self.cp.concepts)
+        return answer
+            
         
     def add_concept(self, concept, tag):
         """ adds a concept to the CP
@@ -212,12 +240,28 @@ class OmniAgent():
         self.lex.add_label(label, tag)
         
         
+    def increase_strength(self, label, tag):
+        """ NOT USED
+            increases the association strength between the given label and tag
+        """
+        pass
+        
+        
+    def decrease_strength(self, label, tag):
+        """ NOT USED
+            decreases the association strength between the given label and tag
+        """
+        pass
+        
+        
     def print_matrix(self):
         return self.lex.print_matrix()
         
-
     def get_concepts(self):
         return self.cp.get_concepts
+    
+    def get_label(self, tag):
+        return self.lex.get_label(tag)
         
             
             

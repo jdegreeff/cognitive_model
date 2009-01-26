@@ -19,17 +19,10 @@ import io
 def main():
     """ main run """
     
-    om = agent.OmniAgent("om1")
-    
-    om.print_matrix()
-    print om.lex.labels
-    print om.lex.tags
-    print om.get_concepts()
-    print len(om.lex.tags)
-    print len(om.lex.labels)
+    gl.agent1 = agent.OmniAgent("om1")
+    gl.agent2 = agent.BasicAgent("ag1")
 
-
-    # init()
+    init()
 
     
     # discrimination game section
@@ -44,13 +37,16 @@ def main():
 #        print len(i.cp.prototype_data)
 #    layout.run(gl.agent_set, cfg.space)
 
-    #main_loop()
+    main_loop()
 
 #    for i in gl.agent_set:
 #        i.print_matrix()
 #        print i.lex.labels
 #        print i.lex.tags
-#        print i.get_concepts()
+#        print i.get_concepts()    # practical printout, may be reconsidered
+    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
+        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
+        print "communication success: " + str(gl.guessing_succes)
 #        print i.cp.prototype_data
 #        print len(i.lex.tags)
 #        print len(i.get_concepts())
@@ -58,23 +54,29 @@ def main():
 #    
 #    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
 #    layout.run(gl.agent_set, cfg.space)
+
+    gl.agent2.print_matrix()
+    layout.run([gl.agent1, gl.agent2], cfg.space)
         
     
 def main_loop():
     """ main loop """
-    for i in gl.agent_set:
-        for j in gl.agent_set:
-            if i is not j:
-                for h in gl.training_data:
-                    guessing_game(i, j, h)
-                    if gl.n_guessing_games % 2:
-                        guessing_game(i, j, h)
-                    else:
-                        guessing_game(j, i, h)
-                    # practical printout, may be reconsidered
-                    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
-                        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
-                        print "communication success: " + str(gl.guessing_succes)
+#    for i in gl.agent_set:
+#        for j in gl.agent_set:
+#            if i is not j:
+#                for h in gl.training_data:
+#                    guessing_game(i, j, h)
+#                    if gl.n_guessing_games % 2:
+#                        guessing_game(i, j, h)
+#                    else:
+#                        guessing_game(j, i, h)
+#                    # practical printout, may be reconsidered
+#                    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
+#                        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
+#                        print "communication success: " + str(gl.guessing_succes)
+
+    for h in gl.training_data:
+        guessing_game(gl.agent1, gl.agent2, h)
                     
                     
                     
@@ -82,14 +84,14 @@ def main_loop():
 def init():
     """ initialises various parameters and values """
     # initialise agents
-    i = 0
-    while i < cfg.n_agents:
-        agent_name = "agent" + str(i)
-        ag = agent.BasicAgent(agent_name)
-        gl.agent_set.append(ag)
-        i += 1
+#    i = 0
+#    while i < cfg.n_agents:
+#        agent_name = "agent" + str(i)
+#        ag = agent.BasicAgent(agent_name)
+#        gl.agent_set.append(ag)
+#        i += 1
     gl.n_guessing_games = 0
-    gl.data_tony = io.open_datafile("natural", "rgb")
+    gl.data_tony = io.open_datafile("uniform", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
 
     

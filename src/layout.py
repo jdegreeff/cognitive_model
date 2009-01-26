@@ -49,7 +49,7 @@ class ColorWindow(QtGui.QWidget):
                     except IndexError:
                         pass                   
                     if x < 800:
-                        x += 50   
+                        x += 60   
                     else:
                         x = 0
                         y += 50
