@@ -182,7 +182,7 @@ class OmniAgent():
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
         if domain == "rgb":
-            knowledge = data.basic_colour_set_small
+            knowledge = data.basic_colour_set
         for i in knowledge:
             tag = aux.generateRandomTag(4)
             self.add_concept(i[1], tag)
