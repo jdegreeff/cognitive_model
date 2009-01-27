@@ -52,7 +52,7 @@ class BasicAgent():
             from the context. The game succeeds if the agent has a concept 
             which uniquely matches the topic and no other stimuli from the context.
             If this is not the case, a new concept is build, or the existing concepts
-            are shifted with the given label. If no label is given, a new one will be generated.
+            are shifted.
             The return is either the concept tag, a string description of the action taken by the agent
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
@@ -197,8 +197,6 @@ class OmniAgent():
         """ Discrimination game in which an agent has to distinguish the topic
             from the context. The game succeeds if the agent has a concept 
             which uniquely matches the topic and no other stimuli from the context.
-            If this is not the case, a new concept is build, or the existing concepts
-            are shifted with the given label. If no label is given, a new one will be generated.
             The return is either the concept tag, a string description of the action taken by the agent
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """

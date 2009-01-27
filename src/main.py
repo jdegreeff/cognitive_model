@@ -44,9 +44,9 @@ def main():
 #        print i.lex.labels
 #        print i.lex.tags
 #        print i.get_concepts()    # practical printout, may be reconsidered
-    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
-        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
-        print "communication success: " + str(gl.guessing_succes)
+#    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
+#        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
+#        print "communication success: " + str(gl.guessing_succes)
 #        print i.cp.prototype_data
 #        print len(i.lex.tags)
 #        print len(i.get_concepts())
@@ -78,7 +78,7 @@ def main_loop():
 
     for h in gl.training_data:
         guessing_game(gl.agent1, gl.agent2, h)
-        print gl.agent2.get_n_concepts()
+        print gl.agent2.get_n_concepts(), gl.guessing_succes
                     
                     
                     
@@ -93,7 +93,7 @@ def init():
 #        gl.agent_set.append(ag)
 #        i += 1
     gl.n_guessing_games = 0
-    gl.data_tony = io.open_datafile("uniform", "rgb")
+    gl.data_tony = io.open_datafile("natural", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
 
     

@@ -50,13 +50,13 @@ class CP():
     
     def get_all_concept_coordinates(self):
         """ returns a list of the coordinates of all concepts currently in CP
-            the tag describing the concept and the SD values are omitted
+            the tag describing the concept is omitted
         """
         concepts_coor = []
         for i in self.concepts:
             coor = []
             for j in i[1]:  
-                coor.append([j[0], j[1]])
+                coor.append([j[0], j[1], j[2]])
             concepts_coor.append(coor)
         return concepts_coor
     
@@ -69,7 +69,7 @@ class CP():
         for i in self.concepts:
             if i[0] == tag:
                 for j in i[1]:
-                    concept_coor.append([j[0], j[1]])
+                    concept_coor.append([j[0], j[1], j[2]])
         return concept_coor
     
     
@@ -152,7 +152,8 @@ class CP():
             only matching dimensions are taken into account
             point1 used as reference, list of salience should be according to 
             dimensions of point1, if non given, default salience of 1 is used
-            point = [ [d1, value], [d2, value], ..., [dn, value] ]
+            point1 = [ [d1, value], [d2, value], ..., [dn, value] ]
+            point2 = [ [d1, value, SD], [d2, value, SD], ..., [dn, value, SD] ]
             list_salience = [s1, s2,...,sn]
         """
         distance = 0
@@ -161,7 +162,18 @@ class CP():
         for count, i in enumerate(point1):
             for j in point2:
                 if i[0] == j[0]:
-                    distance += ( list_salience[count] * ((i[1] - j[1])**2) )
+                    if gl.n_guessing_games > 1000:
+                        if self.holder_name == "ag1":
+                            pass
+                    if cfg.prototype_distance:  # if the SD of prototypes is used 
+                        if len(j) == 2:         # make sure there is an SD value
+                            j.append(0.0)
+                        if i[1] <= j[1]:
+                            distance += ( list_salience[count] * ((i[1] - (j[1] - j[2]))**2) )
+                        else:
+                            distance += ( list_salience[count] * ((i[1] - (j[1] + j[2]))**2) )
+                    else:
+                        distance += ( list_salience[count] * ((i[1] - j[1])**2) )
         return sqrt(distance)
 
 
