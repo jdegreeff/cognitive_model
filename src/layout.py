@@ -1,10 +1,13 @@
 # layout.py
 
 from __future__ import division
-import sys, random
+import sys, random, time
 from PyQt4 import QtGui, QtCore
+#from qt import *
 import main
 import globals as gl
+from threading import *
+
 
 colour_black = QtGui.QColor(0, 0, 0, 255)
 colour_white = QtGui.QColor(255, 255, 255, 255)
@@ -156,30 +159,97 @@ class ColorWindow(QtGui.QWidget):
         paint.end()
 
 
-class ColorWindow2(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        self.setGeometry(300, 100, 1200, 700)
-        title = 'Test'
-        self.setWindowTitle(title)
-        
 
-    def paintEvent(self, event):
-        paint = QtGui.QPainter()
-        paint.begin(self)
-        
-        paint.drawLine( 50, 600, 850, 600 )
-        paint.drawLine( 50, 50, 50, 600 )
-        # start main loop
-        if gl.loop_start:
-            main.main_loop()
-            gl.loop_start = False
-        
-        ratio = str(gl.guessing_succes)
-        paint.drawText(60, 50, ratio)
-        
-        paint.end()
+
+#class Painting(QWidget):
+#
+##    def __init__(self, *args):
+##        apply(QWidget.__init__,(self, ) + args)
+##
+##    def paintEvent(self, ev):
+##        self.p = QPainter()
+##        self.p.begin(self)
+##        
+##        label = str(gl.number)
+##        self.p.drawText(15, 50, label)
+##        
+##        self.p.flush()
+##        self.p.end()
+#
+#    def __init__(self, agents,  space):
+#        #QtGui.QWidget.__init__(self, parent)
+#        self.ag = agents
+#        self.space = space
+#
+#    def paintEvent(self, event):
+#        paint = QPainter()
+#        paint.begin(self)
+#        
+#        #RGB colour space
+#        if self.space == "rgb":
+#            y2 = 0
+#            for i in self.ag:
+#                text = 'Categories of "' + i.agent_name + '"'
+#                paint.drawText(900, 20 + y2, text)
+#                count = 0
+#                x = 0
+#                y = 0
+#                y += y2
+#                data_list = i.cp.get_all_concept_coordinates()
+#                #label_list = i.get_labels()
+#                while count < len(data_list):
+#                    r = data_list[count][0][1]
+#                    g = data_list[count][1][1]
+#                    b = data_list[count][2][1]
+#                    color = QColor(r, g, b, 255)
+#                    paint.setPen(colour_black)
+#                    paint.setBrush(color)
+#                    paint.drawRect(15+x, 15+y, 30, 20)
+#                    try:
+#                        label = i.get_label(i.cp.concepts[count][0])
+#                        paint.drawText(15+x, 50+y, label)
+#                    except IndexError:
+#                        pass                   
+#                    if x < 800:
+#                        x += 60   
+#                    else:
+#                        x = 0
+#                        y += 50
+#                    count += 1
+#                
+#                y2 += 250
+#        paint.end()
+#
+#
+#class TextThread(Thread):
+#
+#    def __init__(self, name, painter, *args):
+#        self.counter=0
+#        self.name=name
+#        self.p = painter
+#        apply(Thread.__init__, (self, ) + args)
+#
+#    def run(self):
+#        while self.counter < 200:
+#            gl.number += 1
+#            self.counter = self.counter + 1
+#            time.sleep(1)
+#            self.p.repaint()
+#
+#
+#
+#class MainWindow(QMainWindow):
+#
+#    def __init__(self, agents,  space, *args):
+#        apply(QMainWindow.__init__, (self,) + args)
+#        self.setGeometry(300, 100, 1200, 700)
+#        self.number = 0
+#        self.painting=Painting( agents,  space)
+#        self.setCentralWidget(self.painting)
+#        self.thread1=TextThread("thread1", self.painting)
+#        self.thread1.start()
     
+
 
 def run(agents,  space):
     app = QtGui.QApplication(sys.argv)
@@ -188,9 +258,10 @@ def run(agents,  space):
     app.exec_()
     
     
-def run2():
-    app = QtGui.QApplication(sys.argv)
-    dt = ColorWindow2()
-    dt.show()
-    app.exec_()
+#def run2(agents,  space):
+#    app=QApplication(sys.argv)
+#    win=MainWindow(agents,  space)
+#    win.show()
+#    app.connect(app, SIGNAL("lastWindowClosed()"), app, SLOT("quit()"))
+#    app.exec_loop()
 

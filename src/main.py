@@ -58,6 +58,7 @@ def main():
     gl.agent2.print_matrix()
     print gl.agent2.get_concepts()
     layout.run([gl.agent1, gl.agent2], cfg.space)
+    
         
     
 def main_loop():

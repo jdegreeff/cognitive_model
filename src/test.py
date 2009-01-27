@@ -72,8 +72,7 @@ def main(args):
     app=QApplication(args)
     win=MainWindow()
     win.show()
-    app.connect(app, SIGNAL("lastWindowClosed()"),
-                app, SLOT("quit()"))
+    app.connect(app, SIGNAL("lastWindowClosed()"), app, SLOT("quit()"))
     app.exec_loop()
   
 if __name__=="__main__":
