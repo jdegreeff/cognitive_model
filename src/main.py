@@ -56,6 +56,7 @@ def main():
 #    layout.run(gl.agent_set, cfg.space)
 
     gl.agent2.print_matrix()
+    print gl.agent2.get_concepts()
     layout.run([gl.agent1, gl.agent2], cfg.space)
         
     
@@ -77,6 +78,7 @@ def main_loop():
 
     for h in gl.training_data:
         guessing_game(gl.agent1, gl.agent2, h)
+        print gl.agent2.get_n_concepts()
                     
                     
                     

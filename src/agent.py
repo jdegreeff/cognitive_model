@@ -61,7 +61,8 @@ class BasicAgent():
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
             tag = aux.generateRandomTag(4)
-            self.add_concept(context[topic_index], tag)
+            #self.add_concept(context[topic_index], tag)
+            self.add_exemplar(context[topic_index], tag)    # no new concepts are stored, only exemplars
             answer = tag
         else:
             # select the best matching concept for every stimulus from the context (including the topic)
@@ -79,7 +80,8 @@ class BasicAgent():
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discrimination_succes < cfg.adapt_threshold:
                     tag = aux.generateRandomTag(4)
-                    self.add_concept(context[topic_index], tag)
+                    #self.add_concept(context[topic_index], tag)
+                    self.add_exemplar(context[topic_index], tag)    # no new concepts are stored, only exemplars
                     answer = tag
                 # if agent discrimination success is above threshold, 
                 # topic is added as exemplar for the best matching concept, 
@@ -215,7 +217,7 @@ class OmniAgent():
             self.n_succes_dg += 1.0
             answer = best_matching_concepts[topic_index]
         else:
-            # print "discrimination fail"
+            #print "discrimination fail"
             answer = "concept_shifted" # method to cause the guessing game to fail and do nothing
  
         # calculate statistics

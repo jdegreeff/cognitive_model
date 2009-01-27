@@ -85,7 +85,7 @@ class Lexicon():
         """
         label_index = self.labels.index(label)
         tag_index = self.tags.index(tag)
-        if self.matrix[label_index][tag_index] <= 0.9:
+        if self.matrix[label_index][tag_index] <= 0.99:
             self.matrix[label_index][tag_index] += cfg.label_learning_rate
         #decrease competing connections if lateral_inhibition is used
         if cfg.lateral_inhibition:
@@ -93,11 +93,11 @@ class Lexicon():
                 if count2 != label_index:
                     for count, j in enumerate(i):
                         if count == tag_index:
-                            if self.matrix[count2][count] >= 0.1:
+                            if self.matrix[count2][count] >= 0.01:
                                 self.matrix[count2][count] -= cfg.label_learning_rate
             for count, i in enumerate(self.matrix[label_index]):
                 if count != tag_index:
-                    if self.matrix[label_index][count] >= 0.1:
+                    if self.matrix[label_index][count] >= 0.01:
                         self.matrix[label_index][count] -= cfg.label_learning_rate
         
         
@@ -109,7 +109,7 @@ class Lexicon():
         except ValueError:
             print "agent.lex.decrease_strength Error"
         tag_index = self.tags.index(tag)
-        if self.matrix[label_index][tag_index] >= 0.1:
+        if self.matrix[label_index][tag_index] >= 0.01:
             self.matrix[label_index][tag_index] -= cfg.label_learning_rate
             
             
@@ -159,7 +159,7 @@ class Lexicon():
         for i in self.labels:
             print "'", i,"'", 
             for k in self.matrix[j]:
-                    print " ",  '%.1f'% k, "     ", 
+                    print " ",  '%.2f'% k, "     ", 
             print "\n"
             j += 1
         
