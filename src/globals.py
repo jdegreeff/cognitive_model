@@ -1,4 +1,5 @@
 # globals.py
+import layout
 
 # global variables
 agent_set = []              # a collection of agents

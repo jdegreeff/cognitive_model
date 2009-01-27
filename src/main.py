@@ -15,6 +15,7 @@ import globals as gl
 import layout
 import copy
 import io
+from threading import *
 
 def main():
     """ main run """
@@ -37,7 +38,7 @@ def main():
 #        print len(i.cp.prototype_data)
 #    layout.run(gl.agent_set, cfg.space)
 
-    main_loop()
+    #main_loop()
 
 #    for i in gl.agent_set:
 #        i.print_matrix()
@@ -57,12 +58,17 @@ def main():
 
     gl.agent2.print_matrix()
     print gl.agent2.get_concepts()
-    layout.run([gl.agent1, gl.agent2], cfg.space)
+    #layout.run([gl.agent1, gl.agent2], cfg.space)
     
         
     
-def main_loop():
+class MainLoop(Thread):
     """ main loop """
+    
+    def __init__(self, dt, *args):
+        apply(Thread.__init__, (self, ) + args)
+        self.window = dt
+
 #    for i in gl.agent_set:
 #        for j in gl.agent_set:
 #            if i is not j:
@@ -77,11 +83,11 @@ def main_loop():
 #                        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
 #                        print "communication success: " + str(gl.guessing_succes)
 
-    for h in gl.training_data:
-        guessing_game(gl.agent1, gl.agent2, h)
-        print gl.agent2.get_n_concepts(), gl.guessing_succes
-                    
-                    
+    def run(self):
+        for h in gl.training_data:
+            guessing_game(gl.agent1, gl.agent2, h)
+            print gl.agent2.get_n_concepts(), gl.guessing_succes
+            self.window.update()
                     
     
 def init():
@@ -93,9 +99,11 @@ def init():
 #        ag = agent.BasicAgent(agent_name)
 #        gl.agent_set.append(ag)
 #        i += 1
+    
     gl.n_guessing_games = 0
     gl.data_tony = io.open_datafile("natural", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
+    main_thread = layout.MainThread([gl.agent1, gl.agent2], cfg.space)
 
     
 
