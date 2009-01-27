@@ -16,112 +16,65 @@
 #    
 #print function(5)
 
-#!/usr/bin/python
-
-# burning.py
-
-#import time
-#import sys
-#from PyQt4 import QtGui, QtCore
-#
-#
-#class Widget(QtGui.QLabel):
-#    def __init__(self, parent):
-#        QtGui.QLabel.__init__(self, parent)
-#        self.setMinimumSize(1, 30)
-#        self.parent = parent
-#
-#    def paintEvent(self, event):
-#        paint = QtGui.QPainter()
-#        paint.begin(self)
-#
-#        paint.drawText(30, 30, str(self.parent.count))
-#        paint.end()
-#
-#
-#class Burning(QtGui.QWidget):
-#    def __init__(self, parent=None):
-#        QtGui.QWidget.__init__(self, parent)
-#        self.count = 0
-#
-#        self.wid = Widget(self)
-#
-#        hbox = QtGui.QHBoxLayout()
-#        hbox.addWidget(self.wid)
-#        vbox = QtGui.QVBoxLayout()
-#        vbox.addStretch(1)
-#        vbox.addLayout(hbox)
-#        self.setLayout(vbox)
-#
-#        self.setGeometry(300, 300, 300, 220)
-#        self.setWindowTitle('Burning')
-#        self.start()
-#        
-#    def start(self):
-#        while self.count < 1000000:
-#            self.wid.repaint()
-#            #time.sleep(1)
-#            self.count += 1
-#
-#    def changeValue(self, event):
-#        self.cw = self.slider.value()
-#        self.wid.repaint()
-#
-#
-#app = QtGui.QApplication(sys.argv)
-#dt = Burning()
-#dt.show()
-#app.exec_()
 
 
-
-#!/usr/bin/python
-
-# progressbar.py
-
-import sys
-from PyQt4 import QtGui
-from PyQt4 import QtCore
+import sys, time
+import globals as gl
+from threading import *
+from qt import *
 
 
-class ProgressBar(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+class Painting(QWidget):
 
-        self.setGeometry(300, 300, 250, 150)
-        self.setWindowTitle('ProgressBar')
+    def __init__(self, *args):
+        apply(QWidget.__init__,(self, ) + args)
+        self.repaint(1)
 
-        self.pbar = QtGui.QProgressBar(self)
-        self.pbar.setGeometry(30, 40, 200, 25)
+    def paintEvent(self, ev):
+        self.p = QPainter()
+        self.p.begin(self)
+        
+        label = str(gl.number)
+        self.p.drawText(15, 50, label)
+        
+        self.p.flush()
+        self.p.end()
 
-        self.button = QtGui.QPushButton('Start', self)
-        self.button.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.button.move(40, 80)
+class TextThread(Thread):
 
-        self.connect(self.button, QtCore.SIGNAL('clicked()'), self.onStart)
+    def __init__(self, name, painter, *args):
+        self.counter=0
+        self.name=name
+        self.p = painter
+        apply(Thread.__init__, (self, ) + args)
 
-        self.timer = QtCore.QBasicTimer()
-        self.step = 0;
-
-
-    def timerEvent(self, event):
-        if self.step >= 100:
-            self.timer.stop()
-            return
-        self.step = self.step + 1
-        self.pbar.setValue(self.step)
-
-    def onStart(self):
-        if self.timer.isActive():
-            self.timer.stop()
-            self.button.setText('Start')
-        else:
-            self.timer.start(100, self)
-            self.button.setText('Stop')
+    def run(self):
+        while self.counter < 200:
+            gl.number += 1
+            self.counter = self.counter + 1
+            time.sleep(1)
+            self.p.repaint()
 
 
-app = QtGui.QApplication(sys.argv)
-icon = ProgressBar()
-icon.show()
-app.exec_()
+class MainWindow(QMainWindow):
 
+    def __init__(self, *args):
+        apply(QMainWindow.__init__, (self,) + args)
+        self.setGeometry(300, 100, 1200, 700)
+        self.number = 0
+        self.painting=Painting(self)
+        self.setCentralWidget(self.painting)
+        self.thread1=TextThread("thread1", self.painting)
+        self.thread1.start()
+
+
+def main(args):
+    app=QApplication(args)
+    win=MainWindow()
+    win.show()
+    app.connect(app, SIGNAL("lastWindowClosed()"),
+                app, SLOT("quit()"))
+    app.exec_loop()
+  
+if __name__=="__main__":
+    main(sys.argv)

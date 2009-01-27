@@ -180,9 +180,6 @@ class ColorWindow2(QtGui.QWidget):
         
         paint.end()
     
-    
-
-
 
 def run(agents,  space):
     app = QtGui.QApplication(sys.argv)

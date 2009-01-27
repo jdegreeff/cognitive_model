@@ -162,9 +162,6 @@ class CP():
         for count, i in enumerate(point1):
             for j in point2:
                 if i[0] == j[0]:
-                    if gl.n_guessing_games > 1000:
-                        if self.holder_name == "ag1":
-                            pass
                     if cfg.prototype_distance:  # if the SD of prototypes is used 
                         if len(j) == 2:         # make sure there is an SD value
                             j.append(0.0)
