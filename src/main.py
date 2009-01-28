@@ -19,9 +19,6 @@ from threading import *
 
 def main():
     """ main in which various aspects of the program are initiated """
-    
-    gl.agent1 = agent.OmniAgent("om1")
-    gl.agent2 = agent.BasicAgent("ag1")
 
     init()
     
@@ -72,11 +69,24 @@ class MainThread(Thread):
         
     def run(self):
         #gl.loop_running = True
-        for h in gl.training_data:
-            guessing_game(gl.agent1, gl.agent2, h)
-            print gl.agent2.get_n_concepts(), gl.guessing_succes
-            self.window.update()
-        gl.loop_running = False
+        count = 0
+        while count < cfg.n_loops:
+            stats = []
+            for h in gl.training_data:
+                guessing_game(gl.agent1, gl.agent2, h)
+                #print "games: " + str(gl.n_guessing_games), gl.agent2.get_n_concepts(), gl.guessing_succes
+                stats.append([ gl.n_guessing_games, gl.agent2.get_n_concepts(), gl.guessing_succes ])
+                self.window.update()
+            gl.loop_running = False
+            gl.stats.append(stats)
+            count += 1
+            gl.reset()
+            init()
+        #aux.calculate_stats(gl.stats)
+        counter = 0
+        for i in gl.stats:
+            io.write_output( str(counter), i )
+            counter += 1
 
 
 #    for i in gl.agent_set:
@@ -98,6 +108,8 @@ class MainThread(Thread):
     
 def init():
     """ initialises various parameters and values """
+    gl.agent1 = agent.OmniAgent("om1")
+    gl.agent2 = agent.BasicAgent("ag1")
     # initialise agents
 #    i = 0
 #    while i < cfg.n_agents:
@@ -120,7 +132,17 @@ def guessing_game(agent1, agent2, context, topic_index = False):
         context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
     """
     if not topic_index:
-        topic_index = ran.randint(0, len(context)-1)
+        if cfg.active_learning:
+            a2_context_distance = []
+            for i in context:
+                a2_known_concepts = agent2.cp.get_all_concept_coordinates()
+                distance = 0
+                for j in a2_known_concepts:
+                    distance += agent2.cp.calculate_distance(i, j)
+                a2_context_distance.append(distance)
+            topic_index = aux.posMax(a2_context_distance)
+        else:
+            topic_index = ran.randint(0, len(context)-1)
     # agent1 plays discrimination game
     a1_disc_result = agent1.discrimination_game(context, topic_index)
     if a1_disc_result == "concept_shifted":

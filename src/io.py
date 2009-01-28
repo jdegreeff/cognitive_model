@@ -13,3 +13,15 @@ def open_datafile(mode, space):
         colour = [float(row[0]), float(row[1]), float(row[2])]
         list.append(colour)
     return list
+
+
+def write_output(name, output):
+    """ write output file
+        output = [ [value1, value2, value n], ...[value1, value2, value n] ]
+    """
+    filename = "output" + name + ".csv"
+    out_file = csv.writer(open(filename, 'w'), delimiter=',', quotechar='|')
+    for i in output:
+        out_file.writerow(i)
+
+

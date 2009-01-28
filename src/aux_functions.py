@@ -159,3 +159,25 @@ def calculate_distance_general(point1, point2, list_salience = "empty" ):
     return sqrt(distance)
     
     
+def calculate_stats(stats):
+    """ calculates the average number of concepts learned for a given number of training loops
+        stats = [ data_loop1, data_loop2, ...data_loopn ]
+        data_loop = [ n_game, n_concepts, guessing_succes ] 
+    """
+    overall = [[0.0] * 3] * cfg.n_training_datasets
+    for i in stats:
+        for count, j in enumerate(i):
+            for count2, h in enumerate(j):
+                overall[count][count2] += h
+    for i in overall:
+        for j in i:
+            j = j/len(stats)
+    print "done"
+    gl.overall_stats = overall
+        
+        
+        
+        
+        
+        
+    
