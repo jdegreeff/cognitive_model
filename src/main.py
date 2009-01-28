@@ -71,10 +71,13 @@ class MainThread(Thread):
         self.window = main_window
         
     def run(self):
+        gl.loop_running = True
         for h in gl.training_data:
             guessing_game(gl.agent1, gl.agent2, h)
             print gl.agent2.get_n_concepts(), gl.guessing_succes
             self.window.update()
+        gl.loop_running = False
+
 
 #    for i in gl.agent_set:
 #        for j in gl.agent_set:
@@ -159,6 +162,8 @@ def guessing_game(agent1, agent2, context, topic_index = False):
         gl.n_succes_gg += 1
     agent1.guessing_succes = agent1.n_succes_gg/agent1.n_guessing_games
     agent2.guessing_succes = agent1.n_succes_gg/agent1.n_guessing_games
+    agent1.concept_history.append(agent1.get_n_concepts())
+    agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_succes = gl.n_succes_gg/gl.n_guessing_games
         
         

@@ -17,6 +17,7 @@ class BasicAgent():
     def __init__(self, name):
         """ initiate variables """
         self.agent_name = name                      # agent name
+        self.agent_type = "basic"                   # agent type: "basic" or "omni"
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
@@ -25,6 +26,7 @@ class BasicAgent():
         self.n_guessing_games = 0                   # number of guessing games played by the agent
         self.n_succes_gg = 0                        # number of successful guessing games
         self.guessing_succes = 0.0                  # agents guessing success ratio
+        self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
                             
                                 
     def add_exemplar(self, exemplar, tag):
@@ -166,6 +168,7 @@ class OmniAgent():
     def __init__(self, name):
         """ initiate variables """
         self.agent_name = name                      # agent name
+        self.agent_type = "omni"                    # agent type: "basic" or "omni"
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.load_knowledge("rgb")                  # loads existing body of conceptual knowledge into cp and lexicon
@@ -175,6 +178,7 @@ class OmniAgent():
         self.n_guessing_games = 0                   # number of guessing games played by the agent
         self.n_succes_gg = 0                        # number of successful guessing games
         self.guessing_succes = 0.0                  # agents guessing success ratio
+        self.concept_history = []                   # list containing number of concepts agent has after each interaction (g
         
         
     def load_knowledge(self, domain):
@@ -252,7 +256,11 @@ class OmniAgent():
             decreases the association strength between the given label and tag
         """
         pass
-        
+    
+    
+    def get_n_concepts(self):
+        """ returns the number of concepts currently in CP """
+        return self.cp.get_n_concepts()        
         
     def print_matrix(self):
         return self.lex.print_matrix()

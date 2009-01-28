@@ -10,6 +10,9 @@ data_tony =[]               # training data from Tony Belpaeme
 n_guessing_games = 0        # number of guessing games played all agents
 n_succes_gg = 0             # number of successful guessing games
 guessing_succes = 0.0       # agents guessing success ratio
-loop_start = True
-n_loops = 10                # number of times the agents go through the guessing game loop
-number = 0
+loop_running = False
+
+
+# graphical properties
+x_scale                     # x scaling
+y_scale                     # y scaling
