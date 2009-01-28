@@ -71,7 +71,7 @@ class MainThread(Thread):
         self.window = main_window
         
     def run(self):
-        gl.loop_running = True
+        #gl.loop_running = True
         for h in gl.training_data:
             guessing_game(gl.agent1, gl.agent2, h)
             print gl.agent2.get_n_concepts(), gl.guessing_succes

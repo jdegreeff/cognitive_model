@@ -29,7 +29,6 @@ class CP():
         Furthermore, concept coordinates may be shifted through language games
     """
     
-    
     def __init__(self, name):
         """ initiate variables """
         self.holder_name = name     # name of the agent holding this CP

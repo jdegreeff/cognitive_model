@@ -21,7 +21,7 @@ class MainWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.ag = agents
         self.space = space
-        self.setGeometry(300, 100, gl.x_scale * 100,  gl.y_scale * 100)
+        self.setGeometry(300, 100, cfg.x_scale * 100,  cfg.y_scale * 100)
         title = 'Categories'
         self.setWindowTitle(title)
 
@@ -33,8 +33,8 @@ class MainWindow(QtGui.QWidget):
 #            label = str(self.ag[1].get_n_concepts())
 #            paint.drawText(15, 50, label)  
             
-            x_size = (gl.x_scale * 0.66) * 100
-            y_size = (gl.y_scale * 0.9) * 100
+            x_size = (cfg.x_scale * 0.66) * 100
+            y_size = (cfg.y_scale * 0.9) * 100
             paint.drawLine(20,40, 20, y_size)
             paint.drawLine(20, y_size, x_size, y_size)
             for i in self.ag:

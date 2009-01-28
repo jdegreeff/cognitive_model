@@ -11,8 +11,3 @@ n_guessing_games = 0        # number of guessing games played all agents
 n_succes_gg = 0             # number of successful guessing games
 guessing_succes = 0.0       # agents guessing success ratio
 loop_running = False
-
-
-# graphical properties
-x_scale                     # x scaling
-y_scale                     # y scaling
