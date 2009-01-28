@@ -18,14 +18,18 @@ import io
 from threading import *
 
 def main():
-    """ main run """
+    """ main in which various aspects of the program are initiated """
     
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
 
     init()
-
     
+    layout.StartLayout([gl.agent1, gl.agent2], cfg.space)
+    
+    gl.agent2.print_matrix()
+    print gl.agent2.get_concepts()
+
     # discrimination game section
 #    for i in gl.agent_set:
 #        for j in gl.training_data:
@@ -56,18 +60,21 @@ def main():
 #    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
 #    layout.run(gl.agent_set, cfg.space)
 
-    gl.agent2.print_matrix()
-    print gl.agent2.get_concepts()
-    #layout.run([gl.agent1, gl.agent2], cfg.space)
+
     
         
+class MainThread(Thread):
+    """ main thread """
     
-class MainLoop(Thread):
-    """ main loop """
-    
-    def __init__(self, dt, *args):
+    def __init__(self, main_window, *args):
         apply(Thread.__init__, (self, ) + args)
-        self.window = dt
+        self.window = main_window
+        
+    def run(self):
+        for h in gl.training_data:
+            guessing_game(gl.agent1, gl.agent2, h)
+            print gl.agent2.get_n_concepts(), gl.guessing_succes
+            self.window.update()
 
 #    for i in gl.agent_set:
 #        for j in gl.agent_set:
@@ -83,11 +90,7 @@ class MainLoop(Thread):
 #                        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
 #                        print "communication success: " + str(gl.guessing_succes)
 
-    def run(self):
-        for h in gl.training_data:
-            guessing_game(gl.agent1, gl.agent2, h)
-            print gl.agent2.get_n_concepts(), gl.guessing_succes
-            self.window.update()
+
                     
     
 def init():
@@ -99,11 +102,9 @@ def init():
 #        ag = agent.BasicAgent(agent_name)
 #        gl.agent_set.append(ag)
 #        i += 1
-    
     gl.n_guessing_games = 0
     gl.data_tony = io.open_datafile("natural", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
-    main_thread = layout.MainThread([gl.agent1, gl.agent2], cfg.space)
 
     
 
