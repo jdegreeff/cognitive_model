@@ -1,6 +1,6 @@
 # cpf.py
 # configuration file
-import globals as gl
+
 
 # parameters
 n_agents = 2
@@ -10,12 +10,12 @@ label_learning_rate = 0.01
 merge_concepts = 0
 merging_rate = 0.15
 space = "rgb"                   # "rgb" or "4df"
-n_training_datasets = 1000
 context_size = 15
 sample_minimum_distance = 50
-n_loops = 10                    # number of loops the agents go through the learning loop
+n_training_datasets = 3000
+n_loops = 100                    # number of loops the agents go through the learning loop
 prototype_distance = 1          # distance measure is based on prototype SD, not actual coordinates
-active_learning = 1             # if 1, agents use active learning: learning is aimed at new things (i.e. agent chooses topic)
+active_learning = 0             # if 1, agents use active learning: learning is aimed at new things (i.e. agent chooses topic)
 
 # graphical properties
 use_graphics = 0                # whether or not a graphic display should be shown

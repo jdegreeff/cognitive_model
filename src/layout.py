@@ -155,5 +155,5 @@ class StartLayout():
         else:
             self.thread1 = main.MainThread()
         self.thread1.start()
-        app.exec_()
+        sys.exit(app.exec_()) #app.exec_()
     

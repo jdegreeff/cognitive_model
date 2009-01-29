@@ -85,7 +85,7 @@ class MainThread(Thread):
             gl.reset()
             init()
         aux.calculate_stats(gl.stats)
-        name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops)
+        name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
         io.write_output(name, gl.overall_stats)
 #        counter = 0
 #        for i in gl.stats:
