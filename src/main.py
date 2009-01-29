@@ -63,7 +63,7 @@ def main():
 class MainThread(Thread):
     """ main thread """
     
-    def __init__(self, main_window, *args):
+    def __init__(self, main_window = None, *args):
         apply(Thread.__init__, (self, ) + args)
         self.window = main_window
         
@@ -76,17 +76,21 @@ class MainThread(Thread):
                 guessing_game(gl.agent1, gl.agent2, h)
                 #print "games: " + str(gl.n_guessing_games), gl.agent2.get_n_concepts(), gl.guessing_succes
                 stats.append([ gl.n_guessing_games, gl.agent2.get_n_concepts(), gl.guessing_succes ])
-                self.window.update()
+                if self.window is not None:
+                    self.window.update()
             gl.loop_running = False
             gl.stats.append(stats)
             count += 1
+            print "loop " + str(count)
             gl.reset()
             init()
-        #aux.calculate_stats(gl.stats)
-        counter = 0
-        for i in gl.stats:
-            io.write_output( str(counter), i )
-            counter += 1
+        aux.calculate_stats(gl.stats)
+        name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops)
+        io.write_output(name, gl.overall_stats)
+#        counter = 0
+#        for i in gl.stats:
+#            io.write_output( str(counter), i )
+#            counter += 1
 
 
 #    for i in gl.agent_set:

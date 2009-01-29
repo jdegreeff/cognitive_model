@@ -98,7 +98,6 @@ def generateRGBTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
             count2 += 1
         training_data.append(set)
         count += 1
-    print "training data created"
     return training_data
 
 
@@ -164,14 +163,18 @@ def calculate_stats(stats):
         stats = [ data_loop1, data_loop2, ...data_loopn ]
         data_loop = [ n_game, n_concepts, guessing_succes ] 
     """
-    overall = [[0.0] * 3] * cfg.n_training_datasets
+    overall = []
+    counter = 0
+    while counter < cfg.n_training_datasets:
+        overall.append([0.0] * 3)
+        counter += 1
     for i in stats:
         for count, j in enumerate(i):
             for count2, h in enumerate(j):
-                overall[count][count2] += h
-    for i in overall:
-        for j in i:
-            j = j/len(stats)
+                overall[count][count2] = overall[count][count2] + h
+    for count, i in enumerate(overall):
+        for count2, j in enumerate(i):
+            overall[count][count2] = j/len(stats)
     print "done"
     gl.overall_stats = overall
         

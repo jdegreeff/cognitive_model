@@ -148,9 +148,12 @@ class StartLayout():
     """
     def __init__(self, agents,  space):
         app = QtGui.QApplication(sys.argv)
-        main_window = MainWindow(agents, space)
-        main_window.show()
-        self.thread1 = main.MainThread(main_window)
+        if cfg.use_graphics:
+            main_window = MainWindow(agents, space)
+            main_window.show()
+            self.thread1 = main.MainThread(main_window)
+        else:
+            self.thread1 = main.MainThread()
         self.thread1.start()
         app.exec_()
     

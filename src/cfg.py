@@ -18,5 +18,6 @@ prototype_distance = 1          # distance measure is based on prototype SD, not
 active_learning = 1             # if 1, agents use active learning: learning is aimed at new things (i.e. agent chooses topic)
 
 # graphical properties
+use_graphics = 0                # whether or not a graphic display should be shown
 x_scale = 12
 y_scale = 7
