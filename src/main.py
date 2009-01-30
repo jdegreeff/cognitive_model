@@ -82,7 +82,7 @@ class MainThread(Thread):
             gl.stats.append(stats)
             count += 1
             print "loop " + str(count)
-            gl.reset()
+            aux.reset()
             init()
         aux.calculate_stats(gl.stats)
         name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)

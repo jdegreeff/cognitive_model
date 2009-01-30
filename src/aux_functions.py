@@ -180,7 +180,18 @@ def calculate_stats(stats):
         
         
         
-        
+def reset():
+    """ resets all global variables
+    """
+    gl.agent_set = None            # a collection of agents
+    gl.agent1 = None               # an agent
+    gl.agent2 = None               # another agent
+    gl.training_data = None        # training data
+    gl.data_tony = None            # training data from Tony Belpaeme
+    gl.n_guessing_games = 0        # number of guessing games played all agents
+    gl.n_succes_gg = 0             # number of successful guessing games
+    gl.guessing_succes = 0.0       # agents guessing success ratio
+    gl.loop_running = False
         
         
     
