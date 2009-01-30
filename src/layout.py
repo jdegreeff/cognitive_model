@@ -1,12 +1,10 @@
 # layout.py
 
 from __future__ import division
-import sys, random, time
+import sys, random
 from PyQt4 import QtGui, QtCore
 #from qt import *
-import main
 import globals as gl
-from threading import *
 import cfg
 
 colour_black = QtGui.QColor(0, 0, 0, 255)
@@ -140,20 +138,4 @@ class MainWindow(QtGui.QWidget):
                 
         paint.end()
         
-
-
-    
-class StartLayout():
-    """ Starts the main graphical window and initiates the main running thread
-    """
-    def __init__(self, agents,  space):
-        app = QtGui.QApplication(sys.argv)
-        if cfg.use_graphics:
-            main_window = MainWindow(agents, space)
-            main_window.show()
-            self.thread1 = main.MainThread(main_window)
-        else:
-            self.thread1 = main.MainThread()
-        self.thread1.start()
-        sys.exit(app.exec_()) #app.exec_()
     

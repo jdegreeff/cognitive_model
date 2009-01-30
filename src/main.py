@@ -6,23 +6,26 @@
 # main.py
 
 from __future__ import division
+from PyQt4 import QtGui, QtCore
+import random as ran
+from threading import *
+import sys
+import aux_functions as aux
 import agent
 import data
-import random as ran
-import aux_functions as aux
 import cfg
 import globals as gl
 import layout
 import copy
 import io
-from threading import *
+
 
 def main():
     """ main in which various aspects of the program are initiated """
 
     init()
     
-    layout.StartLayout([gl.agent1, gl.agent2], cfg.space)
+    StartLayout([gl.agent1, gl.agent2], cfg.space)
     
     gl.agent2.print_matrix()
     print gl.agent2.get_concepts()
@@ -58,6 +61,19 @@ def main():
 #    layout.run(gl.agent_set, cfg.space)
 
 
+class StartLayout():
+    """ Starts the main graphical window and initiates the main running thread
+    """
+    def __init__(self, agents,  space):
+        app = QtGui.QApplication(sys.argv)
+        if cfg.use_graphics:
+            main_window = layout.MainWindow(agents, space)
+            main_window.show()
+            self.thread1 = MainThread(main_window)
+        else:
+            self.thread1 = MainThread()
+        self.thread1.start()
+        sys.exit(app.exec_())
     
         
 class MainThread(Thread):
