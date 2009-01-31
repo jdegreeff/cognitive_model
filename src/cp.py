@@ -88,6 +88,7 @@ class CP():
             tag = "string"
         """
         exemplar_copy = copy.deepcopy(exemplar)    # make a copy
+        del exemplar
         self.prototype_data.append([tag, copy.deepcopy(exemplar_copy)])        # add to data
         new = True
         for i in self.concepts:     # check for existing concept
@@ -141,6 +142,7 @@ class CP():
             concept = [ [d1, value], [d2, value], ..., [dn, value] ]
         """
         concept_new = copy.deepcopy(concept)         # make a copy of concept, so concept itself is not modified
+        del concept
         for count, i in enumerate(concept_new):      # add SD
             concept_new[count].append(0.0)
         self.concepts.append([tag, concept_new])

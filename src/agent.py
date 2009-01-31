@@ -29,9 +29,18 @@ class BasicAgent():
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
                             
                                 
+    def delete_agent(self):
+        del self.agent_name, self.agent_type, self.cp, self.lex, self.n_discrimination_games
+        del self.n_succes_dg, self.discrimination_succes, self.n_guessing_games, self.n_succes_gg
+        del self.guessing_succes, self.concept_history
+            
+        
+        
+        
     def add_exemplar(self, exemplar, tag):
         """ adds exemplar data to the concept of the given tag """ 
-        exemplar_new = copy.deepcopy(exemplar)    # make a copy                          
+        exemplar_new = copy.deepcopy(exemplar)    # make a copy
+        del exemplar                          
         self.cp.add_exemplar(exemplar_new, tag)
         
         
@@ -40,7 +49,8 @@ class BasicAgent():
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
         """                                
-        concept_new = copy.deepcopy(concept)    # make a copy     
+        concept_new = copy.deepcopy(concept)    # make a copy 
+        del concept    
         self.cp.add_concept(concept_new, tag)
         
         
@@ -58,18 +68,19 @@ class BasicAgent():
             The return is either the concept tag, a string description of the action taken by the agent
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
-        context_new = copy.deepcopy(context)    # make a copy   
+        context_new = copy.deepcopy(context)    # make a copy
+        del context   
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
             tag = aux.generateRandomTag(4)
-            #self.add_concept(context[topic_index], tag)
-            self.add_exemplar(context[topic_index], tag)    # no new concepts are stored, only exemplars
+            #self.add_concept(context_new[topic_index], tag)
+            self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
             answer = tag
         else:
             # select the best matching concept for every stimulus from the context (including the topic)
             best_matching_concepts = []
-            for i in context:
+            for i in context_new:
                 distances = []
                 for j in known_concept_coors:
                     distances.append(self.cp.calculate_distance(i, j))
@@ -82,15 +93,15 @@ class BasicAgent():
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discrimination_succes < cfg.adapt_threshold:
                     tag = aux.generateRandomTag(4)
-                    #self.add_concept(context[topic_index], tag)
-                    self.add_exemplar(context[topic_index], tag)    # no new concepts are stored, only exemplars
+                    #self.add_concept(context_new[topic_index], tag)
+                    self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
                     answer = tag
                 # if agent discrimination success is above threshold, 
                 # topic is added as exemplar for the best matching concept, 
                 # i.e. the best matching concept is shifted towards the topic
                 else:
                     tag = best_matching_concepts[topic_index]
-                    self.add_exemplar(context[topic_index], tag)
+                    self.add_exemplar(context_new[topic_index], tag)
                     answer = tag
                     
         # merge concepts
@@ -181,6 +192,12 @@ class OmniAgent():
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (g
         
         
+    def delete_agent(self):
+        del self.agent_name, self.agent_type, self.cp, self.lex, self.n_discrimination_games
+        del self.n_succes_dg, self.discrimination_succes, self.n_guessing_games, self.n_succes_gg
+        del self.guessing_succes, self.concept_history
+        
+        
     def load_knowledge(self, domain):
         """ loads existing body of conceptual knowledge into cp and lexicon body
             domain determines which type of knowledge is used. Knowledge is added as concepts, 
@@ -204,12 +221,13 @@ class OmniAgent():
             The return is either the concept tag, a string description of the action taken by the agent
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
-        context_new = copy.deepcopy(context)    # make a copy   
+        context_new = copy.deepcopy(context)    # make a copy 
+        del context  
         # select the best matching concept for every stimulus from the context (including the topic)
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         best_matching_concepts = []
-        for i in context:
+        for i in context_new:
             distances = []
             for j in known_concept_coors:
                 distances.append(self.cp.calculate_distance(i, j))
@@ -235,7 +253,8 @@ class OmniAgent():
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
         """                                
-        concept_new = copy.deepcopy(concept)    # make a copy     
+        concept_new = copy.deepcopy(concept)    # make a copy
+        del concept     
         self.cp.add_concept(concept_new, tag)
         
         

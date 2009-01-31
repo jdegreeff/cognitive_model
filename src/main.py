@@ -18,6 +18,38 @@ import globals as gl
 import layout
 import copy
 import io
+import gc
+from guppy import hpy; h=hpy()
+
+# Recursively expand slist's objects
+# into olist, using seen to track
+# already processed objects.
+def _getr(slist, olist, seen):
+    for e in slist:
+        if id(e) in seen:
+            continue
+        seen[id(e)] = None
+        olist.append(e)
+        tl = gc.get_referents(e)
+        if tl:
+            _getr(tl, olist, seen)
+            
+# The public function.
+def get_all_objects():
+    """Return a list of all live Python objects, not including the
+        list itself.
+    """
+    gc.collect()
+    gcl = gc.get_objects()
+    olist = []
+    seen = {}
+    # Just in case:
+    seen[id(gcl)] = None
+    seen[id(olist)] = None
+    seen[id(seen)] = None
+    # _getr does the real work.
+    _getr(gcl, olist, seen)
+    return olist 
 
 
 def main():
@@ -26,9 +58,7 @@ def main():
     init()
     
     StartLayout([gl.agent1, gl.agent2], cfg.space)
-    
-    gl.agent2.print_matrix()
-    print gl.agent2.get_concepts()
+
 
     # discrimination game section
 #    for i in gl.agent_set:
@@ -84,29 +114,31 @@ class MainThread(Thread):
         self.window = main_window
         
     def run(self):
-        #gl.loop_running = True
-        count = 0
-        while count < cfg.n_loops:
-            stats = []
-            for h in gl.training_data:
-                guessing_game(gl.agent1, gl.agent2, h)
+        gl.loop_running = True
+        while gl.current_loop < cfg.n_loops:
+            #print "Number objects before:", len(get_all_objects())
+            local_stats = [] 
+            for i in gl.training_data:
+                game = guessing_game(gl.agent1, gl.agent2, i)
+                del game
                 #print "games: " + str(gl.n_guessing_games), gl.agent2.get_n_concepts(), gl.guessing_succes
-                stats.append([ gl.n_guessing_games, gl.agent2.get_n_concepts(), gl.guessing_succes ])
+                local_stats.append([ gl.n_guessing_games, gl.agent2.get_n_concepts(), gl.guessing_succes ])
                 if self.window is not None:
                     self.window.update()
-            gl.loop_running = False
-            gl.stats.append(stats)
-            count += 1
-            print "loop " + str(count)
-            aux.reset()
-            init()
+            gl.stats.append(local_stats)
+            del local_stats
+            gl.current_loop += 1
+            print "loop " + str(gl.current_loop)
+            
+            #print h.heap()
+            reset()
+            #print "Number objects after:", len(get_all_objects())
+            
+            
+        gl.loop_running = False            
         aux.calculate_stats(gl.stats)
         name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
         io.write_output(name, gl.overall_stats)
-#        counter = 0
-#        for i in gl.stats:
-#            io.write_output( str(counter), i )
-#            counter += 1
 
 
 #    for i in gl.agent_set:
@@ -127,19 +159,30 @@ class MainThread(Thread):
                     
     
 def init():
-    """ initialises various parameters and values """
+    """ initialises various parameters and values 
+    """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    # initialise agents
-#    i = 0
-#    while i < cfg.n_agents:
-#        agent_name = "agent" + str(i)
-#        ag = agent.BasicAgent(agent_name)
-#        gl.agent_set.append(ag)
-#        i += 1
-    gl.n_guessing_games = 0
     gl.data_tony = io.open_datafile("natural", "rgb")
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)  
+    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+
+    
+    
+def reset():
+    """ resets all global variables
+    """
+    gl.agent1.delete_agent()
+    gl.agent2.delete_agent()
+    del gl.agent1
+    del gl.agent2
+    del gl.training_data
+    gl.agent1 = agent.OmniAgent("om1")
+    gl.agent2 = agent.BasicAgent("ag1")
+    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.n_guessing_games = 0        # number of guessing games played all agents
+    gl.n_succes_gg = 0             # number of successful guessing games
+    gl.guessing_succes = 0.0       # agents guessing success ratio
+    gl.loop_running = False 
 
     
 
@@ -164,7 +207,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
         else:
             topic_index = ran.randint(0, len(context)-1)
     # agent1 plays discrimination game
-    a1_disc_result = agent1.discrimination_game(context, topic_index)
+    a1_disc_result = agent1.discrimination_game(context, topic_index) 
     if a1_disc_result == "concept_shifted":
         guessing_game_result = 0
     # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
@@ -207,6 +250,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     agent1.concept_history.append(agent1.get_n_concepts())
     agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_succes = gl.n_succes_gg/gl.n_guessing_games
+    
         
         
 def calculate_agents_lexicon():
