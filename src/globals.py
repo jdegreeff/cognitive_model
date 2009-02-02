@@ -13,4 +13,3 @@ guessing_succes = 0.0       # agents guessing success ratio
 loop_running = False
 current_loop = 0            # current loop of the program
 stats = []                  # statistics
-overall_stats = []          # average stats

@@ -5,90 +5,30 @@
 # More information at http://www.tech.plym.ac.uk/SoCCE/CONCEPT/
 # main.py
 
+# TODO: implementation of manhattan distance calculation for discrete metric
+# TODO: implement a manner for compositionality; Gardenfors solution:  within a pair of concepts
+#       one concept can override properties of the other concept based on salience
+
 from __future__ import division
 from PyQt4 import QtGui, QtCore
 import random as ran
 from threading import *
 import sys
 import aux_functions as aux
+import globals as gl
 import agent
 import data
 import cfg
-import globals as gl
 import layout
 import copy
 import io
-import gc
-from guppy import hpy; h=hpy()
-
-# Recursively expand slist's objects
-# into olist, using seen to track
-# already processed objects.
-def _getr(slist, olist, seen):
-    for e in slist:
-        if id(e) in seen:
-            continue
-        seen[id(e)] = None
-        olist.append(e)
-        tl = gc.get_referents(e)
-        if tl:
-            _getr(tl, olist, seen)
-            
-# The public function.
-def get_all_objects():
-    """Return a list of all live Python objects, not including the
-        list itself.
-    """
-    gc.collect()
-    gcl = gc.get_objects()
-    olist = []
-    seen = {}
-    # Just in case:
-    seen[id(gcl)] = None
-    seen[id(olist)] = None
-    seen[id(seen)] = None
-    # _getr does the real work.
-    _getr(gcl, olist, seen)
-    return olist 
 
 
 def main():
-    """ main in which various aspects of the program are initiated """
-
+    """ main in which various aspects of the program are initiated 
+    """
     init()
-    
     StartLayout([gl.agent1, gl.agent2], cfg.space)
-
-
-    # discrimination game section
-#    for i in gl.agent_set:
-#        for j in gl.training_data:
-#            i.discrimination_game(j, 0)
-#        
-#    print gl.agent_set[0].get_concepts()
-#    for i in gl.agent_set:
-#        print i.get_n_concepts()
-#        print i.cp.prototype_data
-#        print len(i.cp.prototype_data)
-#    layout.run(gl.agent_set, cfg.space)
-
-    #main_loop()
-
-#    for i in gl.agent_set:
-#        i.print_matrix()
-#        print i.lex.labels
-#        print i.lex.tags
-#        print i.get_concepts()    # practical printout, may be reconsidered
-#    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
-#        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
-#        print "communication success: " + str(gl.guessing_succes)
-#        print i.cp.prototype_data
-#        print len(i.lex.tags)
-#        print len(i.get_concepts())
-#        print len(i.lex.labels)
-#    
-#    print "shared lexicon: " + str(calculate_agents_lexicon()) + "%"    
-#    layout.run(gl.agent_set, cfg.space)
 
 
 class StartLayout():
@@ -107,8 +47,8 @@ class StartLayout():
     
         
 class MainThread(Thread):
-    """ main thread """
-    
+    """ main thread 
+    """
     def __init__(self, main_window = None, *args):
         apply(Thread.__init__, (self, ) + args)
         self.window = main_window
@@ -116,47 +56,33 @@ class MainThread(Thread):
     def run(self):
         gl.loop_running = True
         while gl.current_loop < cfg.n_loops:
-            #print "Number objects before:", len(get_all_objects())
-            local_stats = [] 
+            count = 0
             for i in gl.training_data:
-                game = guessing_game(gl.agent1, gl.agent2, i)
-                del game
-                #print "games: " + str(gl.n_guessing_games), gl.agent2.get_n_concepts(), gl.guessing_succes
-                local_stats.append([ gl.n_guessing_games, gl.agent2.get_n_concepts(), gl.guessing_succes ])
+                guessing_game(gl.agent1, gl.agent2, i)
+                gl.stats[count][0] += float(gl.agent2.get_n_concepts())
+                gl.stats[count][1] += gl.guessing_succes
+                count += 1
                 if self.window is not None:
                     self.window.update()
-            gl.stats.append(local_stats)
-            del local_stats
             gl.current_loop += 1
             print "loop " + str(gl.current_loop)
-            
-            #print h.heap()
             reset()
-            #print "Number objects after:", len(get_all_objects())
             
-            
-        gl.loop_running = False            
-        aux.calculate_stats(gl.stats)
+        gl.loop_running = False 
+        
+        # calculate statistics
+        count = 0           
+        for i in gl.stats:
+            count2 = 0
+            for j in i:
+                gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
+                count2 += 1
+            count += 1
         name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
-        io.write_output(name, gl.overall_stats)
+        io.write_output(name, gl.stats)
+        print "done"
 
 
-#    for i in gl.agent_set:
-#        for j in gl.agent_set:
-#            if i is not j:
-#                for h in gl.training_data:
-#                    guessing_game(i, j, h)
-#                    if gl.n_guessing_games % 2:
-#                        guessing_game(i, j, h)
-#                    else:
-#                        guessing_game(j, i, h)
-#                    # practical printout, may be reconsidered
-#                    if (gl.n_guessing_games % (cfg.n_training_datasets/2)) == 0:
-#                        print "%.2f percent done" % ((gl.n_guessing_games/((cfg.n_training_datasets * (cfg.n_agents-1)) * cfg.n_agents)/2)*100) 
-#                        print "communication success: " + str(gl.guessing_succes)
-
-
-                    
     
 def init():
     """ initialises various parameters and values 
@@ -165,26 +91,24 @@ def init():
     gl.agent2 = agent.BasicAgent("ag1")
     gl.data_tony = io.open_datafile("natural", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    counter = 0
+    while counter < cfg.n_training_datasets:
+        gl.stats.append([0.0] * 2)
+        counter += 1
 
     
     
 def reset():
     """ resets all global variables
     """
-    gl.agent1.delete_agent()
-    gl.agent2.delete_agent()
-    del gl.agent1
-    del gl.agent2
-    del gl.training_data
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0        # number of guessing games played all agents
     gl.n_succes_gg = 0             # number of successful guessing games
     gl.guessing_succes = 0.0       # agents guessing success ratio
-    gl.loop_running = False 
+    gl.loop_running = False
 
-    
 
 
 def guessing_game(agent1, agent2, context, topic_index = False):

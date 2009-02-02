@@ -27,21 +27,11 @@ class BasicAgent():
         self.n_succes_gg = 0                        # number of successful guessing games
         self.guessing_succes = 0.0                  # agents guessing success ratio
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
-                            
-                                
-    def delete_agent(self):
-        del self.agent_name, self.agent_type, self.cp, self.lex, self.n_discrimination_games
-        del self.n_succes_dg, self.discrimination_succes, self.n_guessing_games, self.n_succes_gg
-        del self.guessing_succes, self.concept_history
-            
-        
         
         
     def add_exemplar(self, exemplar, tag):
         """ adds exemplar data to the concept of the given tag """ 
-        exemplar_new = copy.deepcopy(exemplar)    # make a copy
-        del exemplar                          
-        self.cp.add_exemplar(exemplar_new, tag)
+        self.cp.add_exemplar(copy.deepcopy(exemplar), tag)
         
         
     def add_concept(self, concept, tag):
@@ -49,9 +39,7 @@ class BasicAgent():
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
         """                                
-        concept_new = copy.deepcopy(concept)    # make a copy 
-        del concept    
-        self.cp.add_concept(concept_new, tag)
+        self.cp.add_concept(copy.deepcopy(concept), tag)
         
         
     def add_label(self, label, tag):
@@ -69,7 +57,6 @@ class BasicAgent():
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
         context_new = copy.deepcopy(context)    # make a copy
-        del context   
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
@@ -109,10 +96,8 @@ class BasicAgent():
             self.cp.merge_concepts()
                     
         # calculate statistics
-        # print self.n_discrimination_games, self.discrimination_succes
         self.n_discrimination_games += 1.0
         self.discrimination_succes = self.n_succes_dg/self.n_discrimination_games
-        #print self.discrimination_succes, len(self.cp.concepts)
         return answer
         
         
@@ -189,13 +174,7 @@ class OmniAgent():
         self.n_guessing_games = 0                   # number of guessing games played by the agent
         self.n_succes_gg = 0                        # number of successful guessing games
         self.guessing_succes = 0.0                  # agents guessing success ratio
-        self.concept_history = []                   # list containing number of concepts agent has after each interaction (g
-        
-        
-    def delete_agent(self):
-        del self.agent_name, self.agent_type, self.cp, self.lex, self.n_discrimination_games
-        del self.n_succes_dg, self.discrimination_succes, self.n_guessing_games, self.n_succes_gg
-        del self.guessing_succes, self.concept_history
+        self.concept_history = []                   # list containing number of concepts agent has after each interaction (
         
         
     def load_knowledge(self, domain):
@@ -222,7 +201,6 @@ class OmniAgent():
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
         context_new = copy.deepcopy(context)    # make a copy 
-        del context  
         # select the best matching concept for every stimulus from the context (including the topic)
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
@@ -237,14 +215,11 @@ class OmniAgent():
             self.n_succes_dg += 1.0
             answer = best_matching_concepts[topic_index]
         else:
-            #print "discrimination fail"
             answer = "concept_shifted" # method to cause the guessing game to fail and do nothing
  
         # calculate statistics
-        # print self.n_discrimination_games, self.discrimination_succes
         self.n_discrimination_games += 1.0
         self.discrimination_succes = self.n_succes_dg/self.n_discrimination_games
-        #print self.discrimination_succes, len(self.cp.concepts)
         return answer
             
         
@@ -252,10 +227,8 @@ class OmniAgent():
         """ adds a concept to the CP
             it is not be used for the prototype however, and hence the data 
             will not be stored in the cp.prototype_data
-        """                                
-        concept_new = copy.deepcopy(concept)    # make a copy
-        del concept     
-        self.cp.add_concept(concept_new, tag)
+        """                                   
+        self.cp.add_concept(copy.deepcopy(concept), tag)
         
         
     def add_label(self, label, tag):
