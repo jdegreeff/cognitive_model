@@ -135,6 +135,10 @@ class BasicAgent():
     def get_concepts(self):
         return self.cp.get_concepts()
     
+    def get_all_concept_coordinates(self):
+        """ returns the coordinates of all concepts in the CP """
+        return self.cp.get_all_concept_coordinates()
+    
     def get_n_concepts(self):
         """ returns the number of concepts currently in CP """
         return self.cp.get_n_concepts()
@@ -249,6 +253,10 @@ class OmniAgent():
         """
         pass
     
+    
+    def get_all_concept_coordinates(self):
+        """ returns the coordinates of all concepts in the CP """
+        return self.cp.get_all_concept_coordinates()
     
     def get_n_concepts(self):
         """ returns the number of concepts currently in CP """

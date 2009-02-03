@@ -142,7 +142,6 @@ class CP():
             concept = [ [d1, value], [d2, value], ..., [dn, value] ]
         """
         concept_new = copy.deepcopy(concept)         # make a copy of concept, so concept itself is not modified
-        del concept
         for count, i in enumerate(concept_new):      # add SD
             concept_new[count].append(0.0)
         self.concepts.append([tag, concept_new])

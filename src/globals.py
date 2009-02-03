@@ -13,3 +13,4 @@ guessing_succes = 0.0       # agents guessing success ratio
 loop_running = False
 current_loop = 0            # current loop of the program
 stats = []                  # statistics
+distance = 0.0              # overall distance between concepts of 2 agents

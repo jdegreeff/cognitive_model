@@ -145,7 +145,8 @@ def calculate_distance_general(point1, point2, list_salience = "empty" ):
         only matching dimensions are taken into account
         point1 used as reference, list of salience should be according to 
         dimensions of point1, if non given, default salience of 1 is used
-        point = [ [d1, value], [d2, value], ..., [dn, value] ]
+        point1 = [ [d1, value], [d2, value], ..., [dn, value] ]
+        point2 = [ [d1, value, SD], [d2, value, SD], ..., [dn, value, SD] ]
         list_salience = [s1, s2,...,sn]
     """
     distance = 0
@@ -154,20 +155,16 @@ def calculate_distance_general(point1, point2, list_salience = "empty" ):
     for count, i in enumerate(point1):
         for j in point2:
             if i[0] == j[0]:
-                distance += ( list_salience[count] * ((i[1] - j[1])**2) )
+                if cfg.prototype_distance:  # if the SD of prototypes is used 
+                    if len(j) == 2:         # make sure there is an SD value
+                        j.append(0.0)
+                    if i[1] <= j[1]:
+                        distance += ( list_salience[count] * ((i[1] - (j[1] - j[2]))**2) )
+                    else:
+                        distance += ( list_salience[count] * ((i[1] - (j[1] + j[2]))**2) )
+                else:
+                    distance += ( list_salience[count] * ((i[1] - j[1])**2) )
     return sqrt(distance)
-    
-    
-#def calculate_stats(stats):
-#    """ calculates the average number of concepts learned for a given number of training loops
-#        stats = [ data_loop1, data_loop2, ...data_loopn ]
-#        data_loop = [ n_game, n_concepts, guessing_succes ] 
-#    """
-#    for count, i in enumerate(stats):
-#        for count2, j in enumerate(i):
-#            stats[count][count2] = j/len(stats)
-#    print "done"
-#    gl.overall_stats = stats
         
         
         

@@ -13,6 +13,7 @@ from __future__ import division
 from PyQt4 import QtGui, QtCore
 import random as ran
 from threading import *
+from math import *
 import sys
 import aux_functions as aux
 import globals as gl
@@ -66,11 +67,12 @@ class MainThread(Thread):
                     self.window.update()
             gl.current_loop += 1
             print "loop " + str(gl.current_loop)
-            reset()
-            
+            gl.distance += measure_agents_concepts_dist(gl.agent1, gl.agent2)
+            reset()  
         gl.loop_running = False 
         
         # calculate statistics
+        gl.distance = gl.distance/cfg.n_loops
         count = 0           
         for i in gl.stats:
             count2 = 0
@@ -81,13 +83,15 @@ class MainThread(Thread):
         name = "_overall_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
         io.write_output(name, gl.stats)
         print "done"
+        print gl.distance
+        
 
 
     
 def init():
     """ initialises various parameters and values 
     """
-    gl.agent1 = agent.OmniAgent("om1")
+    gl.agent1 = agent.BasicAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
     gl.data_tony = io.open_datafile("natural", "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
@@ -96,7 +100,7 @@ def init():
         gl.stats.append([0.0] * 2)
         counter += 1
 
-    
+
     
 def reset():
     """ resets all global variables
@@ -177,7 +181,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     
         
         
-def calculate_agents_lexicon():
+def measure_agents_lexicon():
     """ calculates the percentage of agents lexicon which matches the lexicon of other agents
         TODO: modify this function so that it counts only proper labels,
         right now it is taking all labels into account, also the ones which have a very low connection
@@ -200,6 +204,30 @@ def calculate_agents_lexicon():
         matching -= (uniques/length/len(gl.agent_set))
     return int(matching * 100)
             
+        
+        
+def measure_agents_concepts_dist(agent1, agent2):
+    """ measures the distance between the concepts of two given agents
+        for each concept of one agent, the closest concept of the second agent is found
+        and the difference is added to the overall distance, and this is done vise versa
+    """
+    agent1_concepts = agent1.get_all_concept_coordinates()
+    agent2_concepts = agent2.get_all_concept_coordinates()
+    concepts_distance = 0.0
+    for i in agent1_concepts:
+        distances = []
+        for j in agent2_concepts:
+            distance = aux.calculate_distance_general(i, j)
+            distances.append(distance)
+        concepts_distance += min(distances)
+    for i in agent2_concepts:
+        distances = []
+        for j in agent1_concepts:
+            distance = aux.calculate_distance_general(i, j)
+            distances.append(distance)
+        concepts_distance += min(distances)
+    return sqrt(concepts_distance)
+        
         
 
 # main start
