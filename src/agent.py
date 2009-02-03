@@ -158,14 +158,19 @@ class BasicAgent():
         return self.cp.get_concepts_tags()[aux.posMin(distances)]
         
         
+    def increase_strength(self, label, tag, amount = None):
+        """ increases the association strength between the given label and tag with the given amount """
+        if amount == None:
+            amount = cfg.label_learning_rate
+        self.lex.increase_strength(label, tag, amount)
         
-    def increase_strength(self, label, tag):
-        """ increases the association strength between the given label and tag """
-        self.lex.increase_strength(label, tag)
         
-    def decrease_strength(self, label, tag):
-        """ decreases the association strength between the given label and tag """
-        self.lex.decrease_strength(label, tag)
+    def decrease_strength(self, label, tag, amount = None):
+        """ decreases the association strength between the given label and tag with the given amount"""
+        if amount == None:
+            amount = cfg.label_learning_rate
+        self.lex.decrease_strength(label, tag, amount)
+        
         
     def get_name(self):
         return self.agent_name

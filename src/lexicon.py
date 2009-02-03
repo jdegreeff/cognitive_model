@@ -79,29 +79,29 @@ class Lexicon():
             self.tags.append(tag)
             
             
-    def increase_strength(self, label, tag):
+    def increase_strength(self, label, tag, amount):
         """ increases the association strength between the given label and tag
             if lateral_inhibition is used, other associations are weakened
         """
         label_index = self.labels.index(label)
         tag_index = self.tags.index(tag)
-        if self.matrix[label_index][tag_index] <= 0.99:
-            self.matrix[label_index][tag_index] += cfg.label_learning_rate
+        if self.matrix[label_index][tag_index] <= (1 - amount):
+            self.matrix[label_index][tag_index] += amount
         #decrease competing connections if lateral_inhibition is used
         if cfg.lateral_inhibition:
             for count2, i in enumerate(self.matrix):
                 if count2 != label_index:
                     for count, j in enumerate(i):
                         if count == tag_index:
-                            if self.matrix[count2][count] >= 0.01:
-                                self.matrix[count2][count] -= cfg.label_learning_rate
+                            if self.matrix[count2][count] >= (0 + amount):
+                                self.matrix[count2][count] -= amount
             for count, i in enumerate(self.matrix[label_index]):
                 if count != tag_index:
-                    if self.matrix[label_index][count] >= 0.01:
-                        self.matrix[label_index][count] -= cfg.label_learning_rate
+                    if self.matrix[label_index][count] >= (0 + amount):
+                        self.matrix[label_index][count] -= amount
         
         
-    def decrease_strength(self, label, tag):
+    def decrease_strength(self, label, tag, amount):
         """ decreases the association strength between the given label and tag
         """
         try:
@@ -109,8 +109,8 @@ class Lexicon():
         except ValueError:
             print "agent.lex.decrease_strength Error"
         tag_index = self.tags.index(tag)
-        if self.matrix[label_index][tag_index] >= 0.01:
-            self.matrix[label_index][tag_index] -= cfg.label_learning_rate
+        if self.matrix[label_index][tag_index] >= (0 + amount):
+            self.matrix[label_index][tag_index] -= amount
             
             
     def get_tag(self, label):

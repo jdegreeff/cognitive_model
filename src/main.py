@@ -70,33 +70,34 @@ class MainThread(Thread):
                     self.window.update()
             print "loop " + str(gl.current_loop)
             gl.distance += measure_agents_concepts_dist(gl.agent1, gl.agent2)
-            gl.correctness += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
+            gl.correctness += measure_agent_knowledge(gl.agent1, gl.agent2, 1000)
             query_knowledge(gl.agent1, gl.agent2)
             if (gl.current_loop < cfg.n_loops-1):
                 reset()  
             gl.current_loop += 1
+            
         gl.loop_running = False 
-        
-        # calculate statistics
-        gl.distance = gl.distance/cfg.n_loops
-        gl.correctness = gl.correctness/cfg.n_loops
-        count = 0           
-        for i in gl.stats:
-            count2 = 0
-            for j in i:
-                gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
-                count2 += 1
-            count += 1
-        name = "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
-        io.write_output(name, gl.stats)
+        calculate_statistics()
         print "done"
-        
-        # tests
         print gl.distance
         print gl.correctness
         
 
 
+def calculate_statistics():
+    gl.distance = gl.distance/cfg.n_loops
+    gl.correctness = gl.correctness/cfg.n_loops
+    count = 0           
+    for i in gl.stats:
+        count2 = 0
+        for j in i:
+            gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
+            count2 += 1
+        count += 1
+    name = "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
+    io.write_output(name, gl.stats)
+    
+    
     
 def init():
     """ initialises various parameters and values 
@@ -109,6 +110,9 @@ def init():
     while counter < cfg.n_training_datasets:
         gl.stats.append([0.0] * 2)
         counter += 1
+#        
+#    print measure_agents_concepts_dist(gl.agent1, gl.agent2)
+#    print measure_agent_knowledge(gl.agent1, gl.agent2, 1000)
 
 
     
@@ -163,6 +167,13 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             agent1.increase_strength(a1_topic_label, a1_disc_result)
             agent2.increase_strength(a1_topic_label, a2_guessing_game_answer[1])
             agent2.add_exemplar(context[topic_index], a2_guessing_game_answer[1]) # shift cat towards topic
+            if cfg.contrastive_learning:
+                count = 0
+                for i in context:
+                    if count is not topic_index:
+                        a2_matching_concept = agent2.get_matching_concept(context[count])
+                        agent2.decrease_strength(a1_topic_label, a2_matching_concept)
+                    count += 1
         # if agent2 does not know the communicated label
         elif a2_guessing_game_answer == "label_unknown":
             guessing_game_result = 0
@@ -199,9 +210,9 @@ def query_knowledge(agent1, agent2):
     if a2_label_concept:
         a1_answer = agent1.answer_query(a2_label_concept)
         if a1_answer:
-            agent2.increase_strength(a2_label_concept[0], a2_label_concept[1][0])
+            agent2.increase_strength(a2_label_concept[0], a2_label_concept[1][0], 0.1)
         else:
-            agent2.decrease_strength(a2_label_concept[0], a2_label_concept[1][0])
+            agent2.decrease_strength(a2_label_concept[0], a2_label_concept[1][0], 0.1)
 
 
 
@@ -209,7 +220,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     """ teacher (agent1) and learner (agent2) are given a random test concept
         teacher gives the label and learner has to label it as well
         if the labels are the same, learner succeeds the test, of not, learner fails
-        measurement is repeated for n_tests times, return is % success
+        measurement is repeated for n_tests times, return is % of success
     """
     count = 0
     correctness = 0.0
@@ -220,8 +231,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
         if a1_label == a2_label:
             correctness += 1
         count += 1
-    correcness = (correctness/count)
-    return (correctness/100)
+    return correctness/count
     
 
         
