@@ -79,6 +79,21 @@ class CP():
             concepts_tags.append(i[0])
         return concepts_tags
     
+    
+    def get_concept_highSD(self):
+        """ returns the tag of the concept with the highest SD
+        """
+        concept = None
+        sd = 0.0
+        for i in self.concepts:
+            sd_tot = 0.0
+            for j in i[1]:
+                sd_tot += j[2]
+            if sd_tot > sd:
+                sd = sd_tot
+                concept = i
+        return concept
+            
 
     def add_exemplar(self, exemplar, tag):
         """ adds an exemplar of a specific concept to CP 
@@ -88,7 +103,6 @@ class CP():
             tag = "string"
         """
         exemplar_copy = copy.deepcopy(exemplar)    # make a copy
-        del exemplar
         self.prototype_data.append([tag, copy.deepcopy(exemplar_copy)])        # add to data
         new = True
         for i in self.concepts:     # check for existing concept

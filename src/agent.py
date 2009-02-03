@@ -21,11 +21,11 @@ class BasicAgent():
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
-        self.n_succes_dg = 0                        # number of successful discrimination games
-        self.discrimination_succes = 0.0            # agents discrimination success ratio
+        self.n_success_dg = 0                        # number of successful discrimination games
+        self.discrimination_success = 0.0            # agents discrimination success ratio
         self.n_guessing_games = 0                   # number of guessing games played by the agent
-        self.n_succes_gg = 0                        # number of successful guessing games
-        self.guessing_succes = 0.0                  # agents guessing success ratio
+        self.n_success_gg = 0                        # number of successful guessing games
+        self.guessing_success = 0.0                  # agents guessing success ratio
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
         
         
@@ -74,11 +74,11 @@ class BasicAgent():
                 best_matching_concept = self.cp.get_concepts_tags()[aux.posMin(distances)]
                 best_matching_concepts.append(best_matching_concept)
             if best_matching_concepts.count(best_matching_concepts[topic_index]) == 1:
-                self.n_succes_dg += 1.0
+                self.n_success_dg += 1.0
                 answer = best_matching_concepts[topic_index]
             else:
                 # if agent discrimination success is below threshold a new concept is created
-                if self.discrimination_succes < cfg.adapt_threshold:
+                if self.discrimination_success < cfg.adapt_threshold:
                     tag = aux.generateRandomTag(4)
                     #self.add_concept(context_new[topic_index], tag)
                     self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
@@ -97,8 +97,9 @@ class BasicAgent():
                     
         # calculate statistics
         self.n_discrimination_games += 1.0
-        self.discrimination_succes = self.n_succes_dg/self.n_discrimination_games
+        self.discrimination_success = self.n_success_dg/self.n_discrimination_games
         return answer
+        
         
         
     def answer_gg(self, label, context):
@@ -117,6 +118,47 @@ class BasicAgent():
             return [aux.posMin(context_distances), tag]
         
         
+        
+    def get_unsure_concept(self):
+        """ agents finds the most unsure concept (i.e. the concept with the highest SD)
+            and returns this concept with the associated label, to be queried with the teacher
+            if teachers answers positive, tag-label association can be strengthened, otherwise weakened
+        """
+        concept = self.cp.get_concept_highSD()
+        if concept == None:
+            return concept
+        else:
+            label = self.lex.get_label(concept[0])
+            return [label, concept]        
+        
+        
+
+    def answer_query(self, label_concept):
+        """ incoming concept = ["label", concept]
+            agent checks if the label and concept are associated in agent's own lexicon
+            if so, answer is True, otherwise False
+        """
+        coors = label_concept[1][1]
+        tag = self.get_matching_concept(coors)
+        label = self.get_label(tag)
+        if label == label_concept[0]:
+            return True
+        else:
+            return False
+        
+    
+    
+    def get_matching_concept(self, coors):
+        """ returns the closest matching concept tag, based on incoming coordinates
+        """
+        distances = []
+        for i in self.cp.concepts:
+            distance = self.cp.calculate_distance(coors, i[1])
+            distances.append(distance)
+        return self.cp.get_concepts_tags()[aux.posMin(distances)]
+        
+        
+        
     def increase_strength(self, label, tag):
         """ increases the association strength between the given label and tag """
         self.lex.increase_strength(label, tag)
@@ -129,7 +171,7 @@ class BasicAgent():
         return self.agent_name
     
     def get_cp(self):
-        """ Returns the whole conceptual space of the agent """
+        """ returns the whole conceptual space of the agent """
         return self.cp
     
     def get_concepts(self):
@@ -173,11 +215,11 @@ class OmniAgent():
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.load_knowledge("rgb")                  # loads existing body of conceptual knowledge into cp and lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
-        self.n_succes_dg = 0                        # number of successful discrimination games
-        self.discrimination_succes = 0.0            # agents discrimination success ratio
+        self.n_success_dg = 0                        # number of successful discrimination games
+        self.discrimination_success = 0.0            # agents discrimination success ratio
         self.n_guessing_games = 0                   # number of guessing games played by the agent
-        self.n_succes_gg = 0                        # number of successful guessing games
-        self.guessing_succes = 0.0                  # agents guessing success ratio
+        self.n_success_gg = 0                        # number of successful guessing games
+        self.guessing_success = 0.0                  # agents guessing success ratio
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (
         
         
@@ -216,15 +258,42 @@ class OmniAgent():
             best_matching_concept = self.cp.get_concepts_tags()[aux.posMin(distances)]
             best_matching_concepts.append(best_matching_concept)
         if best_matching_concepts.count(best_matching_concepts[topic_index]) == 1:
-            self.n_succes_dg += 1.0
+            self.n_success_dg += 1.0
             answer = best_matching_concepts[topic_index]
         else:
             answer = "concept_shifted" # method to cause the guessing game to fail and do nothing
  
         # calculate statistics
         self.n_discrimination_games += 1.0
-        self.discrimination_succes = self.n_succes_dg/self.n_discrimination_games
+        self.discrimination_success = self.n_success_dg/self.n_discrimination_games
         return answer
+    
+    
+    def answer_query(self, label_concept):
+        """ incoming concept = ["label", concept]
+            agent checks if the label and concept are associated in agent's own lexicon
+            if so, answer is True, otherwise False
+        """
+        coors = label_concept[1][1]
+        distances = []
+        for i in self.cp.concepts:
+            distance = self.cp.calculate_distance(coors, i[1])
+            distances.append(distance)
+        label = self.get_label(self.cp.get_concepts_tags()[aux.posMin(distances)])
+        if label == label_concept[0]:
+            return True
+        else:
+            return False
+        
+        
+    def get_matching_concept(self, coors):
+        """ returns the closest matching concept tag, based on incoming coordinates
+        """
+        distances = []
+        for i in self.cp.concepts:
+            distance = self.cp.calculate_distance(coors, i[1])
+            distances.append(distance)
+        return self.cp.get_concepts_tags()[aux.posMin(distances)]
             
         
     def add_concept(self, concept, tag):
