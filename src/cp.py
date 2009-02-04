@@ -27,6 +27,8 @@ class CP():
             2) through direct addition of a concept. Coordinates of exemplar data
                are used for this, no prototype formation is used
         Furthermore, concept coordinates may be shifted through language games
+        basic format of a concept 
+        = [ "tag", [ [ "d1", value], [ "d2", value], [ "d3", value] ], [concept_use, concept_success] ]
     """
     
     def __init__(self, name):
@@ -93,7 +95,37 @@ class CP():
                 sd = sd_tot
                 concept = i
         return concept
+    
+    
+    def get_unsuccessful_concept(self):
+        """ returns the tag of the concept which is the must unsuccessful in language games
+        """
+        concept = None
+        success = 1.0
+        for i in self.concepts:
+            if len(i) == 3:
+                con_suc = i[2][1]/i[2][0]
+                if con_suc < success:
+                    success = con_suc
+                    concept = i
+        return concept
             
+            
+    def concept_use(self, tag, result):
+        """ measures the success of the concept in the guessing game
+            if concepts do not have a measurement structure, [0,0] is added,
+            where [0, stands for usage and 0] for success
+        """
+        count = 0
+        for i in self.concepts:
+            if i[0] == tag:
+                if len(i) == 2:
+                    self.concepts[count].append([0,0])
+                self.concepts[count][2][0] += 1
+                self.concepts[count][2][1] += result
+            count += 1
+                
+                            
 
     def add_exemplar(self, exemplar, tag):
         """ adds an exemplar of a specific concept to CP 
@@ -118,7 +150,10 @@ class CP():
                     concept = self.concepts[count]
                     self.concepts.pop(count)
                     break
-            concept_new = [concept[0],[]]
+            if len(concept) == 2:
+                concept_new = [concept[0],[]]
+            else:
+                concept_new = [concept[0],[],concept[2]]
             for i in exemplar_copy:
                 for j in concept[1]:
                     if i[0] == j[0]:        # if dimensions match calculate difference

@@ -119,12 +119,21 @@ class BasicAgent():
         
         
         
+    def concept_use(self, tag, result = 0):
+        """ measures the success of the concept in the guessing game
+        """
+        self.cp.concept_use(tag, result)
+        
+        
+        
     def get_unsure_concept(self):
-        """ agents finds the most unsure concept (i.e. the concept with the highest SD)
+        """ agents finds the most unsure concept 
+            (i.e. the concept with the highest SD, or the most unsuccessful concept in language games)
             and returns this concept with the associated label, to be queried with the teacher
             if teachers answers positive, tag-label association can be strengthened, otherwise weakened
         """
-        concept = self.cp.get_concept_highSD()
+        #concept = self.cp.get_concept_highSD()
+        concept = self.cp.get_unsuccessful_concept()
         if concept == None:
             return concept
         else:
@@ -159,6 +168,7 @@ class BasicAgent():
             return self.cp.get_concepts_tags()[aux.posMin(distances)]
         else:
             return "----"
+        
         
         
     def increase_strength(self, label, tag, amount = None):

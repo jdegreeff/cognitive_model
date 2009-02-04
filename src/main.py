@@ -59,14 +59,15 @@ class MainThread(Thread):
         while gl.current_loop < cfg.n_loops:
             count = 0
             for i in gl.training_data:
-                guessing_game(gl.agent1, gl.agent2, i)
-                #direct_instruction(gl.agent1, gl.agent2)
+                #guessing_game(gl.agent1, gl.agent2, i)
+                direct_instruction(gl.agent1, gl.agent2)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
-                gl.stats[count][0] += float(gl.agent2.get_n_concepts())
-                gl.stats[count][1] += measure_agents_concepts_dist(gl.agent1, gl.agent2)
-                gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
+                if cfg.calc_statistics:
+                    gl.stats[count][0] += float(gl.agent2.get_n_concepts())
+                    gl.stats[count][1] += measure_agents_concepts_dist(gl.agent1, gl.agent2)
+                    gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
                 count += 1
                 if self.window is not None:
                     self.window.update()
@@ -75,12 +76,16 @@ class MainThread(Thread):
                 reset()  
             gl.current_loop += 1
         gl.loop_running = False 
-        calculate_statistics()
+        if cfg.calc_statistics:
+            calculate_statistics()
         print "done"
         
 
 
 def calculate_statistics():
+    """ calculates statistics and writes output file in the source directory,
+        typically called after all loops are finished
+    """
     count = 0           
     for i in gl.stats:
         count2 = 0
@@ -88,8 +93,8 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
             count2 += 1
         count += 1
-    name = "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_al" + str(cfg.active_learning) \
-            + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
+    name = "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
+            + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
     
@@ -99,7 +104,7 @@ def init():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.data_tony = io.open_datafile("natural", "rgb")
+    gl.data_tony = io.open_datafile(cfg.dataset, "rgb")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
@@ -132,14 +137,14 @@ def guessing_game(agent1, agent2, context, topic_index = False):
         context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
     """
     if not topic_index:
-        if cfg.active_learning:
+        if cfg.active_learning and (agent2.get_n_concepts() > 0):
             a2_context_distance = []
+            a2_known_concepts = agent2.cp.get_all_concept_coordinates()
             for i in context:
-                a2_known_concepts = agent2.cp.get_all_concept_coordinates()
-                distance = 0
+                distances = []
                 for j in a2_known_concepts:
-                    distance += agent2.cp.calculate_distance(i, j)
-                a2_context_distance.append(distance)
+                    distances.append(agent2.cp.calculate_distance(i, j))
+                a2_context_distance.append(min(distances))
             topic_index = aux.posMax(a2_context_distance)
         else:
             topic_index = ran.randint(0, len(context)-1)
@@ -162,6 +167,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             agent1.increase_strength(a1_topic_label, a1_disc_result)
             agent2.increase_strength(a1_topic_label, a2_guessing_game_answer[1])
             agent2.add_exemplar(context[topic_index], a2_guessing_game_answer[1]) # shift cat towards topic
+            agent2.concept_use(a2_guessing_game_answer[1], 1) # measure concept use
             if cfg.contrastive_learning:
                 count = 0
                 for i in context:
@@ -180,6 +186,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             guessing_game_result = 0
             agent1.decrease_strength(a1_topic_label, a1_disc_result)
             agent2.decrease_strength(a1_topic_label, a2_guessing_game_answer[1])
+            agent2.concept_use(a2_guessing_game_answer[1]) # measure concept use
     
     # statistics
     gl.n_guessing_games += 1
@@ -205,9 +212,13 @@ def direct_instruction(agent1, agent2):
     """
     stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
     a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
-    a2_tag = agent2.discrimination_game([stimulus], 0)
-    agent2.add_exemplar(stimulus, a2_tag)
-    agent2.add_label(a1_label, a2_tag)
+    a2_tag = agent2.get_tag(a1_label)
+    if a2_tag == "label_unknown":
+        tag = aux.generateRandomTag(4)
+        agent2.add_exemplar(stimulus, tag)
+        agent2.add_label(a1_label, tag)
+    else:
+        agent2.add_exemplar(stimulus, a2_tag)
     
     
     
