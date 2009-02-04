@@ -59,8 +59,8 @@ class MainThread(Thread):
         while gl.current_loop < cfg.n_loops:
             count = 0
             for i in gl.training_data:
-                #guessing_game(gl.agent1, gl.agent2, i)
-                direct_instruction(gl.agent1, gl.agent2)
+                guessing_game(gl.agent1, gl.agent2, i)
+                #direct_instruction(gl.agent1, gl.agent2)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
