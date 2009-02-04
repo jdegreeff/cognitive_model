@@ -155,7 +155,10 @@ class BasicAgent():
         for i in self.cp.concepts:
             distance = self.cp.calculate_distance(coors, i[1])
             distances.append(distance)
-        return self.cp.get_concepts_tags()[aux.posMin(distances)]
+        if distances:
+            return self.cp.get_concepts_tags()[aux.posMin(distances)]
+        else:
+            return "----"
         
         
     def increase_strength(self, label, tag, amount = None):
@@ -298,7 +301,10 @@ class OmniAgent():
         for i in self.cp.concepts:
             distance = self.cp.calculate_distance(coors, i[1])
             distances.append(distance)
-        return self.cp.get_concepts_tags()[aux.posMin(distances)]
+        if distances:
+            return self.cp.get_concepts_tags()[aux.posMin(distances)]
+        else:
+            return "----"
             
         
     def add_concept(self, concept, tag):

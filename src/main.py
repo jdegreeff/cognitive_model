@@ -60,33 +60,27 @@ class MainThread(Thread):
             count = 0
             for i in gl.training_data:
                 guessing_game(gl.agent1, gl.agent2, i)
+                #direct_instruction(gl.agent1, gl.agent2)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
                 gl.stats[count][0] += float(gl.agent2.get_n_concepts())
-                gl.stats[count][1] += gl.guessing_success
+                gl.stats[count][1] += measure_agents_concepts_dist(gl.agent1, gl.agent2)
+                gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
                 count += 1
                 if self.window is not None:
                     self.window.update()
             print "loop " + str(gl.current_loop)
-            gl.distance += measure_agents_concepts_dist(gl.agent1, gl.agent2)
-            gl.correctness += measure_agent_knowledge(gl.agent1, gl.agent2, 1000)
-            query_knowledge(gl.agent1, gl.agent2)
             if (gl.current_loop < cfg.n_loops-1):
                 reset()  
             gl.current_loop += 1
-            
         gl.loop_running = False 
         calculate_statistics()
         print "done"
-        print gl.distance
-        print gl.correctness
         
 
 
 def calculate_statistics():
-    gl.distance = gl.distance/cfg.n_loops
-    gl.correctness = gl.correctness/cfg.n_loops
     count = 0           
     for i in gl.stats:
         count2 = 0
@@ -94,7 +88,8 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
             count2 += 1
         count += 1
-    name = "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_ac" + str(cfg.active_learning)
+    name = "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) + "_al" + str(cfg.active_learning) \
+            + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
     
@@ -108,9 +103,9 @@ def init():
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
-        gl.stats.append([0.0] * 2)
+        gl.stats.append([0.0] * 3)
         counter += 1
-#        
+        
 #    print measure_agents_concepts_dist(gl.agent1, gl.agent2)
 #    print measure_agent_knowledge(gl.agent1, gl.agent2, 1000)
 
@@ -202,6 +197,20 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     
     
     
+def direct_instruction(agent1, agent2):
+    """ direct instruction involving a teacher (agent1) with a body of knowledge and a learner (agent2)
+        a random stimulus is picked, and presented to both teacher and learner. The teacher 
+        expresses its associated label for the stimulus and the learner stores both label and
+        stimulus into its knowledge body
+    """
+    stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+    a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
+    a2_tag = agent2.discrimination_game([stimulus], 0)
+    agent2.add_exemplar(stimulus, a2_tag)
+    agent2.add_label(a1_label, a2_tag)
+    
+    
+    
 def query_knowledge(agent1, agent2):
     """ agent2 queries knowledge with agent1, 
         based on the answer, agent2 updates it's association matrix
@@ -222,6 +231,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
         if the labels are the same, learner succeeds the test, of not, learner fails
         measurement is repeated for n_tests times, return is % of success
     """
+    # TODO: check if generating of test concepts is done properly (black, grey, white seem to be the only colour right now)
     count = 0
     correctness = 0.0
     while count < n_tests:
@@ -274,13 +284,15 @@ def measure_agents_concepts_dist(agent1, agent2):
         for j in agent2_concepts:
             distance = aux.calculate_distance_general(i, j)
             distances.append(distance)
-        concepts_distance += min(distances)
+        if distances:
+            concepts_distance += min(distances)
     for i in agent2_concepts:
         distances = []
         for j in agent1_concepts:
             distance = aux.calculate_distance_general(i, j)
             distances.append(distance)
-        concepts_distance += min(distances)
+        if distances:
+            concepts_distance += min(distances)
     return sqrt(concepts_distance)
         
         
