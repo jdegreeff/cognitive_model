@@ -59,8 +59,10 @@ class MainThread(Thread):
         while gl.current_loop < cfg.n_loops:
             count = 0
             for i in gl.training_data:
-                #guessing_game(gl.agent1, gl.agent2, i)
-                direct_instruction(gl.agent1, gl.agent2)
+                if cfg.direct_instruction:
+                    direct_instruction(gl.agent1, gl.agent2)
+                else:
+                    guessing_game(gl.agent1, gl.agent2, i)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -93,7 +95,7 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
             count2 += 1
         count += 1
-    name = "_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -110,9 +112,6 @@ def init():
     while counter < cfg.n_training_datasets:
         gl.stats.append([0.0] * 3)
         counter += 1
-        
-#    print measure_agents_concepts_dist(gl.agent1, gl.agent2)
-#    print measure_agent_knowledge(gl.agent1, gl.agent2, 1000)
 
 
     
@@ -122,9 +121,9 @@ def reset():
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
-    gl.n_guessing_games = 0         # number of guessing games played
-    gl.n_success_gg = 0             # number of successful guessing games
-    gl.guessing_success = 0.0       # agents guessing success ratio
+    gl.n_guessing_games = 0
+    gl.n_success_gg = 0
+    gl.guessing_success = 0.0
     gl.loop_running = False
 
 

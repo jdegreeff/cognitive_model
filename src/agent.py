@@ -137,7 +137,7 @@ class BasicAgent():
         if concept == None:
             return concept
         else:
-            label = self.lex.get_label(concept[0])
+            label = self.lex.get_label(concept[0], None)
             return [label, concept]        
         
         
