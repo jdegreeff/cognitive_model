@@ -59,8 +59,8 @@ class MainThread(Thread):
         while gl.current_loop < cfg.n_loops:
             count = 0
             for i in gl.training_data:
-                guessing_game(gl.agent1, gl.agent2, i)
-                #direct_instruction(gl.agent1, gl.agent2)
+                #guessing_game(gl.agent1, gl.agent2, i)
+                direct_instruction(gl.agent1, gl.agent2)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -93,7 +93,7 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
             count2 += 1
         count += 1
-    name = "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
+    name = "_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -104,7 +104,7 @@ def init():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.data_tony = io.open_datafile(cfg.dataset, "rgb")
+    gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
@@ -211,7 +211,14 @@ def direct_instruction(agent1, agent2):
         stimulus into its knowledge body
     """
     stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
-    a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
+    if cfg.teaching_inaccuracy:
+        int = ran.randint(1,100)
+        if int > (1-cfg.teaching_inaccuracy) * 100:
+            a1_label = agent1.get_label(agent1.get_matching_concept(stimulus), 1)
+        else:
+            a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
+    else:
+        a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
     a2_tag = agent2.get_tag(a1_label)
     if a2_tag == "label_unknown":
         tag = aux.generateRandomTag(4)
@@ -242,7 +249,6 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
         if the labels are the same, learner succeeds the test, of not, learner fails
         measurement is repeated for n_tests times, return is % of success
     """
-    # TODO: check if generating of test concepts is done properly (black, grey, white seem to be the only colour right now)
     count = 0
     correctness = 0.0
     while count < n_tests:

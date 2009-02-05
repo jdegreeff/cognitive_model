@@ -46,6 +46,28 @@ def posMax(list):
     return index
 
 
+def posSemiMax(list):
+    """ returns the index of the semi-highest value of a given list
+        if multiple values exist, the first is returned
+    """
+    m = list[0]
+    index1 = 0
+    for i, x in enumerate(list):
+        if x > m:
+            m = x
+            index1 = i
+    list.pop(index1)
+    m = list[0]
+    index2 = 0
+    for i, x in enumerate(list):
+        if x > m:
+            m = x
+            index2 = i
+    if index1 <= index2:
+        index2 += 1
+    return index2
+
+
 def posMin(list):
     """ returns the index of the lowest value of a given list
         if multiple highest values exist, the first is returned
@@ -63,6 +85,8 @@ def generateTrainingData(space, n_sets, context_size, type = 0):
     training_dataset = []
     if space == "rgb":
         training_dataset = generateRGBTrainingDataUniform(n_sets, context_size, cfg.sample_minimum_distance)
+    if space == "lab":
+        training_dataset = generateLABTrainingDataUniform(n_sets, context_size, cfg.sample_minimum_distance)
     if space == "4df":
         training_dataset = generate4DFigureTrainingData(n_sets, context_size, type)
     return training_dataset
@@ -71,7 +95,7 @@ def generateTrainingData(space, n_sets, context_size, type = 0):
 def generateRGBTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
     """ generates n_sets training data sets: context of n_stimuli
         space: RGB
-        values are drawn randomly from uniform distribution,
+        values are drawn randomly from dataset
         minimum distance between values is taken into account
     """
     training_data = []
@@ -85,6 +109,39 @@ def generateRGBTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
                 #stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
                 data = gl.data_tony[ran.randint(0, 24999)]
                 stimulus = [ ["r", data[0]*255], ["g", data[1]*255], ["b", data[2]*255] ] 
+                if set == []:
+                    check = False
+                else:
+                    for i in set:
+                        distance = calculate_distance_general(i, stimulus)
+                        if distance > sample_minimum_distance:
+                            check = False
+                        else:
+                            check = True
+            set.append(stimulus)
+            count2 += 1
+        training_data.append(set)
+        count += 1
+    return training_data
+
+
+def generateLABTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
+    """ generates n_sets training data sets: context of n_stimuli
+        space: LAB
+        values are drawn randomly from dataset
+        minimum distance between values is taken into account
+    """
+    training_data = []
+    count = 0
+    while count < n_sets:
+        count2 = 0
+        set = []
+        while count2 < n_stimuli:
+            check = True
+            while check:
+                #stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
+                data = gl.data_tony[ran.randint(0, 24999)]
+                stimulus = [ ["l", data[0]], ["a", data[1]], ["b", data[2]] ] 
                 if set == []:
                     check = False
                 else:

@@ -4,6 +4,8 @@ import Image
 
 # parameters
 e = 0.008856
+l_range = [0, 100]
+ab_range = [-128, 127]
 
 # takes an RGB image as argument and returns XYZ image
 def rgb2xyz(rgb_image):

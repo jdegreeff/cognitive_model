@@ -206,8 +206,8 @@ class BasicAgent():
     def get_labels(self):
         return self.lex.get_labels()
     
-    def get_label(self, tag):
-        return self.lex.get_label(tag)
+    def get_label(self, tag, inaccuracy = None):
+        return self.lex.get_label(tag, inaccuracy)
     
     def get_tags(self):
         return self.lex.get_tags()
@@ -231,7 +231,7 @@ class OmniAgent():
         self.agent_type = "omni"                    # agent type: "basic" or "omni"
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
-        self.load_knowledge("rgb")                  # loads existing body of conceptual knowledge into cp and lexicon
+        self.load_knowledge(cfg.space)              # loads existing body of conceptual knowledge into cp and lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
         self.n_success_dg = 0                        # number of successful discrimination games
         self.discrimination_success = 0.0            # agents discrimination success ratio
@@ -248,7 +248,9 @@ class OmniAgent():
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
         if domain == "rgb":
-            knowledge = data.basic_colour_set
+            knowledge = data.basic_colour_rgb
+        if domain == "lab":
+            knowledge = data.basic_colour_lab
         for i in knowledge:
             tag = aux.generateRandomTag(4)
             self.add_concept(i[1], tag)
@@ -293,11 +295,8 @@ class OmniAgent():
             if so, answer is True, otherwise False
         """
         coors = label_concept[1][1]
-        distances = []
-        for i in self.cp.concepts:
-            distance = self.cp.calculate_distance(coors, i[1])
-            distances.append(distance)
-        label = self.get_label(self.cp.get_concepts_tags()[aux.posMin(distances)])
+        tag = self.get_matching_concept(coors)
+        label = self.get_label(tag)
         if label == label_concept[0]:
             return True
         else:
@@ -358,8 +357,8 @@ class OmniAgent():
     def get_concepts(self):
         return self.cp.get_concepts
     
-    def get_label(self, tag):
-        return self.lex.get_label(tag)
+    def get_label(self, tag, inaccuracy = None):
+        return self.lex.get_label(tag, inaccuracy)
         
             
             

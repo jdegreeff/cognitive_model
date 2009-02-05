@@ -130,7 +130,7 @@ class Lexicon():
             return self.tags[max]
     
     
-    def get_label(self, tag):
+    def get_label(self, tag, inaccuracy):
         """ retrieves the label with the highest association for the given tag 
             if there are more than one labels with the highest association value, 
             the first one will be returned
@@ -148,7 +148,10 @@ class Lexicon():
                 for count, j in enumerate(i):
                     if count == tag_index:
                         value_list.append(j)
-            return self.labels[aux.posMax(value_list)]
+            if inaccuracy:
+                return self.labels[aux.posSemiMax(value_list)]
+            else:
+                return self.labels[aux.posMax(value_list)]
 
         
     def print_matrix(self):
