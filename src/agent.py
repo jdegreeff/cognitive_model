@@ -168,7 +168,7 @@ class BasicAgent():
             return self.cp.get_concepts_tags()[aux.posMin(distances)]
         else:
             return "----"
-        
+        a2_guessing_game_answer[1]
         
         
     def increase_strength(self, label, tag, amount = None):
