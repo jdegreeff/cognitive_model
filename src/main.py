@@ -80,12 +80,14 @@ class MainThread(Thread):
             if (gl.current_loop < cfg.n_loops-1):
                 reset()  
             gl.current_loop += 1
-        gl.loop_running = False 
+        gl.loop_running = False
         if cfg.calc_statistics:
             if cfg.calc_sd:
                 calculate_statistics2()
             else:
                 calculate_statistics()
+                
+
         print "done"
         
 
@@ -114,16 +116,16 @@ def calculate_statistics2():
     for i in gl.stats:
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_loops
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_loops
-        mean = 0
-        for j in gl.stats[count][2]:
-            mean += j
-        mean = mean/cfg.n_loops
-        sd = 0
-        for j in gl.stats[count][2]:
-            sd += ((j-mean)**2)
-        sd = sd/(cfg.n_loops-1)
-        sd = sqrt(sd)
-        gl.stats[count][2] = [mean, sd]
+#        mean = 0
+#        for j in gl.stats[count][2]:
+#            mean += j
+#        mean = mean/cfg.n_loops
+#        sd = 0
+#        for j in gl.stats[count][2]:
+#            sd += ((j-mean)**2)
+#        sd = sd/(cfg.n_loops-1)
+#        sd = sqrt(sd)
+#        gl.stats[count][2] = [mean, sd]
         count += 1
     name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
@@ -285,7 +287,8 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     while count < n_tests:
         test_concept = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
-        a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
+        #a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
+        a2_label = agent2.get_label(agent2.get_random_concept())
         if a1_label == a2_label:
             correctness += 1
         count += 1

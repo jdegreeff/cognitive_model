@@ -1,6 +1,7 @@
 # agent.py
 
 from __future__ import division
+import random as ran
 import cp
 import lexicon
 import aux_functions as aux
@@ -169,6 +170,18 @@ class BasicAgent():
         else:
             return "----"
         a2_guessing_game_answer[1]
+        
+        
+    def get_random_concept(self):
+        """ returns a random concept tag from the agent's CP
+        """
+        if self.cp.concepts:
+            ran_index = ran.randint(0, (self.cp.get_n_concepts()-1))
+            return self.cp.get_concepts_tags()[ran_index]
+        else:
+            return "----"
+
+
         
         
     def increase_strength(self, label, tag, amount = None):
