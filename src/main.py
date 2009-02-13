@@ -287,8 +287,8 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     while count < n_tests:
         test_concept = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
-        #a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
-        a2_label = agent2.get_label(agent2.get_random_concept())
+        a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
+        #a2_label = agent2.get_label(agent2.get_random_concept())
         if a1_label == a2_label:
             correctness += 1
         count += 1
