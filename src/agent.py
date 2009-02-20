@@ -156,7 +156,7 @@ class BasicAgent():
         else:
             return False
         
-    
+        
     
     def get_matching_concept(self, coors):
         """ returns the closest matching concept tag, based on incoming coordinates
@@ -172,6 +172,7 @@ class BasicAgent():
         a2_guessing_game_answer[1]
         
         
+        
     def get_random_concept(self):
         """ returns a random concept tag from the agent's CP
         """
@@ -182,7 +183,6 @@ class BasicAgent():
             return "----"
 
 
-        
         
     def increase_strength(self, label, tag, amount = None):
         """ increases the association strength between the given label and tag with the given amount """
@@ -220,6 +220,9 @@ class BasicAgent():
         return self.lex.get_labels()
     
     def get_label(self, tag, inaccuracy = None):
+        """ returns the label with the highest association for the given tag
+            if inaccuracy == True, the label with the 2nd highest association is returned
+        """
         return self.lex.get_label(tag, inaccuracy)
     
     def get_tags(self):
