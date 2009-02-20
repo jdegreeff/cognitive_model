@@ -56,7 +56,7 @@ class MainThread(Thread):
         
     def run(self):
         gl.loop_running = True
-        while gl.current_loop < cfg.n_loops:
+        while gl.current_loop < cfg.n_replicas:
             count = 0
             for i in gl.training_data:
                 if cfg.direct_instruction:
@@ -76,18 +76,17 @@ class MainThread(Thread):
                 count += 1
                 if self.window is not None:
                     self.window.update()
-            print "loop " + str(gl.current_loop)
-            if (gl.current_loop < cfg.n_loops-1):
+            print "replica " + str(gl.current_loop)
+            if (gl.current_loop < cfg.n_replicas-1):
                 reset()  
             gl.current_loop += 1
         gl.loop_running = False
+        # statistics
         if cfg.calc_statistics:
             if cfg.calc_sd:
                 calculate_statistics2()
             else:
                 calculate_statistics()
-                
-
         print "done"
         
 
@@ -100,10 +99,10 @@ def calculate_statistics():
     for i in gl.stats:
         count2 = 0
         for j in i:
-            gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_loops
+            gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_replicas
             count2 += 1
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -114,20 +113,20 @@ def calculate_statistics2():
     """
     count = 0           
     for i in gl.stats:
-        gl.stats[count][0] = gl.stats[count][0]/cfg.n_loops
-        gl.stats[count][1] = gl.stats[count][1]/cfg.n_loops
+        gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
+        gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
 #        mean = 0
 #        for j in gl.stats[count][2]:
 #            mean += j
-#        mean = mean/cfg.n_loops
+#        mean = mean/cfg.n_replicas
 #        sd = 0
 #        for j in gl.stats[count][2]:
 #            sd += ((j-mean)**2)
-#        sd = sd/(cfg.n_loops-1)
+#        sd = sd/(cfg.n_replicas-1)
 #        sd = sqrt(sd)
 #        gl.stats[count][2] = [mean, sd]
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_loops) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output2(name, gl.stats)
     
@@ -142,7 +141,10 @@ def init():
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
-        gl.stats.append([0.0, 0.0, []])
+        if cfg.calc_sd:
+            gl.stats.append([0.0, 0.0, []])
+        else:
+            gl.stats.append([0.0, 0.0, 0.0])
         counter += 1
 
 

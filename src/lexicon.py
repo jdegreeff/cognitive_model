@@ -134,6 +134,7 @@ class Lexicon():
         """ retrieves the label with the highest association for the given tag 
             if there are more than one labels with the highest association value, 
             the first one will be returned
+            if inaccuracy == True/1, the label with the 2nd highest association is returned
         """
         tag_index = -1
         for count, i in enumerate(self.tags):
