@@ -69,7 +69,7 @@ class MainThread(Thread):
                 if cfg.calc_statistics:
                     gl.stats[count][0] += float(gl.agent2.get_n_concepts())
                     gl.stats[count][1] += measure_agents_concepts_dist(gl.agent1, gl.agent2)
-                    if cfg.calc_sd:
+                    if cfg.calc_all:
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
                         gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
@@ -83,11 +83,13 @@ class MainThread(Thread):
         gl.loop_running = False
         # statistics
         if cfg.calc_statistics:
-            if cfg.calc_sd:
+            if cfg.calc_all:
                 calculate_statistics2()
             else:
                 calculate_statistics()
         print "done"
+        gl.agent2.drop_cp()
+        gl.agent2.save_cp_to_xml()
         
 
 
@@ -115,16 +117,6 @@ def calculate_statistics2():
     for i in gl.stats:
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
-#        mean = 0
-#        for j in gl.stats[count][2]:
-#            mean += j
-#        mean = mean/cfg.n_replicas
-#        sd = 0
-#        for j in gl.stats[count][2]:
-#            sd += ((j-mean)**2)
-#        sd = sd/(cfg.n_replicas-1)
-#        sd = sqrt(sd)
-#        gl.stats[count][2] = [mean, sd]
         count += 1
     name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
@@ -141,7 +133,7 @@ def init():
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
-        if cfg.calc_sd:
+        if cfg.calc_all:
             gl.stats.append([0.0, 0.0, []])
         else:
             gl.stats.append([0.0, 0.0, 0.0])
@@ -186,7 +178,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     if a1_disc_result == "concept_shifted":
         guessing_game_result = 0
     # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
-    elif len(a1_disc_result) == 4:
+    elif len(a1_disc_result) == 6:
         a1_topic_label = agent1.get_label(a1_disc_result)
         # if agent1 does not has a label for the topic, a new label is created and added to the lexicon
         if a1_topic_label == "tag_unknown":
@@ -256,7 +248,7 @@ def direct_instruction(agent1, agent2):
         a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
     a2_tag = agent2.get_tag(a1_label)
     if a2_tag == "label_unknown":
-        tag = aux.generateRandomTag(4)
+        tag = aux.generateRandomTag(6)
         agent2.add_exemplar(stimulus, tag)
         agent2.add_label(a1_label, tag)
     else:

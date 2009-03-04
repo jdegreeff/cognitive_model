@@ -130,7 +130,7 @@ class Lexicon():
             return self.tags[max]
     
     
-    def get_label(self, tag, inaccuracy):
+    def get_label(self, tag, inaccuracy=None):
         """ retrieves the label with the highest association for the given tag 
             if there are more than one labels with the highest association value, 
             the first one will be returned

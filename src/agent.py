@@ -9,6 +9,7 @@ import cfg
 import copy
 import globals as gl
 import data
+import io
 
 
 class BasicAgent():
@@ -61,7 +62,7 @@ class BasicAgent():
         # get the coordinates of the current known concepts
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
-            tag = aux.generateRandomTag(4)
+            tag = aux.generateRandomTag(6)
             #self.add_concept(context_new[topic_index], tag)
             self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
             answer = tag
@@ -80,7 +81,7 @@ class BasicAgent():
             else:
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discrimination_success < cfg.adapt_threshold:
-                    tag = aux.generateRandomTag(4)
+                    tag = aux.generateRandomTag(6)
                     #self.add_concept(context_new[topic_index], tag)
                     self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
                     answer = tag
@@ -234,6 +235,15 @@ class BasicAgent():
     def print_matrix(self):
         return self.lex.print_matrix()
             
+    def drop_cp(self):
+        """ current cp of the agent is saved to a file
+        """
+        io.drop_cp(self.agent_name, self.cp)
+        
+    def save_cp_to_xml(self):
+        """ current cp of the agent is saved to a xml file
+        """
+        io.save_cp_to_xml(self.agent_name, self.cp, self.lex)
             
             
             
@@ -268,7 +278,7 @@ class OmniAgent():
         if domain == "lab":
             knowledge = data.basic_colour_lab
         for i in knowledge:
-            tag = aux.generateRandomTag(4)
+            tag = aux.generateRandomTag(6)
             self.add_concept(i[1], tag)
             self.add_label(i[0], tag)
         for count, i in enumerate(self.lex.matrix):     # increase connections strength to 1

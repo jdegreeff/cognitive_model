@@ -264,7 +264,7 @@ class CP():
                             for count3, h in enumerate(self.concepts):
                                 if h[0] == tag2:
                                     self.concepts.pop(count3)
-                            self.add_concept(new_concept, aux.generateRandomTag(4))
+                            self.add_concept(new_concept, aux.generateRandomTag(6))
                             # print "merged"
                             check = True
                             break

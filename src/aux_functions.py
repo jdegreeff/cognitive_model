@@ -13,7 +13,8 @@ def generateRandomTag(length):
     i = 0
     tag = ""
     while i < length:
-        tag += str((ran.choice(data.alphanumeric_set)))
+        #tag += str((ran.choice(data.alphanumeric_set)))
+        tag += str((ran.choice(data.alphabet_set)))
         i += 1
     return tag
 
