@@ -90,6 +90,8 @@ def generateTrainingData(space, n_sets, context_size, type = 0):
         training_dataset = generateLABTrainingDataUniform(n_sets, context_size, cfg.sample_minimum_distance)
     if space == "4df":
         training_dataset = generate4DFigureTrainingData(n_sets, context_size, type)
+    if space == "shape":
+        training_dataset = generateShapeTrainingData(n_sets, context_size, type)
     return training_dataset
 
 
@@ -186,6 +188,37 @@ def generate4DFigureTrainingData(n_sets,  n_stimuli, type = 0):
                 stimulus = [["l", ran.randint(3, 5)], ["n", ran.randint(3, 5)], ["t", ran.randint(3, 5)], ["e", ran.randint(3, 5)] ]
                 set.append(stimulus)
                 count2 += 1
+        training_data.append(set)
+        count += 1
+    return training_data
+
+
+def generateShapeTrainingData(n_sets,  n_stimuli, sample_minimum_distance):
+    """ generates n_sets training data sets: context of n_stimuli
+        space: shape
+        values are drawn randomly from shape_range
+        minimum distance between values is taken into account
+    """
+    training_data = []
+    count = 0
+    while count < n_sets:
+        count2 = 0
+        set = []
+        while count2 < n_stimuli:
+            check = True
+            while check:
+                stimulus = [ ["sh", ran.randint(data.shape_range[0],data.shape_range[1])] ] 
+                if set == []:
+                    check = False
+                else:
+                    for i in set:
+                        distance = calculate_distance_general(i, stimulus)
+                        if distance > sample_minimum_distance:
+                            check = False
+                        else:
+                            check = True
+            set.append(stimulus)
+            count2 += 1
         training_data.append(set)
         count += 1
     return training_data

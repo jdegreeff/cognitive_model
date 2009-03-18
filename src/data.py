@@ -56,6 +56,27 @@ basic_colour_set_small = [ ["blue",   [ ["r", 0.0], ["g", 0.0], ["b", 255.0]] ],
                            ["black",  [ ["r", 0.0], ["g", 0.0], ["b", 0.0]] ] ]
 
 
+# shape domain:   0 = empty, 1 = point, 2 = line, 3 = triangle, 4 = square, 5 = pentagon, 
+#                 6 = hexagon, 7 = heptagon, 8 = octagon, 9 = enneagon, 10 = circle
+shape_data = [["empty", [["sh", 0.0]]],
+              ["point", [["sh", 1.0]]],
+              ["line", [["sh", 2.0]]],
+              ["triangle", [["sh", 3.0]]],
+              ["square", [["sh", 4.0]]],
+              ["pentagon", [["sh", 5.0]]],
+              ["hexagon", [["sh", 6.0]]],
+              ["heptagon", [["sh", 7.0]]],
+              ["octagon", [["sh", 8.0]]],
+              ["enneagon", [["sh", 9.0]]],
+              ["circle", [["sh", 10.0]]] ]
+
+
+
+
+# domain ranges
+rgb_range = [0, 255]
+shape_range = [0, 10]
+
 
 # alphabet sets
 consonant_set = ["B","C","D","F","G","H","J","K","L","M","N","P","Q","R","S","T","V","W"]
@@ -65,5 +86,3 @@ alphabet_set = ["a","b","c","d","e","f","g","h","i","j","k","l","m",\
 alphanumeric_set = ["a","b","c","d","e","f","g","h","i","j","k","l","m",\
                     "n","o","p","q","r","s","t","u","v","w","x","y","z",\
                     "1","2","3","4","5","6","7","8","9","0"]
-
-rgb_range = [0, 255]

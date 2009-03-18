@@ -267,16 +267,18 @@ class OmniAgent():
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (
         
         
-    def load_knowledge(self, domain):
+    def load_knowledge(self, space):
         """ loads existing body of conceptual knowledge into cp and lexicon body
             domain determines which type of knowledge is used. Knowledge is added as concepts, 
             so no prototyping is done.
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
-        if domain == "rgb":
+        if space == "rgb":
             knowledge = data.basic_colour_rgb
-        if domain == "lab":
+        if space == "lab":
             knowledge = data.basic_colour_lab
+        if space == "shape":
+            knowledge = data.shape_data
         for i in knowledge:
             tag = aux.generateRandomTag(6)
             self.add_concept(i[1], tag)
@@ -385,6 +387,11 @@ class OmniAgent():
     
     def get_label(self, tag, inaccuracy = None):
         return self.lex.get_label(tag, inaccuracy)
+    
+    def save_cp_to_xml(self):
+        """ current cp of the agent is saved to a xml file
+        """
+        io.save_cp_to_xml(self.agent_name, self.cp, self.lex)
         
             
             
