@@ -1,4 +1,4 @@
-# basic model 0.8.5
+# basic model 0.8.6
 # CONCEPT project
 # University of Plymouth
 # Joachim de Greeff
