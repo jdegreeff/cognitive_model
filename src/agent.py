@@ -1,4 +1,4 @@
-# agent.py
+# agent 0.8.6
 
 from __future__ import division
 import random as ran

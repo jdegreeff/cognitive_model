@@ -1,4 +1,4 @@
-# layout.py
+# layout 0.8.6
 
 from __future__ import division
 import sys, random

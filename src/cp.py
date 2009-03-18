@@ -1,4 +1,4 @@
-# cp.py
+# cp 0.8.6
 # Conceptual Space
 # basic data of a stimulus: [ ["d1", value], ["d2", value], ..., ["dn", value] ]
 # concepts hold by agent: [ [concept1, prototype], [concept2, prototype], ...]

@@ -1,4 +1,4 @@
-# data.py
+# data 0.8.6
 
 exemplar1 = [["d0",2.0], ["d1",5.0]]
 exemplar2 = [["d0",3.0], ["d1",4.1]]

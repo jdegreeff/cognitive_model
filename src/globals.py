@@ -1,4 +1,4 @@
-# globals.py
+# globals 0.8.6
 #import globals as gl
 
 # global variables

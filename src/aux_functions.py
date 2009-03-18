@@ -1,4 +1,4 @@
-# aux_functions.py
+# aux_functions 0.8.6
 
 from __future__ import division
 import random as ran
