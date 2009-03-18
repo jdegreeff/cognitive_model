@@ -6,7 +6,6 @@ agent_set = []              # a collection of agents
 agent1 = []                 # an agent
 agent2 = []                 # another agent
 training_data = []          # training data
-data_tony =[]               # training data from Tony Belpaeme
 n_guessing_games = 0        # number of guessing games played
 n_success_gg = 0             # number of successful guessing games
 guessing_success = 0.0       # agents guessing success ratio

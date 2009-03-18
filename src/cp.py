@@ -34,7 +34,7 @@ class CP():
     def __init__(self, name):
         """ initiate variables """
         self.holder_name = name     # name of the agent holding this CP
-        self.dimensions = []        # list of CP dimensions
+        self.domains = []        # list of concept_tag-domain tuples
         self.concepts = []          # list of names and coordinates of concepts the CP holds
         self.prototype_data = []    # data from which the prototypes are extracted
 
@@ -49,16 +49,18 @@ class CP():
         return len(self.concepts)
     
     
-    def get_all_concept_coordinates(self):
-        """ returns a list of the coordinates of all concepts currently in CP
-            the tag describing the concept is omitted
+    def get_all_concept_coordinates(self, domain):
+        """ returns a list of the the tag and coordinates of all concepts in a specific domain 
+            which are currently in the CP
         """
         concepts_coor = []
         for i in self.concepts:
-            coor = []
-            for j in i[1]:  
-                coor.append([j[0], j[1], j[2]])
-            concepts_coor.append(coor)
+            for k in self.domains:
+                if i[0] == k[1] and k[0] == domain:
+                    coor = []
+                    for j in i[1]:  
+                        coor.append([j[0], j[1], j[2]])
+                    concepts_coor.append([i[0], coor])
         return concepts_coor
     
 
@@ -198,7 +200,8 @@ class CP():
         
     def calculate_distance(self, point1, point2, list_salience = "empty" ):
         """ calculates the distance between two given points
-            only matching dimensions are taken into account
+            only matching dimensions are taken into account,
+            if no dimensions match, an extreme high distance is returned
             point1 used as reference, list of salience should be according to 
             dimensions of point1, if non given, default salience of 1 is used
             point1 = [ [d1, value], [d2, value], ..., [dn, value] ]

@@ -6,8 +6,7 @@
 # main.py
 
 # TODO: implementation of manhattan distance calculation for discrete metric
-# TODO: implement a manner for compositionality; Gardenfors solution:  within a pair of concepts
-#       one concept can override properties of the other concept based on salience
+
 
 from __future__ import division
 from PyQt4 import QtGui, QtCore
@@ -29,16 +28,26 @@ def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
-    StartLayout([gl.agent1, gl.agent2], cfg.space)
+    #StartLayout([gl.agent1, gl.agent2], cfg.domain[0])
+    
+    # discrimination game test case
+    # TODO: fix the return of the tag closest to the topic
+    # right now a tag is returned for every domain, even if the domain is not part of the stimulus
+    # this should be changed into no tag if there is no data for a certain domain
+    context = [[ ["r", 255.0], ["g", 128.0], ["b", 0.0],["sh", 4.0], ["n", 5] ], [ ["r", 255.0], ["g", 128.0], ["b", 0.0] ] ]
+    disc = gl.agent1.discrimination_game(context, 1)
+    print disc
+    for i in disc:
+        print gl.agent1.get_label(i[1])
 
 
 class StartLayout():
     """ Starts the main graphical window and initiates the main running thread
     """
-    def __init__(self, agents,  space):
+    def __init__(self, agents,  domain):
         app = QtGui.QApplication(sys.argv)
         if cfg.use_graphics:
-            main_window = layout.MainWindow(agents, space)
+            main_window = layout.MainWindow(agents, domain)
             main_window.show()
             self.thread1 = MainThread(main_window)
         else:
@@ -104,7 +113,7 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_replicas
             count2 += 1
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.domain[0]) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -118,7 +127,7 @@ def calculate_statistics2():
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.domain[0]) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output2(name, gl.stats)
     
@@ -129,8 +138,7 @@ def init():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    #gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:
@@ -146,7 +154,7 @@ def reset():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generateTrainingData(cfg.domain[0], cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
     gl.guessing_success = 0.0
@@ -178,7 +186,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     if a1_disc_result == "concept_shifted":
         guessing_game_result = 0
     # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
-    elif len(a1_disc_result) == 6:
+    else:
         a1_topic_label = agent1.get_label(a1_disc_result)
         # if agent1 does not has a label for the topic, a new label is created and added to the lexicon
         if a1_topic_label == "tag_unknown":
@@ -237,7 +245,7 @@ def direct_instruction(agent1, agent2):
         expresses its associated label for the stimulus and the learner stores both label and
         stimulus into its knowledge body
     """
-    stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+    stimulus = aux.generateTrainingData(cfg.domain[0], 1, 1)[0][0]
     if cfg.teaching_inaccuracy:
         int = ran.randint(1,100)
         if int > (1-cfg.teaching_inaccuracy) * 100:
@@ -279,7 +287,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     count = 0
     correctness = 0.0
     while count < n_tests:
-        test_concept = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+        test_concept = aux.generateTrainingData(cfg.domain[0], 1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
         #a2_label = agent2.get_label(agent2.get_random_concept())

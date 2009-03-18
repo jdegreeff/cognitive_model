@@ -55,7 +55,7 @@ class BasicAgent():
             which uniquely matches the topic and no other stimuli from the context.
             If this is not the case, a new concept is build, or the existing concepts
             are shifted.
-            The return is either the concept tag, a string description of the action taken by the agent
+            The return is the concept tag
             context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
         """
         context_new = copy.deepcopy(context)    # make a copy
@@ -244,6 +244,15 @@ class BasicAgent():
         """ current cp of the agent is saved to a xml file
         """
         io.save_cp_to_xml(self.agent_name, self.cp, self.lex)
+        
+    def give_domains(self):
+        """ returns the domains in which the agent holds concepts
+        """
+        dom_list = []
+        for i in self.cp.domains:
+            if i[0] not in dom_list:
+                dom_list.append(i[0])
+        return dom_list
             
             
             
@@ -257,7 +266,6 @@ class OmniAgent():
         self.agent_type = "omni"                    # agent type: "basic" or "omni"
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
-        self.load_knowledge(cfg.space)              # loads existing body of conceptual knowledge into cp and lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
         self.n_success_dg = 0                        # number of successful discrimination games
         self.discrimination_success = 0.0            # agents discrimination success ratio
@@ -265,24 +273,29 @@ class OmniAgent():
         self.n_success_gg = 0                        # number of successful guessing games
         self.guessing_success = 0.0                  # agents guessing success ratio
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (
+        for count, i in enumerate(cfg.domain):
+            self.load_knowledge(cfg.domain[count])   # loads existing body of conceptual knowledge into cp and lexicon
         
         
-    def load_knowledge(self, space):
+    def load_knowledge(self, domain):
         """ loads existing body of conceptual knowledge into cp and lexicon body
             domain determines which type of knowledge is used. Knowledge is added as concepts, 
             so no prototyping is done.
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
-        if space == "rgb":
+        if domain == "rgb":
             knowledge = data.basic_colour_rgb
-        if space == "lab":
+        if domain == "lab":
             knowledge = data.basic_colour_lab
-        if space == "shape":
+        if domain == "shape":
             knowledge = data.shape_data
+        if domain == "4df":
+            knowledge = data.four_df_data
         for i in knowledge:
             tag = aux.generateRandomTag(6)
             self.add_concept(i[1], tag)
             self.add_label(i[0], tag)
+            self.cp.domains.append([domain, tag])
         for count, i in enumerate(self.lex.matrix):     # increase connections strength to 1
             i[count] = 1.0
             
@@ -297,13 +310,21 @@ class OmniAgent():
         context_new = copy.deepcopy(context)    # make a copy 
         # select the best matching concept for every stimulus from the context (including the topic)
         # get the coordinates of the current known concepts
-        known_concept_coors = self.cp.get_all_concept_coordinates()
         best_matching_concepts = []
         for i in context_new:
-            distances = []
-            for j in known_concept_coors:
-                distances.append(self.cp.calculate_distance(i, j))
-            best_matching_concept = self.cp.get_concepts_tags()[aux.posMin(distances)]
+            best_matching_concept = []
+            for k in cfg.domain:
+                known_concept_coors = self.cp.get_all_concept_coordinates(k)
+                distances = []
+                for j in known_concept_coors:
+                    distances.append([j[0], self.cp.calculate_distance(i, j[1])])
+                dis = distances[0][1]
+                pos = 0
+                for count, h in enumerate(distances):
+                    if h[1] < dis:
+                        dis = h[1]
+                        pos = count
+                best_matching_concept.append([k, distances[pos][0]])
             best_matching_concepts.append(best_matching_concept)
         if best_matching_concepts.count(best_matching_concepts[topic_index]) == 1:
             self.n_success_dg += 1.0
@@ -393,6 +414,14 @@ class OmniAgent():
         """
         io.save_cp_to_xml(self.agent_name, self.cp, self.lex)
         
+    def give_domains(self):
+        """ returns the domains in which the agent holds concepts
+        """
+        dom_list = []
+        for i in self.cp.domains:
+            if i[0] not in dom_list:
+                dom_list.append(i[0])
+        return dom_list
             
             
             
