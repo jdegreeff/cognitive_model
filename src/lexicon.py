@@ -1,4 +1,4 @@
-# lexicon.py
+# lexicon.py 0.8.6.1
 
 from __future__ import division
 import numpy

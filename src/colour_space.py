@@ -1,4 +1,4 @@
-#colour_space.py
+#colour_space.py 0.8.6.1
 
 import Image
 
