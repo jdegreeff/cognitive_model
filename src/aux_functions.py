@@ -84,6 +84,7 @@ def posMin(list):
 def generateTrainingData(n_sets, context_size):
     """generates training datasets, based on the specified domains in cfg
        minimum distance is not taken into account at the moment
+       training data is generated with separated stimuli for each active domain
     """
     training_dataset = []
     count = 0
@@ -94,153 +95,30 @@ def generateTrainingData(n_sets, context_size):
             stimulus = []
             for i in cfg.domain:
                 if i == "rgb":
+                    stim = []
                     selection = gl.rgb_data_tony[ran.randint(0, 24999)]
                     for j in [["r", selection[0]*255], ["g", selection[1]*255], ["b", selection[2]*255]]:
-                        stimulus.append(j)
+                        stim.append(j)
+                    stimulus.append([i,stim])
                 if i == "lab":
+                    stim = []
                     selection = gl.lab_data_tony[ran.randint(0, 24999)]
                     for j in [["l", selection[0]], ["a", selection[1]], ["b", selection[2]]]:
-                        stimulus.append(j)
+                        stim.append(j)
+                    stimulus.append([i,stim])
                 if i == "4df":
+                    stim = []
                     for j in [["l", ran.randint(1, 5)], ["n", ran.randint(1, 5)], ["t", ran.randint(1, 5)], ["e", ran.randint(1, 5)]]:
-                        stimulus.append(j)
+                        stim.append(j)
+                    stimulus.append([i,stim])
                 if i == "shape":
-                    stimulus.append(["sh", ran.randint(data.shape_range[0],data.shape_range[1])])
+                    stimulus.append([i,["sh", ran.randint(data.shape_range[0],data.shape_range[1])]])
             set.append(stimulus)
             count2 += 1
         training_dataset.append(set)
         count += 1
     return training_dataset
 
-
-######################## deprecated ########################
-#def generateRGBTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
-#    """ generates n_sets training data sets: context of n_stimuli
-#        domain: RGB
-#        values are drawn randomly from dataset
-#        minimum distance between values is taken into account
-#    """
-#    training_data = []
-#    count = 0
-#    while count < n_sets:
-#        count2 = 0
-#        set = []
-#        while count2 < n_stimuli:
-#            check = True
-#            while check:
-#                #stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
-#                data = gl.data_tony[ran.randint(0, 24999)]
-#                stimulus = [ ["r", data[0]*255], ["g", data[1]*255], ["b", data[2]*255] ] 
-#                if set == []:
-#                    check = False
-#                else:
-#                    for i in set:
-#                        distance = calculate_distance_general(i, stimulus)
-#                        if distance > sample_minimum_distance:
-#                            check = False
-#                        else:
-#                            check = True
-#            set.append(stimulus)
-#            count2 += 1
-#        training_data.append(set)
-#        count += 1
-#    return training_data
-#
-#
-#def generateLABTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
-#    """ generates n_sets training data sets: context of n_stimuli
-#        domain: LAB
-#        values are drawn randomly from dataset
-#        minimum distance between values is taken into account
-#    """
-#    training_data = []
-#    count = 0
-#    while count < n_sets:
-#        count2 = 0
-#        set = []
-#        while count2 < n_stimuli:
-#            check = True
-#            while check:
-#                #stimulus = [["r", ran.uniform(0.0, 255.0)], ["g", ran.uniform(0.0, 255.0)], ["b", ran.uniform(0.0, 255.0)]]
-#                data = gl.data_tony[ran.randint(0, 24999)]
-#                stimulus = [ ["l", data[0]], ["a", data[1]], ["b", data[2]] ] 
-#                if set == []:
-#                    check = False
-#                else:
-#                    for i in set:
-#                        distance = calculate_distance_general(i, stimulus)
-#                        if distance > sample_minimum_distance:
-#                            check = False
-#                        else:
-#                            check = True
-#            set.append(stimulus)
-#            count2 += 1
-#        training_data.append(set)
-#        count += 1
-#    return training_data
-#
-#
-#def generate4DFigureTrainingData(n_sets,  n_stimuli, type = 0):
-#    """ generates n_sets training data sets: context of n_stimuli 
-#        domain: 4D stick figures
-#        discrete values are drawn randomly [1-5]
-#        type can be specified to generate figures with small or large features, default is random
-#        dimensions are "l" = legs, "n" = neck, "t" = tail, "e" = ears
-#    """
-#    training_data = []
-#    count = 0
-#    while count < n_sets:
-#        count2 = 0
-#        set = []
-#        if type == 0:
-#            while count2 < n_stimuli:
-#                stimulus = [["l", ran.randint(1, 5)], ["n", ran.randint(1, 5)], ["t", ran.randint(1, 5)], ["e", ran.randint(1, 5)] ]
-#                set.append(stimulus)
-#                count2 += 1
-#        if type == "SMALL":
-#            while count2 < n_stimuli:
-#                stimulus = [["l", ran.randint(1, 3)], ["n", ran.randint(1, 3)], ["t", ran.randint(1, 3)], ["e", ran.randint(1, 3)] ]
-#                set.append(stimulus)
-#                count2 += 1
-#        if type == "LARGE":
-#            while count2 < n_stimuli:
-#                stimulus = [["l", ran.randint(3, 5)], ["n", ran.randint(3, 5)], ["t", ran.randint(3, 5)], ["e", ran.randint(3, 5)] ]
-#                set.append(stimulus)
-#                count2 += 1
-#        training_data.append(set)
-#        count += 1
-#    return training_data
-#
-#
-#def generateShapeTrainingData(n_sets,  n_stimuli, sample_minimum_distance):
-#    """ generates n_sets training data sets: context of n_stimuli
-#        domain: shape
-#        values are drawn randomly from shape_range
-#        minimum distance between values is taken into account
-#    """
-#    training_data = []
-#    count = 0
-#    while count < n_sets:
-#        count2 = 0
-#        set = []
-#        while count2 < n_stimuli:
-#            check = True
-#            while check:
-#                stimulus = [ ["sh", ran.randint(data.shape_range[0],data.shape_range[1])] ] 
-#                if set == []:
-#                    check = False
-#                else:
-#                    for i in set:
-#                        distance = calculate_distance_general(i, stimulus)
-#                        if distance > sample_minimum_distance:
-#                            check = False
-#                        else:
-#                            check = True
-#            set.append(stimulus)
-#            count2 += 1
-#        training_data.append(set)
-#        count += 1
-#    return training_data
 
 
 def calculate_max_dis():

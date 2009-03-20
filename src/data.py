@@ -71,11 +71,17 @@ shape_data = [["empty", [["sh", 0]]],
               ["circle", [["sh", 10]]] ]
 
 
+# 4d stick figure data
+#"l" = legs, "n" = neck, "t" = tail, "e" = ears
+four_df_data = [["small", [["l", 1], ["n", 1], ["t", 1], ["e", 1] ]],
+                ["medium",[["l", 3], ["n", 3], ["t", 3], ["e", 3] ]],
+                ["big",   [["l", 5], ["n", 5], ["t", 5], ["e", 5] ]] ]
 
 
 # domain ranges
 rgb_range = [0, 255]
 shape_range = [0, 10]
+four_df_range = [1, 5]
 
 
 # alphabet sets

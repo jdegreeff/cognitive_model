@@ -168,8 +168,6 @@ class CP():
                         if number > 1:
                             difference = (i[1] - j[1])/ number      # calculate difference
                             mean = j[1] + difference
-                            if difference > 0:
-                                pass
                             sd = 0
                             # calculate SD: sqrt( sum(x - mean)**2/n-1 )
                             for count, h in enumerate(self.prototype_data):       
@@ -183,8 +181,6 @@ class CP():
                         else:
                             difference = (i[1] - j[1])/ 2      # calculate difference
                             mean = j[1] + difference
-                            if type(mean) == type(float()):
-                                pass
                             concept_new[1].append([j[0], mean, 0.0])
             self.concepts.append(concept_new)
             

@@ -142,7 +142,7 @@ def init():
 
     
 def reset():
-    """ resets all global variables
+    """ resets all relevant global variables
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
@@ -237,7 +237,7 @@ def direct_instruction(agent1, agent2):
         expresses its associated label for the stimulus and the learner stores both label and
         stimulus into its knowledge body
     """
-    stimulus = aux.generateTrainingData(cfg.domain, 1, 1)[0][0]
+    stimulus = aux.generateTrainingData(1, 1)[0][0]
     if cfg.teaching_inaccuracy:
         int = ran.randint(1,100)
         if int > (1-cfg.teaching_inaccuracy) * 100:

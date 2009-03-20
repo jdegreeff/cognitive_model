@@ -280,6 +280,8 @@ class OmniAgent():
                 knowledge = data.basic_colour_lab
             if j == "shape":
                 knowledge = data.shape_data
+            if j == "4df":
+                knowledge = data.four_df_data
             for i in knowledge:
                 tag = aux.generateRandomTag(6)
                 self.add_concept(i[1], tag)
