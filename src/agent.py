@@ -257,7 +257,7 @@ class OmniAgent():
         self.agent_type = "omni"                    # agent type: "basic" or "omni"
         self.cp = cp.CP(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
-        self.load_knowledge(cfg.space)              # loads existing body of conceptual knowledge into cp and lexicon
+        self.load_knowledge()                       # loads existing body of conceptual knowledge into cp and lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
         self.n_success_dg = 0                        # number of successful discrimination games
         self.discrimination_success = 0.0            # agents discrimination success ratio
@@ -267,24 +267,25 @@ class OmniAgent():
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (
         
         
-    def load_knowledge(self, space):
+    def load_knowledge(self):
         """ loads existing body of conceptual knowledge into cp and lexicon body
             domain determines which type of knowledge is used. Knowledge is added as concepts, 
             so no prototyping is done.
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
-        if space == "rgb":
-            knowledge = data.basic_colour_rgb
-        if space == "lab":
-            knowledge = data.basic_colour_lab
-        if space == "shape":
-            knowledge = data.shape_data
-        for i in knowledge:
-            tag = aux.generateRandomTag(6)
-            self.add_concept(i[1], tag)
-            self.add_label(i[0], tag)
-        for count, i in enumerate(self.lex.matrix):     # increase connections strength to 1
-            i[count] = 1.0
+        for j in cfg.domain:
+            if j == "rgb":
+                knowledge = data.basic_colour_rgb
+            if j == "lab":
+                knowledge = data.basic_colour_lab
+            if j == "shape":
+                knowledge = data.shape_data
+            for i in knowledge:
+                tag = aux.generateRandomTag(6)
+                self.add_concept(i[1], tag)
+                self.add_label(i[0], tag)
+            for count, i in enumerate(self.lex.matrix):     # increase connections strength to 1
+                i[count] = 1.0
             
             
     def discrimination_game(self, context, topic_index):

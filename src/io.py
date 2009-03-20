@@ -6,8 +6,8 @@ import csv
 from lxml import etree
 
 
-def open_datafile(mode, space):
-    filename = mode + space + ".txt"
+def open_datafile(mode, domain):
+    filename = mode + domain + ".txt"
     openfile = csv.reader(open(filename), delimiter='\t')
     list = []
     for row in openfile:

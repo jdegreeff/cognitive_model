@@ -29,16 +29,16 @@ def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
-    StartLayout([gl.agent1, gl.agent2], cfg.space)
+    StartLayout([gl.agent1, gl.agent2], cfg.domain)
 
 
 class StartLayout():
     """ Starts the main graphical window and initiates the main running thread
     """
-    def __init__(self, agents,  space):
+    def __init__(self, agents,  domain):
         app = QtGui.QApplication(sys.argv)
         if cfg.use_graphics:
-            main_window = layout.MainWindow(agents, space)
+            main_window = layout.MainWindow(agents, domain)
             main_window.show()
             self.thread1 = MainThread(main_window)
         else:
@@ -72,7 +72,7 @@ class MainThread(Thread):
                     if cfg.calc_all:
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
-                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
+                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 1)
                 count += 1
                 if self.window is not None:
                     self.window.update()
@@ -104,7 +104,7 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_replicas
             count2 += 1
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.domain) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -118,7 +118,7 @@ def calculate_statistics2():
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.domain) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output2(name, gl.stats)
     
@@ -129,8 +129,7 @@ def init():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    #gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:
@@ -146,7 +145,7 @@ def reset():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
     gl.guessing_success = 0.0
@@ -237,7 +236,7 @@ def direct_instruction(agent1, agent2):
         expresses its associated label for the stimulus and the learner stores both label and
         stimulus into its knowledge body
     """
-    stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+    stimulus = aux.generateTrainingData(cfg.domain, 1, 1)[0][0]
     if cfg.teaching_inaccuracy:
         int = ran.randint(1,100)
         if int > (1-cfg.teaching_inaccuracy) * 100:
@@ -279,7 +278,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     count = 0
     correctness = 0.0
     while count < n_tests:
-        test_concept = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+        test_concept = aux.generateTrainingData(1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
         #a2_label = agent2.get_label(agent2.get_random_concept())

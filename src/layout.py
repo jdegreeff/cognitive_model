@@ -15,10 +15,10 @@ pen = QtGui.QPen(colour_black)
 class MainWindow(QtGui.QWidget):
     """ Main graphical window
     """
-    def __init__(self, agents,  space,  parent=None):
+    def __init__(self, agents,  domain,  parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.ag = agents
-        self.space = space
+        self.domain = domain
         self.setGeometry(300, 100, cfg.x_scale * 100,  cfg.y_scale * 100)
         title = 'Categories'
         self.setWindowTitle(title)
@@ -46,8 +46,8 @@ class MainWindow(QtGui.QWidget):
                         old_y = j
             
         else:
-            #RGB colour space
-            if self.space == "rgb":
+            #RGB colour domain
+            if self.domain == "rgb":
                 y2 = 0
                 for i in self.ag:
                     text = 'Categories of "' + i.agent_name + '"'
@@ -80,8 +80,8 @@ class MainWindow(QtGui.QWidget):
                     
                     y2 += 250
                 
-            # 4D figure space
-            if self.space == "4df":
+            # 4D figure domain
+            if self.domain == "4df":
                 y2 = 0
                 for i in self.ag:
                     text = 'Categories of "' + i.agent_name + '"'
