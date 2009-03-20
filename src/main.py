@@ -6,8 +6,7 @@
 # main.py
 
 # TODO: implementation of manhattan distance calculation for discrete metric
-# TODO: implement a manner for compositionality; Gardenfors solution:  within a pair of concepts
-#       one concept can override properties of the other concept based on salience
+
 
 from __future__ import division
 from PyQt4 import QtGui, QtCore
@@ -72,7 +71,7 @@ class MainThread(Thread):
                     if cfg.calc_all:
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
-                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 1)
+                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
                 count += 1
                 if self.window is not None:
                     self.window.update()
@@ -129,6 +128,8 @@ def init():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
+    gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
+    gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:

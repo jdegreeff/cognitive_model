@@ -58,17 +58,17 @@ basic_colour_set_small = [ ["blue",   [ ["r", 0.0], ["g", 0.0], ["b", 255.0]] ],
 
 # shape domain:   0 = empty, 1 = point, 2 = line, 3 = triangle, 4 = square, 5 = pentagon, 
 #                 6 = hexagon, 7 = heptagon, 8 = octagon, 9 = enneagon, 10 = circle
-shape_data = [["empty", [["sh", 0.0]]],
-              ["point", [["sh", 1.0]]],
-              ["line", [["sh", 2.0]]],
-              ["triangle", [["sh", 3.0]]],
-              ["square", [["sh", 4.0]]],
-              ["pentagon", [["sh", 5.0]]],
-              ["hexagon", [["sh", 6.0]]],
-              ["heptagon", [["sh", 7.0]]],
-              ["octagon", [["sh", 8.0]]],
-              ["enneagon", [["sh", 9.0]]],
-              ["circle", [["sh", 10.0]]] ]
+shape_data = [["empty", [["sh", 0]]],
+              ["point", [["sh", 1]]],
+              ["line", [["sh", 2]]],
+              ["triangle", [["sh", 3]]],
+              ["square", [["sh", 4]]],
+              ["pentagon", [["sh", 5]]],
+              ["hexagon", [["sh", 6]]],
+              ["heptagon", [["sh", 7]]],
+              ["octagon", [["sh", 8]]],
+              ["enneagon", [["sh", 9]]],
+              ["circle", [["sh", 10]]] ]
 
 
 

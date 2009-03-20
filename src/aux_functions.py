@@ -85,8 +85,6 @@ def generateTrainingData(n_sets, context_size):
     """generates training datasets, based on the specified domains in cfg
        minimum distance is not taken into account at the moment
     """
-    rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
-    lab_data_tony = io.open_datafile(cfg.dataset, "lab")
     training_dataset = []
     count = 0
     while count < n_sets:
@@ -96,11 +94,11 @@ def generateTrainingData(n_sets, context_size):
             stimulus = []
             for i in cfg.domain:
                 if i == "rgb":
-                    selection = rgb_data_tony[ran.randint(0, 24999)]
+                    selection = gl.rgb_data_tony[ran.randint(0, 24999)]
                     for j in [["r", selection[0]*255], ["g", selection[1]*255], ["b", selection[2]*255]]:
                         stimulus.append(j)
                 if i == "lab":
-                    selection = lab_data_tony[ran.randint(0, 24999)]
+                    selection = gl.lab_data_tony[ran.randint(0, 24999)]
                     for j in [["l", selection[0]], ["a", selection[1]], ["b", selection[2]]]:
                         stimulus.append(j)
                 if i == "4df":
