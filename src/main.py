@@ -129,7 +129,7 @@ def init():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    #gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
+    gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
     gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
