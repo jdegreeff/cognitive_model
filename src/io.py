@@ -3,7 +3,6 @@
 
 from __future__ import division
 import csv
-from lxml import etree
 
 
 def open_datafile(mode, space):

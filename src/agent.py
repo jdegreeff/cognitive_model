@@ -3,15 +3,11 @@
 # and the OmniAgent is used as teacher
 
 from __future__ import division
-import random as ran
-import cp
-import lexicon
-import aux_functions as aux
-import cfg
 import copy
+import random as ran
 import globals as gl
-import data
-import io
+import aux_functions as aux
+import cfg, cp, data, io, lexicon
 
 
 class BasicAgent():

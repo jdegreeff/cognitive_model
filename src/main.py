@@ -5,19 +5,14 @@
 # More information at http://www.tech.plym.ac.uk/SoCCE/CONCEPT/
 
 from __future__ import division
-from PyQt4 import QtGui, QtCore
-import random as ran
-from threading import *
+import copy
 from math import *
 import sys
+import random as ran
 import aux_functions as aux
 import globals as gl
-import agent
-import data
-import cfg
-import layout
-import copy
-import io
+import agent, data, cfg, io
+
 
 
 def main():

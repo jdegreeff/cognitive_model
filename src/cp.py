@@ -4,8 +4,8 @@
 
 from __future__ import division
 import random as ran
-from math import sqrt
 import math
+from math import sqrt
 import copy
 import globals as gl
 import aux_functions as aux

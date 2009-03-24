@@ -2,10 +2,11 @@
 
 from __future__ import division
 import numpy
-import aux_functions as aux
-import cfg
-import globals as gl
 import copy
+import aux_functions as aux
+import globals as gl
+import cfg
+
 
 
 class Lexicon():
