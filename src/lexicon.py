@@ -8,7 +8,6 @@ import globals as gl
 import cfg
 
 
-
 class Lexicon():
     """ Lexicon of an agent, containing labels known by the agent
         and a associative matrix from lexicon to concept
