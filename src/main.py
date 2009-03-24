@@ -24,30 +24,14 @@ def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
-    StartLayout([gl.agent1, gl.agent2], cfg.space)
-
-
-class StartLayout():
-    """ Starts the main graphical window and initiates the main running thread
-    """
-    def __init__(self, agents,  space):
-        app = QtGui.QApplication(sys.argv)
-        if cfg.use_graphics:
-            main_window = layout.MainWindow(agents, space)
-            main_window.show()
-            self.thread1 = MainThread(main_window)
-        else:
-            self.thread1 = MainThread()
-        self.thread1.start()
-        sys.exit(app.exec_())
+    MainThread()
     
         
-class MainThread(Thread):
+class MainThread():
     """ main thread 
     """
     def __init__(self, main_window = None, *args):
-        apply(Thread.__init__, (self, ) + args)
-        self.window = main_window
+        self.run()
         
     def run(self):
         gl.loop_running = True
@@ -67,8 +51,6 @@ class MainThread(Thread):
                     else:
                         gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
                 count += 1
-                if self.window is not None:
-                    self.window.update()
             print "replica " + str(gl.current_loop)
             if (gl.current_loop < cfg.n_replicas-1):
                 reset()  
