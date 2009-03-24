@@ -1,24 +1,5 @@
 # data.py
 
-exemplar1 = [["d0",2.0], ["d1",5.0]]
-exemplar2 = [["d0",3.0], ["d1",4.1]]
-exemplar3 = [["d0",2.4], ["d1",5.4]]
-
-exemplar4 = [["d0",6.3], ["d1",3.2]]
-exemplar5 = [["d0",4.9], ["d1",3.1]]
-exemplar6 = [["d0",6.0], ["d1",3.4]]
-exemplar7 = [["d0",3.3], ["d1",8.4]]
-
-exemplar8 = [["d0",6.0], ["d1",3.4]]
-exemplar9 = [["d0",10.0], ["d1",13.4]]
-
-disc_game_data1 = [ [["d0",2.0], ["d1",3.0]],
-                    [["d0",6.0], ["d1",4.1]],
-                    [["d0",5.4], ["d1",4.4]] ]
-
-test_points = [[["r", 0.0], ["g", 0.0], ["b", 0.0]], 
-               [["r", 255.0], ["g", 255.0], ["b", 255.0]]]
-
 basic_colour_rgb = [ ["blue", [ ["r", 0.0], ["g", 0.0], ["b", 255.0]] ],
                      ["purple", [ ["r", 128.0], ["g", 0.0], ["b", 255.0]] ],
                      ["pink_l", [ ["r", 255.0], ["g", 0.0], ["b", 255.0]] ],
@@ -56,26 +37,8 @@ basic_colour_set_small = [ ["blue",   [ ["r", 0.0], ["g", 0.0], ["b", 255.0]] ],
                            ["black",  [ ["r", 0.0], ["g", 0.0], ["b", 0.0]] ] ]
 
 
-# shape domain:   0 = empty, 1 = point, 2 = line, 3 = triangle, 4 = square, 5 = pentagon, 
-#                 6 = hexagon, 7 = heptagon, 8 = octagon, 9 = enneagon, 10 = circle
-shape_data = [["empty", [["sh", 0.0]]],
-              ["point", [["sh", 1.0]]],
-              ["line", [["sh", 2.0]]],
-              ["triangle", [["sh", 3.0]]],
-              ["square", [["sh", 4.0]]],
-              ["pentagon", [["sh", 5.0]]],
-              ["hexagon", [["sh", 6.0]]],
-              ["heptagon", [["sh", 7.0]]],
-              ["octagon", [["sh", 8.0]]],
-              ["enneagon", [["sh", 9.0]]],
-              ["circle", [["sh", 10.0]]] ]
-
-
-
-
 # domain ranges
 rgb_range = [0, 255]
-shape_range = [0, 10]
 
 
 # alphabet sets

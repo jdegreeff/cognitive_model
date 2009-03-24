@@ -1,13 +1,8 @@
-# basic model 0.8.5
+# basic model 0.8.5.1
 # CONCEPT project
 # University of Plymouth
 # Joachim de Greeff
 # More information at http://www.tech.plym.ac.uk/SoCCE/CONCEPT/
-# main.py
-
-# TODO: implementation of manhattan distance calculation for discrete metric
-# TODO: implement a manner for compositionality; Gardenfors solution:  within a pair of concepts
-#       one concept can override properties of the other concept based on salience
 
 from __future__ import division
 from PyQt4 import QtGui, QtCore
@@ -57,12 +52,10 @@ class MainThread(Thread):
     def run(self):
         gl.loop_running = True
         while gl.current_loop < cfg.n_replicas:
+            # loop begin
             count = 0
             for i in gl.training_data:
-                if cfg.direct_instruction:
-                    direct_instruction(gl.agent1, gl.agent2)
-                else:
-                    guessing_game(gl.agent1, gl.agent2, i)
+                guessing_game(gl.agent1, gl.agent2, i)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -80,18 +73,17 @@ class MainThread(Thread):
             if (gl.current_loop < cfg.n_replicas-1):
                 reset()  
             gl.current_loop += 1
+            # loop end
+        
         gl.loop_running = False
-        # statistics
-        if cfg.calc_statistics:
+        if cfg.calc_statistics:   # statistics
             if cfg.calc_all:
                 calculate_statistics2()
             else:
                 calculate_statistics()
         print "done"
-        gl.agent1.save_cp_to_xml()
-        gl.agent2.save_cp_to_xml()
-        
 
+        
 
 def calculate_statistics():
     """ calculates statistics and writes output file in the source directory,
@@ -104,7 +96,7 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_replicas
             count2 += 1
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -118,7 +110,7 @@ def calculate_statistics2():
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output2(name, gl.stats)
     
@@ -231,31 +223,6 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     
     
     
-def direct_instruction(agent1, agent2):
-    """ direct instruction involving a teacher (agent1) with a body of knowledge and a learner (agent2)
-        a random stimulus is picked, and presented to both teacher and learner. The teacher 
-        expresses its associated label for the stimulus and the learner stores both label and
-        stimulus into its knowledge body
-    """
-    stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
-    if cfg.teaching_inaccuracy:
-        int = ran.randint(1,100)
-        if int > (1-cfg.teaching_inaccuracy) * 100:
-            a1_label = agent1.get_label(agent1.get_matching_concept(stimulus), 1)
-        else:
-            a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
-    else:
-        a1_label = agent1.get_label(agent1.get_matching_concept(stimulus))
-    a2_tag = agent2.get_tag(a1_label)
-    if a2_tag == "label_unknown":
-        tag = aux.generateRandomTag(6)
-        agent2.add_exemplar(stimulus, tag)
-        agent2.add_label(a1_label, tag)
-    else:
-        agent2.add_exemplar(stimulus, a2_tag)
-    
-    
-    
 def query_knowledge(agent1, agent2):
     """ agent2 queries knowledge with agent1, 
         based on the answer, agent2 updates it's association matrix
@@ -282,37 +249,10 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
         test_concept = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
-        #a2_label = agent2.get_label(agent2.get_random_concept())
         if a1_label == a2_label:
             correctness += 1
         count += 1
     return correctness/count
-    
-
-        
-        
-def measure_agents_lexicon():
-    """ calculates the percentage of agents lexicon which matches the lexicon of other agents
-        TODO: modify this function so that it counts only proper labels,
-        right now it is taking all labels into account, also the ones which have a very low connection
-    """
-    matching = 1
-    for i in gl.agent_set:
-        uniques = 0.0
-        for j in i.lex.labels:
-            check = 0
-            for k in gl.agent_set:
-                if i is not k:
-                    if j in k.lex.labels:
-                        check = 1
-            if not check:
-                uniques += 1
-        if len(i.lex.labels) == 0:
-            length = 1
-        else: 
-            length = len(i.lex.labels)
-        matching -= (uniques/length/len(gl.agent_set))
-    return int(matching * 100)
             
         
         
@@ -345,10 +285,3 @@ def measure_agents_concepts_dist(agent1, agent2):
 # main start
 if __name__ == '__main__':
     main()
-    
-    
-    
-    
-    
-    
-    

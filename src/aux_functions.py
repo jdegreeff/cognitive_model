@@ -1,4 +1,5 @@
 # aux_functions.py
+# auxiliary functions
 
 from __future__ import division
 import random as ran
@@ -13,11 +14,9 @@ def generateRandomTag(length):
     i = 0
     tag = ""
     while i < length:
-        #tag += str((ran.choice(data.alphanumeric_set)))
         tag += str((ran.choice(data.alphabet_set)))
         i += 1
     return tag
-
 
 
 def generateRandomLabel(length):
@@ -88,10 +87,6 @@ def generateTrainingData(space, n_sets, context_size, type = 0):
         training_dataset = generateRGBTrainingDataUniform(n_sets, context_size, cfg.sample_minimum_distance)
     if space == "lab":
         training_dataset = generateLABTrainingDataUniform(n_sets, context_size, cfg.sample_minimum_distance)
-    if space == "4df":
-        training_dataset = generate4DFigureTrainingData(n_sets, context_size, type)
-    if space == "shape":
-        training_dataset = generateShapeTrainingData(n_sets, context_size, type)
     return training_dataset
 
 
@@ -161,75 +156,11 @@ def generateLABTrainingDataUniform(n_sets,  n_stimuli, sample_minimum_distance):
     return training_data
 
 
-def generate4DFigureTrainingData(n_sets,  n_stimuli, type = 0):
-    """ generates n_sets training data sets: context of n_stimuli 
-        space: 4D stick figures
-        discrete values are drawn randomly [1-5]
-        type can be specified to generate figures with small or large features, default is random
-        dimensions are "l" = legs, "n" = neck, "t" = tail, "e" = ears
-    """
-    training_data = []
-    count = 0
-    while count < n_sets:
-        count2 = 0
-        set = []
-        if type == 0:
-            while count2 < n_stimuli:
-                stimulus = [["l", ran.randint(1, 5)], ["n", ran.randint(1, 5)], ["t", ran.randint(1, 5)], ["e", ran.randint(1, 5)] ]
-                set.append(stimulus)
-                count2 += 1
-        if type == "SMALL":
-            while count2 < n_stimuli:
-                stimulus = [["l", ran.randint(1, 3)], ["n", ran.randint(1, 3)], ["t", ran.randint(1, 3)], ["e", ran.randint(1, 3)] ]
-                set.append(stimulus)
-                count2 += 1
-        if type == "LARGE":
-            while count2 < n_stimuli:
-                stimulus = [["l", ran.randint(3, 5)], ["n", ran.randint(3, 5)], ["t", ran.randint(3, 5)], ["e", ran.randint(3, 5)] ]
-                set.append(stimulus)
-                count2 += 1
-        training_data.append(set)
-        count += 1
-    return training_data
-
-
-def generateShapeTrainingData(n_sets,  n_stimuli, sample_minimum_distance):
-    """ generates n_sets training data sets: context of n_stimuli
-        space: shape
-        values are drawn randomly from shape_range
-        minimum distance between values is taken into account
-    """
-    training_data = []
-    count = 0
-    while count < n_sets:
-        count2 = 0
-        set = []
-        while count2 < n_stimuli:
-            check = True
-            while check:
-                stimulus = [ ["sh", ran.randint(data.shape_range[0],data.shape_range[1])] ] 
-                if set == []:
-                    check = False
-                else:
-                    for i in set:
-                        distance = calculate_distance_general(i, stimulus)
-                        if distance > sample_minimum_distance:
-                            check = False
-                        else:
-                            check = True
-            set.append(stimulus)
-            count2 += 1
-        training_data.append(set)
-        count += 1
-    return training_data
-
-
 def calculate_max_dis():
     """ calculates the maximum distance based on the range of the current space """
     if cfg.space == "rgb":
         return 441.67
-    
-    
+
     
 def calculate_distance_general(point1, point2, list_salience = "empty" ):
     """ calculates the distance between two given points
@@ -256,7 +187,3 @@ def calculate_distance_general(point1, point2, list_salience = "empty" ):
                 else:
                     distance += ( list_salience[count] * ((i[1] - j[1])**2) )
     return sqrt(distance)
-        
-        
-        
-    

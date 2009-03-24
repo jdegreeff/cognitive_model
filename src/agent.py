@@ -1,4 +1,6 @@
 # agent.py
+# the BasicAgent is used as a learner
+# and the OmniAgent is used as teacher
 
 from __future__ import division
 import random as ran
@@ -63,7 +65,6 @@ class BasicAgent():
         known_concept_coors = self.cp.get_all_concept_coordinates()
         if len(known_concept_coors) == 0:
             tag = aux.generateRandomTag(6)
-            #self.add_concept(context_new[topic_index], tag)
             self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
             answer = tag
         else:
@@ -82,7 +83,6 @@ class BasicAgent():
                 # if agent discrimination success is below threshold a new concept is created
                 if self.discrimination_success < cfg.adapt_threshold:
                     tag = aux.generateRandomTag(6)
-                    #self.add_concept(context_new[topic_index], tag)
                     self.add_exemplar(context_new[topic_index], tag)    # no new concepts are stored, only exemplars
                     answer = tag
                 # if agent discrimination success is above threshold, 
@@ -93,17 +93,12 @@ class BasicAgent():
                     self.add_exemplar(context_new[topic_index], tag)
                     answer = tag
                     
-        # merge concepts
-        if cfg.merge_concepts:
-            self.cp.merge_concepts()
-                    
         # calculate statistics
         self.n_discrimination_games += 1.0
         self.discrimination_success = self.n_success_dg/self.n_discrimination_games
         return answer
         
-        
-        
+ 
     def answer_gg(self, label, context):
         """ Guessing game answer. Agent uses the incoming label and the associated 
             concept to identify the topic from the context, 
@@ -119,13 +114,11 @@ class BasicAgent():
                 context_distances.append(distance)
             return [aux.posMin(context_distances), tag]
         
-        
-        
+
     def concept_use(self, tag, result = 0):
         """ measures the success of the concept in the guessing game
         """
         self.cp.concept_use(tag, result)
-        
         
         
     def get_unsure_concept(self):
@@ -142,7 +135,6 @@ class BasicAgent():
             label = self.lex.get_label(concept[0], None)
             return [label, concept]        
         
-        
 
     def answer_query(self, label_concept):
         """ incoming concept = ["label", concept]
@@ -158,7 +150,6 @@ class BasicAgent():
             return False
         
         
-    
     def get_matching_concept(self, coors):
         """ returns the closest matching concept tag, based on incoming coordinates
         """
@@ -173,7 +164,6 @@ class BasicAgent():
         a2_guessing_game_answer[1]
         
         
-        
     def get_random_concept(self):
         """ returns a random concept tag from the agent's CP
         """
@@ -184,7 +174,6 @@ class BasicAgent():
             return "----"
 
 
-        
     def increase_strength(self, label, tag, amount = None):
         """ increases the association strength between the given label and tag with the given amount """
         if amount == None:
@@ -239,11 +228,6 @@ class BasicAgent():
         """ current cp of the agent is saved to a file
         """
         io.drop_cp(self.agent_name, self.cp)
-        
-    def save_cp_to_xml(self):
-        """ current cp of the agent is saved to a xml file
-        """
-        io.save_cp_to_xml(self.agent_name, self.cp, self.lex)
             
             
             
@@ -259,11 +243,11 @@ class OmniAgent():
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.load_knowledge(cfg.space)              # loads existing body of conceptual knowledge into cp and lexicon
         self.n_discrimination_games = 0             # number of discrimination games played by the agent
-        self.n_success_dg = 0                        # number of successful discrimination games
-        self.discrimination_success = 0.0            # agents discrimination success ratio
+        self.n_success_dg = 0                       # number of successful discrimination games
+        self.discrimination_success = 0.0           # agents discrimination success ratio
         self.n_guessing_games = 0                   # number of guessing games played by the agent
-        self.n_success_gg = 0                        # number of successful guessing games
-        self.guessing_success = 0.0                  # agents guessing success ratio
+        self.n_success_gg = 0                       # number of successful guessing games
+        self.guessing_success = 0.0                 # agents guessing success ratio
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (
         
         
@@ -277,8 +261,6 @@ class OmniAgent():
             knowledge = data.basic_colour_rgb
         if space == "lab":
             knowledge = data.basic_colour_lab
-        if space == "shape":
-            knowledge = data.shape_data
         for i in knowledge:
             tag = aux.generateRandomTag(6)
             self.add_concept(i[1], tag)
@@ -387,12 +369,3 @@ class OmniAgent():
     
     def get_label(self, tag, inaccuracy = None):
         return self.lex.get_label(tag, inaccuracy)
-    
-    def save_cp_to_xml(self):
-        """ current cp of the agent is saved to a xml file
-        """
-        io.save_cp_to_xml(self.agent_name, self.cp, self.lex)
-        
-            
-            
-            

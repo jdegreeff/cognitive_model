@@ -1,8 +1,5 @@
 # cp.py
 # Conceptual Space
-# basic data of a stimulus: [ ["d1", value], ["d2", value], ..., ["dn", value] ]
-# concepts hold by agent: [ [concept1, prototype], [concept2, prototype], ...]
-# where concept1 = "string", prototype = [ ["d1", value, SD], ["d2", value, SD],...]
 # based on Gardenfors, P. Conceptual Spaces: The Geometry of Thought. MIT Press, 2004
 
 from __future__ import division
@@ -169,7 +166,6 @@ class CP():
                             difference = (i[1] - j[1])/ number      # calculate difference
                             mean = j[1] + difference
                             sd = 0
-                            # calculate SD: sqrt( sum(x - mean)**2/n-1 )
                             for count, h in enumerate(self.prototype_data):       
                                 if h[0] == concept[0]:
                                     for k in self.prototype_data[count][1]:
@@ -232,47 +228,4 @@ class CP():
         """
         e = math.e
         distance = self.calculate_distance(point1, point2)
-        return e**(-sensitivity * distance)
-        
-            
-    def merge_concepts(self):
-        """ merges existing concepts in the CP if two concepts are close """
-        # currently only works for matching RGB dimensions!!
-        concept_coors = self.get_all_concept_coordinates()
-        max_dis = aux.calculate_max_dis()
-        check = False
-        for count, i in enumerate(concept_coors):
-            if check:
-                break
-            else:     
-                for count2, j in enumerate(concept_coors):
-                    if i is not j:
-                        #calculate distance
-                        distance = (self.calculate_distance(i, j)/max_dis)
-                        # if distance is within threshold, merge concepts
-                        if distance < cfg.merging_rate:
-                            try:
-                                tag1 = self.concepts[count][0]
-                            except IndexError:
-                                pass
-                            tag2 = self.concepts[count2][0] 
-                            new_concept = [ ["r", (i[0][1] + j[0][1])/2], ["g", (i[1][1] + j[1][1])/2], ["b", (i[2][1] + j[2][1])/2] ]
-                            # SD info is forfeit
-                            for count3, h in enumerate(self.concepts):
-                                if h[0] == tag1:
-                                    self.concepts.pop(count3)
-                            for count3, h in enumerate(self.concepts):
-                                if h[0] == tag2:
-                                    self.concepts.pop(count3)
-                            self.add_concept(new_concept, aux.generateRandomTag(6))
-                            # print "merged"
-                            check = True
-                            break
-    
-                        
-
-            
-            
-            
-            
-            
+        return e**(-sensitivity * distance)  

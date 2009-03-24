@@ -166,9 +166,3 @@ class Lexicon():
                     print " ",  '%.2f'% k, "     ", 
             print "\n"
             j += 1
-        
-        
-        
-        
-        
-        
