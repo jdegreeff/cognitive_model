@@ -3,6 +3,7 @@
 
 from __future__ import division
 import csv
+import numpy
 from lxml import etree
 
 
@@ -44,7 +45,19 @@ def drop_cp(agent_name, cp):
     out_file = csv.writer(open(filename, 'w'), delimiter=',', quotechar='|')
     for i in cp.concepts:
         out_file.writerow(i)
-    
+        
+        
+def save_matrix(agent_name, lexicon):
+    """ saves the association matrix of an agent to a file
+    """
+    filename = "matrix_" + agent_name + ".csv"
+    out_file = csv.writer(open(filename, 'w'), delimiter=',', quotechar='|')
+    tags = lexicon.tags
+    tags.insert(0,"")
+    out_file.writerow(tags)
+    for count, i in enumerate(lexicon.matrix):
+        output = numpy.hstack((lexicon.labels[count], i))
+        out_file.writerow(output)
     
 
 def save_cp_to_xml(agent_name, cp, lex):

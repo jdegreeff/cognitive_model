@@ -90,6 +90,7 @@ class MainThread(Thread):
         print "done"
         gl.agent1.save_cp_to_xml()
         gl.agent2.save_cp_to_xml()
+        io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         
 
 
