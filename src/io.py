@@ -4,7 +4,6 @@
 from __future__ import division
 import csv
 import numpy
-from lxml import etree
 
 
 def open_datafile(mode, space):
@@ -58,43 +57,3 @@ def save_matrix(agent_name, lexicon):
     for count, i in enumerate(lexicon.matrix):
         output = numpy.hstack((lexicon.labels[count], i))
         out_file.writerow(output)
-    
-
-def save_cp_to_xml(agent_name, cp, lex):
-    """ saves the given cp and lexicon to an xml file
-    """
-    #concept format: [ "tag", [ [ "d1", value, sd], [ "d2", value, sd], [ "d3", value, sd] ], [concept_use, concept_success] ]
-    filename = "CP_" + agent_name + ".xml"
-    root = etree.Element("root")
-    etree.SubElement(root, "agent").text = agent_name
-    for i in cp.concepts:
-        concept = etree.SubElement(root, "concept")
-        etree.SubElement(concept, "label").text = lex.get_label(i[0])
-        etree.SubElement(concept, "tag").text = str(i[0])
-        coors = etree.SubElement(concept, "coors")
-        for j in i[1]:
-            value = etree.SubElement(coors, "dimension")
-            etree.SubElement(value, "name").text = str(j[0])
-            etree.SubElement(value, "value").text = str(j[1])
-            etree.SubElement(value, "sd").text = str(j[2])
-        if len(i) > 2:
-            usage = etree.SubElement(concept, "usage")
-            etree.SubElement(usage, "use").text = str(i[2][0])
-            etree.SubElement(usage, "success").text = str(i[2][1])
-    out = open(filename,'w')
-    out.write(etree.tostring(root))
-    
-    
-    
-   
-#etree.SubElement(root, "child").text = "Child 1"
-#etree.SubElement(root, "child").text = "Child 2"
-#another = etree.SubElement(root, "another")
-#
-#etree.SubElement(another, "test").text = "test 3"
-#
-#print(etree.tostring(root, pretty_print=True))
-#
-#out = open('output.xml','w')
-#out.write ( etree.tostring(root) )
-

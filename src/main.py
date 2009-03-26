@@ -88,8 +88,6 @@ class MainThread(Thread):
             else:
                 calculate_statistics()
         print "done"
-        gl.agent1.save_cp_to_xml()
-        gl.agent2.save_cp_to_xml()
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         
 
@@ -113,11 +111,24 @@ def calculate_statistics():
 def calculate_statistics2():
     """ calculates statistics and writes output file in the source directory,
         typically called after all loops are finished, SD is included as well
+        TODO: fix proper handling of cfg.calc_all parameter
+        right now the sd is calculated in this function, so in fact not all data is saved in a file,
+        only mean score and sd written out
     """
     count = 0           
     for i in gl.stats:
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
+        mean = 0
+        for j in gl.stats[count][2]:
+            mean += j
+        mean = mean/cfg.n_replicas
+        sd = 0
+        for j in gl.stats[count][2]:
+            sd += ((j-mean)**2)
+        sd = sd/(cfg.n_replicas-1)
+        sd = sqrt(sd)
+        gl.stats[count][2] = [mean, sd]
         count += 1
     name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
@@ -174,47 +185,35 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             topic_index = aux.posMax(a2_context_distance)
         else:
             topic_index = ran.randint(0, len(context)-1)
-    # agent1 plays discrimination game
-    a1_disc_result = agent1.discrimination_game(context, topic_index) 
-    if a1_disc_result == "concept_shifted":
+    # agent1 finds the topic label
+    a1_topic_label = agent1.get_label(agent1.get_matching_concept(context[topic_index]))
+
+    a2_guessing_game_answer = agent2.answer_gg(a1_topic_label, context)
+    # if agent2 correctly points to the topic the guessing game succeeds
+    if a2_guessing_game_answer[0] == topic_index:
+        guessing_game_result = 1
+        agent2.increase_strength(a1_topic_label, a2_guessing_game_answer[1])
+        agent2.add_exemplar(context[topic_index], a2_guessing_game_answer[1]) # shift matching concept towards topic
+        agent2.concept_use(a2_guessing_game_answer[1], 1) # measure concept use
+        if cfg.contrastive_learning:
+            count = 0
+            for i in context:
+                if count is not topic_index:
+                    a2_matching_concept = agent2.get_matching_concept(context[count])
+                    agent2.decrease_strength(a1_topic_label, a2_matching_concept)
+                count += 1
+    # if agent2 does not know the communicated label
+    elif a2_guessing_game_answer == "label_unknown":
         guessing_game_result = 0
-    # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
-    elif len(a1_disc_result) == 6:
-        a1_topic_label = agent1.get_label(a1_disc_result)
-        # if agent1 does not has a label for the topic, a new label is created and added to the lexicon
-        if a1_topic_label == "tag_unknown":
-            label = aux.generateRandomLabel(5)
-            agent1.add_label(label, a1_disc_result)
-            a1_topic_label = label
-        a2_guessing_game_answer = agent2.answer_gg(a1_topic_label, context)
-        # if agent2 correctly points to the topic the guessing game succeeds
-        if a2_guessing_game_answer[0] == topic_index:
-            guessing_game_result = 1
-            agent1.increase_strength(a1_topic_label, a1_disc_result)
-            agent2.increase_strength(a1_topic_label, a2_guessing_game_answer[1])
-            agent2.add_exemplar(context[topic_index], a2_guessing_game_answer[1]) # shift matching concept towards topic
-            agent2.concept_use(a2_guessing_game_answer[1], 1) # measure concept use
-            if cfg.contrastive_learning:
-                count = 0
-                for i in context:
-                    if count is not topic_index:
-                        a2_matching_concept = agent2.get_matching_concept(context[count])
-                        agent2.decrease_strength(a1_topic_label, a2_matching_concept)
-                    count += 1
-        # if agent2 does not know the communicated label
-        elif a2_guessing_game_answer == "label_unknown":
-            guessing_game_result = 0
-            a2_disc_result = agent2.discrimination_game(context, topic_index)
-            agent2.add_label(a1_topic_label, a2_disc_result)
-            agent1.decrease_strength(a1_topic_label, a1_disc_result)
-        # if agent2 knows the label, but points to the wrong topic
-        else:
-            guessing_game_result = 0
-            agent1.decrease_strength(a1_topic_label, a1_disc_result)
-            agent2.decrease_strength(a1_topic_label, a2_guessing_game_answer[1])
-            a2_disc_result = agent2.discrimination_game(context, topic_index)   # possibly learn new concept
-            agent2.add_label(a1_topic_label, a2_disc_result)
-            agent2.concept_use(a2_guessing_game_answer[1]) # measure concept use
+        a2_disc_result = agent2.discrimination_game(context, topic_index)
+        agent2.add_label(a1_topic_label, a2_disc_result)
+    # if agent2 knows the label, but points to the wrong topic
+    else:
+        guessing_game_result = 0
+        agent2.decrease_strength(a1_topic_label, a2_guessing_game_answer[1])
+        a2_disc_result = agent2.discrimination_game(context, topic_index)   # possibly learn new concept
+        agent2.add_label(a1_topic_label, a2_disc_result)
+        agent2.concept_use(a2_guessing_game_answer[1]) # measure concept use
     
     # statistics
     gl.n_guessing_games += 1
