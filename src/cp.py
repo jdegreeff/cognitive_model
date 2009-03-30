@@ -11,7 +11,7 @@ from math import sqrt
 import math
 import copy
 import globals as gl
-import cfg, aux
+import cfg, aux, concept
 
 
 class CP():
@@ -270,8 +270,37 @@ class CP():
     
                         
 
+class CP2():
+    """ New implementation of Conceptual Space, using concept class objects
+    """
+
+    def __init__(self, name):
+        """ initiate variables """
+        self.holder_name = name     # name of the agent holding this CP
+        self.dimensions = []        # list of CP dimensions
+        self.concepts = []          # list of concepts the CP holds
+        
+        
+    def add_concept(self, tag, concept_data):
+        """ adds concept data to a concept for a given tag
+            if no concept exists, a new one is created
+        """
+        for i in self.concepts:
+            if i.tag == tag:
+                i.add_exemplar_data(concept_data)
+        else:
+            new_concept = concept.Concept(tag, concept_data)
+            self.concepts.append(new_concept)
             
             
+    def get_concepts(self):
+        """ returns the list of concept objects currently in CP """
+        return self.concepts
+    
+    
+    def get_n_concepts(self):
+        """ returns the number of concepts currently in CP """
+        return len(self.concepts)
             
-            
+
             

@@ -23,12 +23,14 @@ def main():
     """
     init()
     #StartLayout([gl.agent1, gl.agent2], cfg.space)
-    concept1 = concept.Concept("asdf")
-    concept1.add_domain("rgb", [[ "r", 255], [ "g", 0], [ "b", 0]])
-    concept1.add_domain("shape", [["sh", 10]])
-    print concept1
-    print concept1.tag
-    print concept1.get_domains()
+    
+    # new concept class test
+    concept1 = concept.Concept("asdf", [["rgb", [[ "r", 4], [ "g", 5], [ "b", 0]]]])
+    concept1.add_exemplar_data([["rgb", [[ "r", 5], [ "g", 0], [ "b", 0]]]])
+    concept1.add_exemplar_data([["rgb", [[ "r", 6], [ "g", 6], [ "b", 0]]]])
+    concept1.add_exemplar_data([["rgb", [[ "r", 7], [ "g", 0], [ "b", 0]]]])
+    print concept1.get_prototype_data()
+    print concept1.get_data()
 
 
 class StartLayout():
@@ -87,8 +89,6 @@ class MainThread(Thread):
             else:
                 calculate_statistics()
         print "done"
-        gl.agent1.save_cp_to_xml()
-        gl.agent2.save_cp_to_xml()
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         
 
@@ -127,10 +127,11 @@ def calculate_statistics2():
 def init():
     """ initialises various parameters and values 
     """
+    gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
+    gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
+    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:
@@ -279,7 +280,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     count = 0
     correctness = 0.0
     while count < n_tests:
-        test_concept = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+        test_concept = aux.generateTrainingData(1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
         #a2_label = agent2.get_label(agent2.get_random_concept())
