@@ -6,30 +6,29 @@
 # main.py
 
 # TODO: implementation of manhattan distance calculation for discrete metric
-# TODO: implement a manner for compositionality; Gardenfors solution:  within a pair of concepts
-#       one concept can override properties of the other concept based on salience
 
 from __future__ import division
 from PyQt4 import QtGui, QtCore
 import random as ran
 from threading import *
 from math import *
-import sys
-import aux_functions as aux
-import globals as gl
-import agent
-import data
-import cfg
-import layout
 import copy
-import io
+import sys
+import globals as gl
+import agent, data, cfg, layout, io, aux, concept
 
 
 def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
-    StartLayout([gl.agent1, gl.agent2], cfg.space)
+    #StartLayout([gl.agent1, gl.agent2], cfg.space)
+    concept1 = concept.Concept("asdf")
+    concept1.add_domain("rgb", [[ "r", 255], [ "g", 0], [ "b", 0]])
+    concept1.add_domain("shape", [["sh", 10]])
+    print concept1
+    print concept1.tag
+    print concept1.get_domains()
 
 
 class StartLayout():

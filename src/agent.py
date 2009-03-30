@@ -2,14 +2,9 @@
 
 from __future__ import division
 import random as ran
-import cp
-import lexicon
-import aux_functions as aux
-import cfg
 import copy
 import globals as gl
-import data
-import io
+import cp, lexicon, aux, cfg, data, io
 
 
 class BasicAgent():

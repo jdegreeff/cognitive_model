@@ -2,10 +2,10 @@
 
 from __future__ import division
 import random as ran
-import data
-import cfg
 from math import sqrt
 import globals as gl
+import data, cfg
+
 
 
 def generateRandomTag(length):

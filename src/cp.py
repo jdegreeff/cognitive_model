@@ -11,8 +11,7 @@ from math import sqrt
 import math
 import copy
 import globals as gl
-import aux_functions as aux
-import cfg
+import cfg, aux
 
 
 class CP():
