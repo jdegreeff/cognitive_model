@@ -94,30 +94,42 @@ def generateTrainingData(n_sets, context_size):
         set = []
         while count2 < context_size:
             stimulus = []
-            for i in cfg.space:
-                if i == "rgb":
-                    if ran.randint(0,1) == 1:
-                        stim = []
-                        selection = gl.rgb_data_tony[ran.randint(0, 24999)]
-                        for j in [["r", selection[0]*255], ["g", selection[1]*255], ["b", selection[2]*255]]:
-                            stim.append(j)
-                        stimulus.append([i,stim])
-                if i == "lab":
-                    if ran.randint(0,1) == 1:
-                        stim = []
-                        selection = gl.lab_data_tony[ran.randint(0, 24999)]
-                        for j in [["l", selection[0]], ["a", selection[1]], ["b", selection[2]]]:
-                            stim.append(j)
-                        stimulus.append([i,stim])
-                if i == "4df":
-                    if ran.randint(0,1) == 1:
-                        stim = []
-                        for j in [["l", ran.randint(1, 5)], ["n", ran.randint(1, 5)], ["t", ran.randint(1, 5)], ["e", ran.randint(1, 5)]]:
-                            stim.append(j)
-                        stimulus.append([i,stim])
-                if i == "shape":
-                    if ran.randint(0,1) == 1:
-                        stimulus.append([i,["sh", ran.randint(data.shape_range[0],data.shape_range[1])]])
+            empty = True
+            check = True
+            while empty or check:
+                for i in cfg.space:
+                    if i == "rgb":
+                        if ran.randint(0,1) == 1:
+                            stim = []
+                            selection = gl.rgb_data_tony[ran.randint(0, 24999)]
+                            for j in [["r", selection[0]*255], ["g", selection[1]*255], ["b", selection[2]*255]]:
+                                stim.append(j)
+                            stimulus.append([i,stim])
+                    if i == "lab":
+                        if ran.randint(0,1) == 1:
+                            stim = []
+                            selection = gl.lab_data_tony[ran.randint(0, 24999)]
+                            for j in [["l", selection[0]], ["a", selection[1]], ["b", selection[2]]]:
+                                stim.append(j)
+                            stimulus.append([i,stim])
+                    if i == "4df":
+                        if ran.randint(0,1) == 1:
+                            stim = []
+                            for j in [["l", ran.randint(1, 5)], ["n", ran.randint(1, 5)], ["t", ran.randint(1, 5)], ["e", ran.randint(1, 5)]]:
+                                stim.append(j)
+                            stimulus.append([i,stim])
+                    if i == "shape":
+                        if ran.randint(0,1) == 1:
+                            stimulus.append([i,[["sh", ran.randint(data.shape_range[0],data.shape_range[1])]]])
+                if len(stimulus) > 0:
+                    empty = False
+                if set == []:
+                    check = False
+                else:   # check if distance is big enough
+                    for i in set:
+                        distance = calculate_distance_point(i, stimulus)
+                        if distance > cfg.sample_minimum_distance:
+                            check = False
             set.append(stimulus)
             count2 += 1
         training_dataset.append(set)

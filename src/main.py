@@ -15,7 +15,7 @@ from math import *
 import copy
 import sys
 import globals as gl
-import agent, data, cfg, layout, io, aux, concept, cp
+import agent, agent2, data, cfg, layout, io, aux, concept, cp
 
 
 def main():
@@ -25,17 +25,21 @@ def main():
     #StartLayout([gl.agent1, gl.agent2], cfg.space)
     
     # new concept class test
-    cs = cp.CP2("test_space")
-    cs.add_concept("asdf", [["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
-    cs.add_concept("asdf", [["rgb", [[ "r", 3], [ "g", 5], [ "b", 0]]]])
-    cs.add_concept("asdf", [["rgb", [[ "r", 4], [ "g", 5], [ "b", 0]]]])
-    cs.add_concept("awer", [ ["rgb", [[ "r", 5], [ "g", 5], [ "b", 0]]] ])
-    cs.add_concept("awer", [["shape", [[ "sh", 5]]], ["rgb", [[ "r", 14], [ "g", 5], [ "b", 0]]]])
-    cs.add_concept("awer", [["shape", [[ "sh", 5]]], ["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
-    print cs.get_n_concepts()
-    print cs.get_concepts_data()
-    for i in cs.get_concepts():
-        print i.get_domain_list()
+#    cs = cp.CS("test_space")
+#    cs.add_concept("234a", [["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
+#    cs.add_concept("asdf", [["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
+#    cs.add_concept("asdf", [["rgb", [[ "r", 3], [ "g", 5], [ "b", 0]]]])
+#    cs.add_concept("asdf", [["rgb", [[ "r", 4], [ "g", 5], [ "b", 0]]]])
+#    cs.add_concept("awer", [["rgb", [[ "r", 0], [ "g", 0], [ "b", 0]]], ["shape", [["sh", 5]]]])
+#    print cs.get_n_concepts()
+#    print cs.get_concepts_data()
+#    print cs.calculate_distance([["rgb", [[ "r", 255], [ "g", 255], [ "b", 255]]], ["shape", [["sh", 0]]]], "awer")
+
+    for i in gl.training_data:
+        topic_index = ran.randint(0, len(i)-1)
+        gl.agent3.discrimination_game(i, topic_index)
+    print gl.agent3.cs.get_n_concepts()
+    print gl.agent3.cs.get_concepts_data()
 
 
 class StartLayout():
@@ -137,6 +141,7 @@ def init():
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
+    gl.agent3 = agent2.LearningAgent("learner")
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:

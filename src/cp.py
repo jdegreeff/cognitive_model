@@ -270,14 +270,16 @@ class CP():
     
                         
 
-class CP2():
+class CS():
     """ New implementation of Conceptual Space, using concept class objects
     """
 
     def __init__(self, name):
         """ initiate variables """
-        self.holder_name = name     # name of the agent holding this CP
-        self.concepts = []          # list of concepts the CP holds
+        self.holder_name = name     # name of the agent holding this CS
+        self.concepts = []          # list of the concept objects the CS holds
+        self.concept_tags = []      # list of concept tags
+        self.n_concepts = 0         # number of concepts
         
         
     def add_concept(self, tag, concept_data):
@@ -292,25 +294,30 @@ class CP2():
         if new:
             new_concept = concept.Concept(tag, concept_data)
             self.concepts.append(new_concept)
+            self.concept_tags.append(tag)
+            self.n_concepts += 1
             
             
     def calculate_distance(self, data_point, concept_tag, salience = "empty"):
         """ calculates the distance for a given data point to a specific concept (tag)
-            only matching domains are taken into account, at least one matching domain is required
-            point1 used as reference, list of salience should be according to 
-            dimensions of point1, if non given, default salience of 1 is used
-            point1 = [ [d1, value], [d2, value], ..., [dn, value] ]
-            point2 = [ [d1, value, SD], [d2, value, SD], ..., [dn, value, SD] ]
-            list_salience = [s1, s2,...,sn]
         """
+        return self.get_concept(concept_tag).calculate_distance(data_point, salience)
+            
+            
+    def get_concept(self, tag):
+        """ returns a concept object based on a given tag
+        """
+        for i in self.concepts:
+            if i.tag == tag:
+                return i
 
     def get_concepts(self):
-        """ returns the concept objects currently in CP """
+        """ returns the concept objects currently in CS """
         return self.concepts
             
             
     def get_concepts_data(self):
-        """ returns the data of the concepts currently in CP """
+        """ returns the data of the concepts currently in CS """
         concepts = []
         for i in self.concepts:
             concepts.append(i.get_data())
@@ -318,7 +325,7 @@ class CP2():
     
     
     def get_n_concepts(self):
-        """ returns the number of concepts currently in CP """
+        """ returns the number of concepts currently in CS """
         return len(self.concepts)
             
 

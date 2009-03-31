@@ -5,6 +5,7 @@
 agent_set = []              # a collection of agents
 agent1 = []                 # an agent
 agent2 = []                 # another agent
+agent3 = []                 # another agent
 training_data = []          # training data
 rgb_data_tony =[]           # training data from Tony Belpaeme
 lab_data_tony =[]           # training data from Tony Belpaeme

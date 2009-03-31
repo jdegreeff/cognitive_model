@@ -4,18 +4,18 @@
 
 # parameters
 n_agents = 2
-adapt_threshold = 0.9
+adapt_threshold = 0.8
 lateral_inhibition = 0
 label_learning_rate = 0.01
 merge_concepts = 0
 merging_rate = 0.15
-space = ["rgb", "shape"]        # "rgb", "lab" or "4df", "shape"
+space = ["rgb"]        # "rgb", "lab" or "4df", "shape"
 dataset = "uniform"             # "natural" or "uniform"
-context_size = 4                # number of stimuli in the context, including the topic
+context_size = 2                # number of stimuli in the context, including the topic
 sample_minimum_distance = 50    # minimum distance between stimuli in the context
 calc_statistics = 1             # specifies whether or not statistics are calculated after every guessing game
 calc_all = 0                     # specifies whether or not all values from every replica are stored in stats
-n_training_datasets = 100      # number of training interactions
+n_training_datasets = 1000      # number of training interactions
 n_replicas = 1                  # number of replica's of the same training simulation
 prototype_distance = 1          # distance measure is based on prototype SD, not actual coordinates
 active_learning = 0             # if 1, agents use active learning: learning is aimed at new things (i.e. agent chooses topic)
