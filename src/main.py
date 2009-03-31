@@ -15,7 +15,7 @@ from math import *
 import copy
 import sys
 import globals as gl
-import agent, data, cfg, layout, io, aux, concept
+import agent, data, cfg, layout, io, aux, concept, cp
 
 
 def main():
@@ -25,12 +25,17 @@ def main():
     #StartLayout([gl.agent1, gl.agent2], cfg.space)
     
     # new concept class test
-    concept1 = concept.Concept("asdf", [["rgb", [[ "r", 4], [ "g", 5], [ "b", 0]]]])
-    concept1.add_exemplar_data([["rgb", [[ "r", 5], [ "g", 0], [ "b", 0]]]])
-    concept1.add_exemplar_data([["rgb", [[ "r", 6], [ "g", 6], [ "b", 0]]]])
-    concept1.add_exemplar_data([["rgb", [[ "r", 7], [ "g", 0], [ "b", 0]]]])
-    print concept1.get_prototype_data()
-    print concept1.get_data()
+    cs = cp.CP2("test_space")
+    cs.add_concept("asdf", [["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
+    cs.add_concept("asdf", [["rgb", [[ "r", 3], [ "g", 5], [ "b", 0]]]])
+    cs.add_concept("asdf", [["rgb", [[ "r", 4], [ "g", 5], [ "b", 0]]]])
+    cs.add_concept("awer", [ ["rgb", [[ "r", 5], [ "g", 5], [ "b", 0]]] ])
+    cs.add_concept("awer", [["shape", [[ "sh", 5]]], ["rgb", [[ "r", 14], [ "g", 5], [ "b", 0]]]])
+    cs.add_concept("awer", [["shape", [[ "sh", 5]]], ["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
+    print cs.get_n_concepts()
+    print cs.get_concepts_data()
+    for i in cs.get_concepts():
+        print i.get_domain_list()
 
 
 class StartLayout():

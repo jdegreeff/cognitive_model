@@ -277,7 +277,6 @@ class CP2():
     def __init__(self, name):
         """ initiate variables """
         self.holder_name = name     # name of the agent holding this CP
-        self.dimensions = []        # list of CP dimensions
         self.concepts = []          # list of concepts the CP holds
         
         
@@ -285,17 +284,37 @@ class CP2():
         """ adds concept data to a concept for a given tag
             if no concept exists, a new one is created
         """
+        new = True
         for i in self.concepts:
             if i.tag == tag:
                 i.add_exemplar_data(concept_data)
-        else:
+                new = False
+        if new:
             new_concept = concept.Concept(tag, concept_data)
             self.concepts.append(new_concept)
             
             
+    def calculate_distance(self, data_point, concept_tag, salience = "empty"):
+        """ calculates the distance for a given data point to a specific concept (tag)
+            only matching domains are taken into account, at least one matching domain is required
+            point1 used as reference, list of salience should be according to 
+            dimensions of point1, if non given, default salience of 1 is used
+            point1 = [ [d1, value], [d2, value], ..., [dn, value] ]
+            point2 = [ [d1, value, SD], [d2, value, SD], ..., [dn, value, SD] ]
+            list_salience = [s1, s2,...,sn]
+        """
+
     def get_concepts(self):
-        """ returns the list of concept objects currently in CP """
+        """ returns the concept objects currently in CP """
         return self.concepts
+            
+            
+    def get_concepts_data(self):
+        """ returns the data of the concepts currently in CP """
+        concepts = []
+        for i in self.concepts:
+            concepts.append(i.get_data())
+        return concepts
     
     
     def get_n_concepts(self):
