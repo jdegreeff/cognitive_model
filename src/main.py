@@ -33,13 +33,21 @@ def main():
 #    cs.add_concept("awer", [["rgb", [[ "r", 0], [ "g", 0], [ "b", 0]]], ["shape", [["sh", 5]]]])
 #    print cs.get_n_concepts()
 #    print cs.get_concepts_data()
-#    print cs.calculate_distance([["rgb", [[ "r", 255], [ "g", 255], [ "b", 255]]], ["shape", [["sh", 0]]]], "awer")
+#    print aux.calculate_distance([["rgb", [[ "r", 0], [ "g", 0], [ "b", 0]]]],
+#                                 [["rgb", [[ "r", 255], [ "g", 255], [ "b", 255]]]] )
 
-    for i in gl.training_data:
-        topic_index = ran.randint(0, len(i)-1)
-        gl.agent3.discrimination_game(i, topic_index)
-    print gl.agent3.cs.get_n_concepts()
-    print gl.agent3.cs.get_concepts_data()
+    count = 0
+    dat = []
+    while count < cfg.n_replicas:
+        for i in gl.training_data:
+            topic_index = ran.randint(0, len(i)-1)
+            gl.agent3.discrimination_game(i, topic_index)
+        count += 1
+        dat.append([gl.agent3.cs.get_n_concepts(), gl.agent3.discrimination_success])
+        print count
+        reset()
+    io.write_output("test", dat)
+    print "done"
 
 
 class StartLayout():
@@ -157,7 +165,8 @@ def reset():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    gl.agent3 = agent2.LearningAgent("learner")
+    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
     gl.guessing_success = 0.0

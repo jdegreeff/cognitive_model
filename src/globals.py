@@ -17,3 +17,4 @@ current_loop = 0            # current loop of the program
 stats = []                  # statistics
 distance = []              # overall distance between concepts of 2 agents
 correctness = []           # percentage of correctness when agents are tested for knowledge
+training_data_dist=[]      # distance in training data, test purpose

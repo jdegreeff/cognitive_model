@@ -4,7 +4,7 @@ from __future__ import division
 import random as ran
 from math import sqrt
 import globals as gl
-import data, cfg
+import data, cfg, io
 
 
 
@@ -94,9 +94,8 @@ def generateTrainingData(n_sets, context_size):
         set = []
         while count2 < context_size:
             stimulus = []
-            empty = True
             check = True
-            while empty or check:
+            while (len(stimulus) == 0) or check:
                 for i in cfg.space:
                     if i == "rgb":
                         if ran.randint(0,1) == 1:
@@ -121,19 +120,28 @@ def generateTrainingData(n_sets, context_size):
                     if i == "shape":
                         if ran.randint(0,1) == 1:
                             stimulus.append([i,[["sh", ran.randint(data.shape_range[0],data.shape_range[1])]]])
-                if len(stimulus) > 0:
-                    empty = False
                 if set == []:
                     check = False
                 else:   # check if distance is big enough
+                    sequence = []
                     for i in set:
-                        distance = calculate_distance(i, stimulus)
-                        if distance > cfg.sample_minimum_distance:
-                            check = False
+                        if cfg.sample_minimum_distance < calculate_distance(i, stimulus):
+                            sequence.append("1")
+                        else:
+                            sequence.append("0")
+                    if "0" not in sequence:
+                        check = False
             set.append(stimulus)
             count2 += 1
         training_dataset.append(set)
         count += 1
+#    for i in training_dataset:
+#        dist = []
+#        for j in i:
+#            distance = calculate_distance(j, i[0])
+#            dist.append(distance)
+#        gl.training_data_dist.append(dist)
+#    io.write_output("dist", gl.training_data_dist)
     return training_dataset
 
 
@@ -161,24 +169,39 @@ def calculate_distance(data_point1, data_point2, salience = "empty"):
     for count, i1 in enumerate(data_point1):
         for j1 in data_point2:
             if i1[0] == j1[0]:          # if domains match
-                if distance == None:    # initiate distance
+                if distance == None:    # initiate overall distance
                     distance = 0
+                dist = 0    # distance per domain
                 for i2 in i1[1]:    
                     for j2 in j1[1]:
                         if len(j2) == 2:    # make sure there is an SD
                             j2.append(0.0)
                         if i2[0] == j2[0]:  # if dimensions match
-                            if i2[1] <= j2[1]:
-                                difference = (i2[1] - (j2[1] - j2[2]))
-                                distance += (difference**2)/len(i1[1])
+                            if cfg.prototype_distance:
+                                if i2[1] <= j2[1]:
+                                    difference = (i2[1] - (j2[1] - j2[2]))/get_range(i2[0])
+                                    dist += difference/len(i1[1])
+                                else:
+                                    difference = (i2[1] - (j2[1] + j2[2]))
+                                    dist += difference/len(i1[1])
                             else:
-                                difference = (i2[1] - (j2[1] + j2[2]))
-                                distance += (difference**2)/len(i1[1])
+                                difference = (i2[1] - j2[1] )#/get_range(i2[0])
+                                dist += difference#/len(i1[1])
+                dist = dist**2
+                distance += (salience[count] * dist)     # take salience for the dimension into account
     if distance == None:
         return distance
     else:
-        return (salience[count] * sqrt(distance))
+        return sqrt(distance)
     
+    
+    
+def get_range(dim_name):
+    """ get range of dimension
+    """
+    for i in data.dimension_ranges:
+        if dim_name == i[0]:
+            return (i[1][1] - i[1][0])
 
     
 def calculate_distance_general(point1, point2, list_salience = "empty" ):
