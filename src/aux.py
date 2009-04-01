@@ -127,7 +127,7 @@ def generateTrainingData(n_sets, context_size):
                     check = False
                 else:   # check if distance is big enough
                     for i in set:
-                        distance = calculate_distance_point(i, stimulus)
+                        distance = calculate_distance(i, stimulus)
                         if distance > cfg.sample_minimum_distance:
                             check = False
             set.append(stimulus)
@@ -144,6 +144,42 @@ def calculate_max_dis():
         return 441.67
     
     
+    
+def calculate_distance(data_point1, data_point2, salience = "empty"):
+    """ calculates the distance between two given data points
+        at least one matching domain is required, only matching domains are taken into account
+        data_point1 is used as reference, list of salience should be according to the
+        domains of data_point1, if non given, default salience of 1.0 is used
+        data_point1 = [ [ "domain", [ ["d1", value], ["d2", value]]], ...]
+        data_point2 = [ [ "domain", [ ["d1", value, SD], ["d2", value, SD]]], ...] (if no SD, 0 is added)
+        salience = [s1, s2,...,sn]
+        for each domain, the maximum distance is 1
+    """
+    distance = None
+    if salience == "empty":
+        salience = [1.0] * len(data_point1)
+    for count, i1 in enumerate(data_point1):
+        for j1 in data_point2:
+            if i1[0] == j1[0]:          # if domains match
+                if distance == None:    # initiate distance
+                    distance = 0
+                for i2 in i1[1]:    
+                    for j2 in j1[1]:
+                        if len(j2) == 2:    # make sure there is an SD
+                            j2.append(0.0)
+                        if i2[0] == j2[0]:  # if dimensions match
+                            if i2[1] <= j2[1]:
+                                difference = (i2[1] - (j2[1] - j2[2]))
+                                distance += (difference**2)/len(i1[1])
+                            else:
+                                difference = (i2[1] - (j2[1] + j2[2]))
+                                distance += (difference**2)/len(i1[1])
+    if distance == None:
+        return distance
+    else:
+        return (salience[count] * sqrt(distance))
+    
+
     
 def calculate_distance_general(point1, point2, list_salience = "empty" ):
     """ calculates the distance between two given points

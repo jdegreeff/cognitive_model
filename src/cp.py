@@ -297,13 +297,7 @@ class CS():
             self.concept_tags.append(tag)
             self.n_concepts += 1
             
-            
-    def calculate_distance(self, data_point, concept_tag, salience = "empty"):
-        """ calculates the distance for a given data point to a specific concept (tag)
-        """
-        return self.get_concept(concept_tag).calculate_distance(data_point, salience)
-            
-            
+                  
     def get_concept(self, tag):
         """ returns a concept object based on a given tag
         """
