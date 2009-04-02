@@ -285,6 +285,7 @@ class CS():
     def add_concept(self, tag, concept_data):
         """ adds concept data to a concept for a given tag
             if no concept exists, a new one is created
+            concept_data format = ["domain", [[ "d1", value], [ "d2", value], [ "d3", value]]]
         """
         new = True
         for i in self.concepts:

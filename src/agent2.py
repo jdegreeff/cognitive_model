@@ -82,3 +82,51 @@ class LearningAgent():
         self.n_discrimination_games += 1
         self.discrimination_success = self.n_success_dg/self.n_discrimination_games
         return answer
+
+
+
+class TeachingAgent():
+    """ Learning Agent consisting of conceptual space linked to lexicon
+    """
+    
+    def __init__(self, name):
+        """ initiate variables """
+        self.agent_name = name                      # agent name
+        self.agent_type = "teacher"                 # agent type: "learner" or "teacher"
+        self.cs = cp.CS(self.agent_name)            # agents conceptual space
+        self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
+        self.load_knowledge()                       # loads existing body of conceptual knowledge into cp and lexicon
+       
+        
+    def add_concept(self, tag, concept_data):
+        """ adds concept data to the concept for the given tag """ 
+        self.cs.add_concept(tag, concept_data)
+        
+        
+    def add_label(self, label, tag):
+        """ adds a label for the given tag the given tag """ 
+        self.lex.add_label(label, tag)
+        
+        
+    def load_knowledge(self):
+        """ loads existing body of conceptual knowledge into cp and lexicon body
+            domain determines which type of knowledge is used. 
+            Knowledge is added as concepts
+            Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
+        """
+        for i in cfg.space:
+            if i == "rgb":
+                knowledge = data.basic_colour_rgb
+            if i == "lab":
+                knowledge = data.basic_colour_lab
+            if i == "shape":
+                knowledge = data.shape_data
+            for j in knowledge:
+                tag = aux.generateRandomTag(6)
+                self.add_concept(tag, [[i, j[1]]])
+                self.add_label(j[0], tag)
+            for count, j in enumerate(self.lex.matrix):     # increase connections strength to 1
+                j[count] = 1.0
+        
+        
+        

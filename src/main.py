@@ -36,18 +36,19 @@ def main():
 #    print aux.calculate_distance([["rgb", [[ "r", 0], [ "g", 0], [ "b", 0]]]],
 #                                 [["rgb", [[ "r", 255], [ "g", 255], [ "b", 255]]]] )
 
-    count = 0
-    dat = []
-    while count < cfg.n_replicas:
-        for i in gl.training_data:
-            topic_index = ran.randint(0, len(i)-1)
-            gl.agent3.discrimination_game(i, topic_index)
-        count += 1
-        dat.append([gl.agent3.cs.get_n_concepts(), gl.agent3.discrimination_success])
-        print count
-        reset()
-    io.write_output("test", dat)
-    print "done"
+    # discrimination game test
+#    count = 0
+#    dat = []
+#    while count < cfg.n_replicas:
+#        for i in gl.training_data:
+#            topic_index = ran.randint(0, len(i)-1)
+#            gl.agent3.discrimination_game(i, topic_index)
+#        count += 1
+#        dat.append([gl.agent3.cs.get_n_concepts(), gl.agent3.discrimination_success])
+#        print count
+#        reset()
+#    io.write_output("test", dat)
+#    print "done"
 
 
 class StartLayout():
@@ -147,9 +148,9 @@ def init():
     gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
     gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
-    gl.agent1 = agent.OmniAgent("om1")
-    gl.agent2 = agent.BasicAgent("ag1")
     gl.agent3 = agent2.LearningAgent("learner")
+    gl.agent4 = agent2.TeachingAgent("teacher")
+    io.save_matrix(gl.agent4.agent_name, gl.agent4.lex)
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:
