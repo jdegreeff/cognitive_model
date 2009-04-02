@@ -22,7 +22,7 @@ def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
-    #StartLayout([gl.agent1, gl.agent2], cfg.space)
+    StartLayout([gl.agent1, gl.agent2], cfg.space)
     
     # new concept class test
 #    cs = cp.CS("test_space")
@@ -87,7 +87,6 @@ class MainThread(Thread):
                         query_knowledge(gl.agent1, gl.agent2)
                 if cfg.calc_statistics:
                     gl.stats[count][0] += float(gl.agent2.get_n_concepts())
-                    gl.stats[count][1] += measure_agents_concepts_dist(gl.agent1, gl.agent2)
                     if cfg.calc_all:
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
@@ -148,9 +147,8 @@ def init():
     gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
     gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
-    gl.agent3 = agent2.LearningAgent("learner")
-    gl.agent4 = agent2.TeachingAgent("teacher")
-    io.save_matrix(gl.agent4.agent_name, gl.agent4.lex)
+    gl.agent1 = agent2.TeachingAgent("teacher")
+    gl.agent2 = agent2.LearningAgent("learner")
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:
@@ -164,9 +162,8 @@ def init():
 def reset():
     """ resets all global variables
     """
-    gl.agent1 = agent.OmniAgent("om1")
-    gl.agent2 = agent.BasicAgent("ag1")
-    gl.agent3 = agent2.LearningAgent("learner")
+    gl.agent1 = agent2.TeachingAgent("teacher")
+    gl.agent2 = agent2.LearningAgent("learner")
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
@@ -212,7 +209,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             guessing_game_result = 1
             agent1.increase_strength(a1_topic_label, a1_disc_result)
             agent2.increase_strength(a1_topic_label, a2_guessing_game_answer[1])
-            agent2.add_exemplar(context[topic_index], a2_guessing_game_answer[1]) # shift matching concept towards topic
+            agent2.add_concept(a2_guessing_game_answer[1], context[topic_index])
             agent2.concept_use(a2_guessing_game_answer[1], 1) # measure concept use
             if cfg.contrastive_learning:
                 count = 0
@@ -233,7 +230,8 @@ def guessing_game(agent1, agent2, context, topic_index = False):
             agent1.decrease_strength(a1_topic_label, a1_disc_result)
             agent2.decrease_strength(a1_topic_label, a2_guessing_game_answer[1])
             a2_disc_result = agent2.discrimination_game(context, topic_index)   # possibly learn new concept
-            agent2.add_label(a1_topic_label, a2_disc_result)
+            if a2_disc_result not in agent2.lex.tags:    # if a new concept is learnt, add this to the lexicon
+                agent2.add_label(a1_topic_label, a2_disc_result)
             agent2.concept_use(a2_guessing_game_answer[1]) # measure concept use
     
     # statistics

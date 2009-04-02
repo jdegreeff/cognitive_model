@@ -305,6 +305,15 @@ class CS():
         for i in self.concepts:
             if i.tag == tag:
                 return i
+            
+            
+    def get_concept_data(self, tag):
+        """ returns the data of a concept, based on a given tag
+        """
+        for i in self.concepts:
+            if i.tag == tag:
+                return i.get_data()[1]
+            
 
     def get_concepts(self):
         """ returns the concept objects currently in CS """
@@ -323,5 +332,13 @@ class CS():
         """ returns the number of concepts currently in CS """
         return len(self.concepts)
             
+
+    def concept_use(self, tag, result):
+        """ measures the success of the concept in the guessing game
+        """
+        for i in self.concepts:
+            if i.tag == tag:
+                i.usage(result)
+
 
             

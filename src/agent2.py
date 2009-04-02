@@ -82,7 +82,66 @@ class LearningAgent():
         self.n_discrimination_games += 1
         self.discrimination_success = self.n_success_dg/self.n_discrimination_games
         return answer
+    
+    
+    def answer_gg(self, label, context):
+        """ Guessing game answer. Agent uses the incoming label and the associated 
+            concept to identify the topic from the context, 
+            the presumed topic index is communicated to the other agent.
+        """
+        tag = self.get_tag(label)
+        if tag == "label_unknown":
+            return tag
+        else:
+            context_distances = []
+            for i in context:
+                distance = aux.calculate_distance(i, self.cs.get_concept_data(tag))
+                context_distances.append(distance)
+            return [aux.posMin(context_distances), tag]
+        
+        
+    def get_matching_concept(self, coors):
+        """ returns the closest matching concept tag, based on incoming coordinates
+        """
+        distances = []
+        for i in self.cs.concepts:
+            distances.append(aux.calculate_distance(coors, i.get_data()[1]))
+        if distances:
+            return self.cs.concept_tags[aux.posMin(distances)]
+        else:
+            return "----"
+        
 
+    def concept_use(self, tag, result = 0):
+        """ measures the success of the concept in the guessing game
+        """
+        self.cs.concept_use(tag, result)
+
+
+    def increase_strength(self, label, tag, amount = None):
+        """ increases the association strength between the given label and tag with the given amount """
+        if amount == None:
+            amount = cfg.label_learning_rate
+        self.lex.increase_strength(label, tag, amount)
+        
+        
+    def decrease_strength(self, label, tag, amount = None):
+        """ decreases the association strength between the given label and tag with the given amount"""
+        if amount == None:
+            amount = cfg.label_learning_rate
+        self.lex.decrease_strength(label, tag, amount)
+        
+
+    def get_tag(self, label):
+        return self.lex.get_tag(label)
+
+
+    def get_label(self, tag, inaccuracy = None):
+        return self.lex.get_label(tag, inaccuracy)
+    
+    def get_n_concepts(self):
+        """ returns the number of concepts currently in the agents CS """
+        return self.cs.get_n_concepts()
 
 
 class TeachingAgent():
@@ -96,7 +155,13 @@ class TeachingAgent():
         self.cs = cp.CS(self.agent_name)            # agents conceptual space
         self.lex = lexicon.Lexicon(self.agent_name) # agents lexicon
         self.load_knowledge()                       # loads existing body of conceptual knowledge into cp and lexicon
-       
+        self.n_discrimination_games = 0             # number of discrimination games played by the agent
+        self.n_success_dg = 0                       # number of successful discrimination games
+        self.discrimination_success = 0.0           # agents discrimination success ratio
+        self.n_guessing_games = 0                   # number of guessing games played by the agent
+        self.n_success_gg = 0                       # number of successful guessing games
+        self.guessing_success = 0.0                 # agents guessing success ratio
+        self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
         
     def add_concept(self, tag, concept_data):
         """ adds concept data to the concept for the given tag """ 
@@ -127,6 +192,62 @@ class TeachingAgent():
                 self.add_label(j[0], tag)
             for count, j in enumerate(self.lex.matrix):     # increase connections strength to 1
                 j[count] = 1.0
+                
+    def discrimination_game(self, context, topic_index):
+        """ Discrimination game in which an agent has to distinguish the topic
+            from the context. The game succeeds if the agent has a concept 
+            which uniquely matches the topic and no other stimuli from the context.
+            If this is not the case, a new concept is build, or the existing concepts
+            are shifted.
+            The tag of the concept (either successful, shifted or new) is returned
+            context = sets of data [  [ "domain", [ [d1, value], [d2, value], ..., [dn, value] ]], ..., ]
+        """
+        context_new = copy.deepcopy(context)    # make a copy
+        # select the best matching concept for each item in the context
+        best_matching_concepts = []
+        for i in context_new:
+            distances = []
+            for j in self.cs.concepts:
+                data = j.get_data()
+                distances.append(aux.calculate_distance(i, data[1]))
+            best_matching_concept = self.cs.concept_tags[aux.posMin(distances)]
+            best_matching_concepts.append(best_matching_concept)
+        # determine the outcome of the guessing game
+        if best_matching_concepts.count(best_matching_concepts[topic_index]) == 1:
+            self.n_success_dg += 1.0
+            answer = best_matching_concepts[topic_index]
+        else:
+            answer = "concept_shifted" # method to cause the guessing game to fail and do nothing
+        # calculate statistics
+        self.n_discrimination_games += 1
+        self.discrimination_success = self.n_success_dg/self.n_discrimination_games
+        return answer
+    
+
+    def get_matching_concept(self, coors):
+        """ returns the closest matching concept tag, based on incoming coordinates
+        """
+        distances = []
+        for i in self.cs.concepts:
+            distances.append(aux.calculate_distance(coors, i.get_data()[1]))
+        if distances:
+            return self.cs.concept_tags[aux.posMin(distances)]
+        else:
+            return "----"
         
         
+    def get_label(self, tag, inaccuracy = None):
+        return self.lex.get_label(tag, inaccuracy)
+    
+    def get_n_concepts(self):
+        """ returns the number of concepts currently in the agents CS """
+        return self.cs.get_n_concepts()
+
+    def increase_strength(self, label, tag):
+        """ NOT USED """
+        pass
+        
+    def decrease_strength(self, label, tag):
+        """ NOT USED """
+        pass
         

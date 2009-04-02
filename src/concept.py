@@ -68,7 +68,13 @@ class Concept():
         """
         return self.domain_list
     
-        
+
+    def usage(self, result):
+        """ records the result of a guessing game
+        """
+        self.concept_use += 1
+        if result:
+            self.concept_success += 1
         
         
         
