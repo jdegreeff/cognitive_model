@@ -8,7 +8,7 @@
 # TODO: implementation of manhattan distance calculation for discrete metric
 # TODO: implement a manner for compositionality; Gardenfors solution:  within a pair of concepts
 #       one concept can override properties of the other concept based on salience
-
+#
 
 from __future__ import division
 from PyQt4 import QtGui, QtCore
