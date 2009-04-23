@@ -8,6 +8,7 @@ agent2 = []                 # another agent
 training_data = []          # training data
 data_tony =[]               # training data from Tony Belpaeme
 n_guessing_games = 0        # number of guessing games played
+n_actual_training = 0       # number of the actual training interactions (guessing games)
 n_success_gg = 0             # number of successful guessing games
 guessing_success = 0.0       # agents guessing success ratio
 loop_running = False

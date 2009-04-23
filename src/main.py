@@ -57,12 +57,18 @@ class MainThread(Thread):
     def run(self):
         gl.loop_running = True
         while gl.current_loop < cfg.n_replicas:
+            #for i in gl.training_data:
             count = 0
-            for i in gl.training_data:
+            training_sample = 0
+            while count < cfg.n_training_interactions:
                 if cfg.direct_instruction:
                     direct_instruction(gl.agent1, gl.agent2)
                 else:
-                    guessing_game(gl.agent1, gl.agent2, i)
+                    finished = False
+                    while not finished:
+                        i = gl.training_data[training_sample]
+                        training_sample += 1
+                        finished = guessing_game(gl.agent1, gl.agent2, i)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -73,10 +79,11 @@ class MainThread(Thread):
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
                         gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
-                count += 1
                 if self.window is not None:
                     self.window.update()
+                count += 1
             print "replica " + str(gl.current_loop)
+            print "trainin trials:" + str(training_sample)
             if (gl.current_loop < cfg.n_replicas-1):
                 reset()  
             gl.current_loop += 1
@@ -88,9 +95,9 @@ class MainThread(Thread):
             else:
                 calculate_statistics()
         print "done"
-        gl.agent1.save_cp_to_xml()
-        gl.agent2.save_cp_to_xml()
-        io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
+#        gl.agent1.save_cp_to_xml()
+#        gl.agent2.save_cp_to_xml()
+#        io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         
 
 
@@ -105,7 +112,7 @@ def calculate_statistics():
             gl.stats[count][count2] = gl.stats[count][count2]/cfg.n_replicas
             count2 += 1
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_interactions) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output(name, gl.stats)
     
@@ -119,7 +126,7 @@ def calculate_statistics2():
         gl.stats[count][0] = gl.stats[count][0]/cfg.n_replicas
         gl.stats[count][1] = gl.stats[count][1]/cfg.n_replicas
         count += 1
-    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
+    name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_interactions) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output2(name, gl.stats)
     
@@ -131,9 +138,10 @@ def init():
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
     gl.data_tony = io.open_datafile(cfg.dataset, cfg.space)
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    # n_training_interactions is 75% bigger, to account for failed teacher discrimination game
+    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_interactions + int(cfg.n_training_interactions * 0.75), cfg.context_size)
     counter = 0
-    while counter < cfg.n_training_datasets:
+    while counter < cfg.n_training_interactions:
         if cfg.calc_all:
             gl.stats.append([0.0, 0.0, []])
         else:
@@ -147,7 +155,8 @@ def reset():
     """
     gl.agent1 = agent.OmniAgent("om1")
     gl.agent2 = agent.BasicAgent("ag1")
-    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_datasets, cfg.context_size)
+    # n_training_interactions is 75% bigger, to account for failed teacher discrimination game
+    gl.training_data = aux.generateTrainingData(cfg.space, cfg.n_training_interactions + int(cfg.n_training_interactions * 0.75), cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
     gl.guessing_success = 0.0
@@ -178,8 +187,10 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     a1_disc_result = agent1.discrimination_game(context, topic_index) 
     if a1_disc_result == "concept_shifted":
         guessing_game_result = 0
+        teacher_success = False
     # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
     elif len(a1_disc_result) == 6:
+        teacher_success = True
         a1_topic_label = agent1.get_label(a1_disc_result)
         # if agent1 does not has a label for the topic, a new label is created and added to the lexicon
         if a1_topic_label == "tag_unknown":
@@ -229,6 +240,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     agent1.concept_history.append(agent1.get_n_concepts())
     agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
+    return teacher_success
     
     
     

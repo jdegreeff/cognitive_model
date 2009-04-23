@@ -37,7 +37,7 @@ class MainWindow(QtGui.QWidget):
             paint.drawLine(20, y_size, x_size, y_size)
             for i in self.ag:
                 if i.agent_type is "basic":
-                    x_step = x_size/cfg.n_training_datasets
+                    x_step = x_size/cfg.n_training_interactions
                     x = 1
                     old_y = 0
                     for j in i.concept_history:
