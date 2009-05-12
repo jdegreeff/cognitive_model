@@ -5,6 +5,7 @@
 # More information at http://www.tech.plym.ac.uk/SoCCE/CONCEPT/
 # main.py
 
+
 # TODO: implementation of manhattan distance calculation for discrete metric
 
 from __future__ import division
