@@ -1,4 +1,4 @@
-# basic model 0.8.7.1
+# basic model 0.8.7.2
 # CONCEPT project
 # University of Plymouth
 # Joachim de Greeff
@@ -195,7 +195,7 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     a1_disc_result = agent1.discrimination_game(context, topic_index) 
     if a1_disc_result == "concept_shifted":
         guessing_game_result = 0
-    # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
+    # if agent1 discrimination game succeeds, i.e. the result is a string of 6 characters
     elif len(a1_disc_result) == 6:
         a1_topic_label = agent1.get_label(a1_disc_result)
         # if agent1 does not has a label for the topic, a new label is created and added to the lexicon
@@ -256,7 +256,7 @@ def direct_instruction(agent1, agent2):
         expresses its associated label for the stimulus and the learner stores both label and
         stimulus into its knowledge body
     """
-    stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+    stimulus = aux.generateTrainingData(1, 1)[0][0]
     if cfg.teaching_inaccuracy:
         int = ran.randint(1,100)
         if int > (1-cfg.teaching_inaccuracy) * 100:
@@ -268,10 +268,10 @@ def direct_instruction(agent1, agent2):
     a2_tag = agent2.get_tag(a1_label)
     if a2_tag == "label_unknown":
         tag = aux.generateRandomTag(6)
-        agent2.add_exemplar(stimulus, tag)
+        agent2.add_concept(tag, stimulus)
         agent2.add_label(a1_label, tag)
     else:
-        agent2.add_exemplar(stimulus, a2_tag)
+        agent2.add_concept(a2_tag, stimulus)
     
     
     
@@ -297,9 +297,12 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     """
     count = 0
     correctness = 0.0
+    if len(agent2.concept_history) > 200:
+        pass
     while count < n_tests:
         test_concept = aux.generateTrainingData(1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
+        #TODO: there seems to be something wrong with distance calculation: (92,2,210) -> teacher: green
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
         #a2_label = agent2.get_label(agent2.get_random_concept())
         if a1_label == a2_label:

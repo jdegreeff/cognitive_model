@@ -52,13 +52,16 @@ shape_data = [["empty", [["sh", 0.0]]],
               ["circle", [["sh", 10.0]]] ]
 
 
-
 # domain ranges
 rgb_range = [0, 255]
 shape_range = [0, 10]
-dimension_ranges = [["r", [0.0, 255.0]], ["g", [0.0, 255.0]], ["b", [0.0, 255.0]],
-                    ["sh", [0,10]]]
+#TODO: fix proper range for "lab" dimensions
+dimension_ranges = [ ["rgb",  [["r", [0.0, 255.0]], ["g", [0.0, 255.0]], ["b", [0.0, 255.0]]]],
+                     ["lab",  [["l",[1.0, 1.0]], ["a",[1.0, 1.0]], ["b",[1.0, 1.0]]]],
+                     ["shape",[["sh", [0,10]]]] ]
 
+dimension_ranges_old = [["r", [0.0, 255.0]], ["g", [0.0, 255.0]], ["b", [0.0, 255.0]],
+                    ["sh", [0,10]]]
 
 # alphabet sets
 consonant_set = ["B","C","D","F","G","H","J","K","L","M","N","P","Q","R","S","T","V","W"]

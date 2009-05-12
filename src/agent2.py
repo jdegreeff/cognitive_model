@@ -181,17 +181,18 @@ class TeachingAgent():
         """
         for i in cfg.space:
             if i == "rgb":
-                knowledge = data.basic_colour_rgb
+                knowledge = aux.normalise_data(i, data.basic_colour_rgb)
             if i == "lab":
-                knowledge = data.basic_colour_lab
+                knowledge = aux.normalise_data(i, data.basic_colour_lab)
             if i == "shape":
-                knowledge = data.shape_data
+                knowledge = aux.normalise_data(i, data.shape_data)
             for j in knowledge:
                 tag = aux.generateRandomTag(6)
                 self.add_concept(tag, [[i, j[1]]])
                 self.add_label(j[0], tag)
             for count, j in enumerate(self.lex.matrix):     # increase connections strength to 1
                 j[count] = 1.0
+                
                 
     def discrimination_game(self, context, topic_index):
         """ Discrimination game in which an agent has to distinguish the topic
