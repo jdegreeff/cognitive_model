@@ -8,21 +8,22 @@
 # TODO: implementation of manhattan distance calculation for discrete metric
 
 from __future__ import division
-from PyQt4 import QtGui, QtCore
+#from PyQt4 import QtGui, QtCore
+from qt import *
 import random as ran
 from threading import *
 from math import *
 import copy
 import sys
 import globals as gl
-import agent, agent2, data, cfg, layout, io, aux, concept, cp
+import agent, agent2, data, cfg, io, aux, concept, cp, test
 
 
 def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
-    StartLayout([gl.agent1, gl.agent2], cfg.space)
+    start([gl.agent1, gl.agent2], cfg.space)
     
     # new concept class test
 #    cs = cp.CS("test_space")
@@ -51,62 +52,55 @@ def main():
 #    print "done"
 
 
-class StartLayout():
+def start(agents, space):
     """ Starts the main graphical window and initiates the main running thread
     """
-    def __init__(self, agents,  space):
-        app = QtGui.QApplication(sys.argv)
-        if cfg.use_graphics:
-            main_window = layout.MainWindow(agents, space)
-            main_window.show()
-            self.thread1 = MainThread(main_window)
-        else:
-            self.thread1 = MainThread()
-        self.thread1.start()
-        sys.exit(app.exec_())
+    root = Tk()
+    app = App(root)
+    root.mainloop()
+    
+    print "check"
+    main.main_loop()
+
     
         
-class MainThread(Thread):
-    """ main thread 
+def main_loop():
+    """ main loop 
     """
-    def __init__(self, main_window = None, *args):
-        apply(Thread.__init__, (self, ) + args)
-        self.window = main_window
-        
-    def run(self):
-        gl.loop_running = True
-        while gl.current_loop < cfg.n_replicas:
-            count = 0
-            for i in gl.training_data:
-                if cfg.direct_instruction:
-                    direct_instruction(gl.agent1, gl.agent2)
-                else:
-                    guessing_game(gl.agent1, gl.agent2, i)
-                if cfg.query_knowledge > 0:
-                    if gl.n_guessing_games % cfg.query_knowledge == 0:
-                        query_knowledge(gl.agent1, gl.agent2)
-                if cfg.calc_statistics:
-                    gl.stats[count][0] += float(gl.agent2.get_n_concepts())
-                    if cfg.calc_all:
-                        gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
-                    else:
-                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
-                count += 1
-                if self.window is not None:
-                    self.window.update()
-            print "replica " + str(gl.current_loop)
-            if (gl.current_loop < cfg.n_replicas-1):
-                reset()  
-            gl.current_loop += 1
-        gl.loop_running = False
-        # statistics
-        if cfg.calc_statistics:
-            if cfg.calc_all:
-                calculate_statistics2()
+    print "start"
+    gl.loop_running = True
+    while gl.current_loop < cfg.n_replicas:
+        count = 0
+        for i in gl.training_data:
+            if cfg.direct_instruction:
+                direct_instruction(gl.agent1, gl.agent2)
             else:
-                calculate_statistics()
-        print "done"
-        io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
+                guessing_game(gl.agent1, gl.agent2, i)
+            if cfg.query_knowledge > 0:
+                if gl.n_guessing_games % cfg.query_knowledge == 0:
+                    query_knowledge(gl.agent1, gl.agent2)
+            if cfg.calc_statistics:
+                gl.stats[count][0] += float(gl.agent2.get_n_concepts())
+                if cfg.calc_all:
+                    gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
+                else:
+                    gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
+            count += 1
+#            if window is not None:
+#                window.update()
+        print "replica " + str(gl.current_loop)
+        if (gl.current_loop < cfg.n_replicas-1):
+            reset()  
+        gl.current_loop += 1
+    gl.loop_running = False
+    # statistics
+    if cfg.calc_statistics:
+        if cfg.calc_all:
+            calculate_statistics2()
+        else:
+            calculate_statistics()
+    print "done"
+    io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         
 
 
