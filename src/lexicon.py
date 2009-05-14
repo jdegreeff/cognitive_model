@@ -59,7 +59,7 @@ class Lexicon():
             self.labels.append(label)
             self.tags.append(tag)
         # if tag is already known, a new label is added
-        elif label not in self.labels:
+        elif label not in self.labels and tag in self.tags:
             new = numpy.array([0.0] * len(self.tags))
             for count, i in enumerate(new):
                 if count == self.tags.index(tag):
@@ -67,7 +67,7 @@ class Lexicon():
             self.matrix = numpy.vstack((self.matrix,new))
             self.labels.append(label)
         # if label is already known, a new tag is added
-        else:
+        elif tag not in self.tags and label in self.labels:
             new = numpy.array([])
             for count, i in enumerate(self.matrix):
                 if count != self.labels.index(label):
@@ -77,6 +77,12 @@ class Lexicon():
             new.shape = len(self.labels), 1
             self.matrix = numpy.hstack((self.matrix, new))
             self.tags.append(tag)
+        # if both tag and label are known, matrix is updated with a new connection
+        else:
+            label_index = self.labels.index(label)
+            tag_index = self.tags.index(tag)
+            self.matrix[label_index][tag_index] = 0.5
+            
             
             
     def increase_strength(self, label, tag, amount):
