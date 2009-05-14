@@ -8,7 +8,7 @@ lateral_inhibition = 0
 label_learning_rate = 0.01
 merge_concepts = 0
 merging_rate = 0.15
-space = ["shape"]        # "rgb", "lab" or "4df", "shape"
+space = ["rgb"]               # "rgb", "lab" or "4df", "shape"
 dataset = "uniform"             # "natural" or "uniform"
 context_size = 4                # number of stimuli in the context, including the topic
 sample_minimum_distance = 0.2    # minimum distance between stimuli in the context
@@ -25,6 +25,6 @@ direct_instruction = 0          # if 1, direct instruction is used, otherwise la
 
 
 # graphical properties
-use_graphics = 1                # whether or not a graphic display should be shown
+use_graphics = 0                # whether or not a graphic display should be shown
 x_scale = 6
 y_scale = 3
