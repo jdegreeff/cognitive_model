@@ -61,65 +61,47 @@
 # is updated.  
 # compound widget that allows the user to set the min and max values of a scale
 
-from Tkinter import *
+import sys
+from qt import *
 
-class MinMax(Frame):
-    def __init__(self,master,min=1, max=10, command=None):
-        Frame.__init__(self,master)
-        self.min = StringVar()
-        self.min.set(str(min))
+class MainWindow(QMainWindow):
+    val = 17
+    def __init__(self, *args):
+        apply(QMainWindow.__init__, (self, ) + args)
 
-        self.minEntry = Entry(self,width=4,textvariable=self.min)
-        self.minEntry.bind("<Return>",self.minHandler)
-        self.minEntry.bind("<Leave>",self.minHandler)
-        self.minEntry.pack(side=LEFT)
+        self.vlayout = QHBoxLayout(self, 10, 5)
 
-        self.heightvalue = DoubleVar()
-        self.heightScale = Scale(self, from_=1,  to=10, resolution=.1, orient=HORIZONTAL,
-                                 command=command, variable=self.heightvalue)
-        self.heightScale.pack(side=LEFT)
+        self.labelValue = QLabel(str(MainWindow.val), self)
+        self.down = QPushButton("Lower", self)
+        self.up = QPushButton("Higher", self)
 
-        self.max = StringVar()
-        self.max.set(str(max))
-        self.maxEntry = Entry(self,width=4,textvariable=self.max)
-        self.maxEntry.bind("<Return>",self.maxHandler)
-        self.maxEntry.bind("<Leave>",self.maxHandler)
-        self.maxEntry.pack(side=LEFT)
+        self.vlayout.addWidget(self.down)
+        self.vlayout.addWidget(self.labelValue)
+        self.vlayout.addWidget(self.up)
 
-    def minHandler(self,event):
-        newmin = float( self.min.get() )
-        oldmin = float(self.heightScale.cget('from'))
-        max = float(self.heightScale.cget('to'))
-        if newmin < max:
-            self.heightScale.config(from_= newmin, resolution=(max-newmin)/100.0)
-            if newmin>self.heightvalue.get():
-                self.heightScale.set(newmin)
-        else:
-            self.min.set(str(oldmin))
-        
-    def maxHandler(self,event):
-        newmax = float( self.max.get() )
-        oldmax = float(self.heightScale.cget('to'))
-        min = float(self.heightScale.cget('from'))
-        if newmax > min:
-            self.heightScale.config(to = newmax, resolution=(newmax-min)/100.0)
-            if newmax<self.heightvalue.get():
-                self.heightScale.set(newmax)
+        self.connect(self.down, SIGNAL("clicked()"), self.reduce)
+        self.connect(self.up, SIGNAL("clicked()"), self.increase)
 
-class App:
+    def reduce(self):
+        MainWindow.val -= 1
+        self.setval()
 
-    def __init__(self, root):
-        MinMax(root,1,100,command=self.handlewidget).pack(side=TOP)
+    def increase(self):
+        MainWindow.val += 1
+        self.setval()
 
-        #make a label which shows the current value of the MinMax scale widget
-        self.label = Label(root,relief=GROOVE)
-        self.label.pack(side=BOTTOM)
+    def setval(self):
+        self.labelValue.setText(str(MainWindow.val))
 
-    def handlewidget(self,value):
-        self.label.configure(text=str(value))
+def main(args):
+    app=QApplication(args)
+    win=MainWindow()
+    win.show()
+    app.connect(app, SIGNAL("lastWindowClosed()")
+                , app
+                , SLOT("quit()")
+                )
+    app.exec_loop()
 
-toplevel = Tk()
-
-app = App(toplevel)
-
-toplevel.mainloop()
+if __name__=="__main__":
+        main(sys.argv)

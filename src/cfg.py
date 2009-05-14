@@ -15,7 +15,7 @@ sample_minimum_distance = 0.2    # minimum distance between stimuli in the conte
 calc_statistics = 1             # specifies whether or not statistics are calculated after every guessing game
 calc_all = 0                     # specifies whether or not all values from every replica are stored in stats
 n_training_datasets = 1000      # number of training interactions
-n_replicas = 3                  # number of replica's of the same training simulation
+n_replicas = 1                  # number of replica's of the same training simulation
 prototype_distance = 0          # distance measure is based on prototype SD, not actual coordinates
 active_learning = 0             # if 1, agents use active learning: learning is aimed at new things (i.e. agent chooses topic)
 query_knowledge = 0            # if > 0, agent queries knowledge with teacher, 1 is after every guessing game, 10 is after every 10 guessing games etc
@@ -25,6 +25,6 @@ direct_instruction = 0          # if 1, direct instruction is used, otherwise la
 
 
 # graphical properties
-use_graphics = 0                # whether or not a graphic display should be shown
-x_scale = 12
-y_scale = 7
+use_graphics = 1                # whether or not a graphic display should be shown
+x_scale = 6
+y_scale = 3

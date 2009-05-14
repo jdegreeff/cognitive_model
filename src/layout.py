@@ -36,12 +36,12 @@ class MainWindow(QtGui.QWidget):
             paint.drawLine(20,40, 20, y_size)
             paint.drawLine(20, y_size, x_size, y_size)
             for i in self.ag:
-                if i.agent_type is "basic":
+                if i.agent_type is "learner":
                     x_step = x_size/cfg.n_training_datasets
                     x = 1
                     old_y = 0
-                    for j in i.concept_history:
-                        paint.drawLine( 20 + (x * x_step), y_size - (j*20), 20 + ((x-1) * x_step), y_size - (old_y*20) )
+                    for j in i.guessing_success_history:
+                        paint.drawLine( 20 + (x * x_step), y_size - (j*300), 20 + ((x-1) * x_step), y_size - (old_y*300) )
                         x += 1
                         old_y = j
             

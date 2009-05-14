@@ -23,6 +23,7 @@ class LearningAgent():
         self.n_guessing_games = 0                   # number of guessing games played by the agent
         self.n_success_gg = 0                       # number of successful guessing games
         self.guessing_success = 0.0                 # agents guessing success ratio
+        self.guessing_success_history = []          # list containing the guessing game success after each interaction (game)
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
         
         
