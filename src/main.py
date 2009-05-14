@@ -100,6 +100,7 @@ class MainThread(Thread):
                 reset()  
             gl.current_loop += 1
         gl.loop_running = False
+        gl.finished = True
         # statistics
         if cfg.calc_statistics:
             if cfg.calc_all:

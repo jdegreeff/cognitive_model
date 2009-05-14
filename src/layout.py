@@ -22,24 +22,33 @@ class MainWindow(QtGui.QWidget):
         self.setGeometry(300, 100, cfg.x_scale * 100,  cfg.y_scale * 100)
         title = 'Categories'
         self.setWindowTitle(title)
+        self.score = 0
+        self.oldscore = 0
 
     def paintEvent(self, event):
         paint = QtGui.QPainter()
         paint.begin(self)
         
-        if gl.loop_running:
+        if gl.loop_running or gl.finished:
 #            label = str(self.ag[1].get_n_concepts())
 #            paint.drawText(15, 50, label)  
             
             x_size = (cfg.x_scale * 0.66) * 100
             y_size = (cfg.y_scale * 0.9) * 100
             paint.drawLine(20,40, 20, y_size)
-            paint.drawLine(20, y_size, x_size, y_size)
+            paint.drawLine(20, y_size, x_size+20, y_size)
+            text = str(cfg.n_training_datasets) + " Training interactions"
+            paint.drawText(x_size + 30, y_size, text)
+            if self.score > self.oldscore:
+                self.oldscore = self.score
+            text2 = str(round(self.oldscore, 2))
+            paint.drawText(x_size + 30, y_size-(self.oldscore*300), text2)
             for i in self.ag:
                 if i.agent_type is "learner":
                     x_step = x_size/cfg.n_training_datasets
-                    x = 1
+                    x = 0
                     old_y = 0
+                    self.score = i.guessing_success_history[-1]  # remember last score
                     for j in i.guessing_success_history:
                         paint.drawLine( 20 + (x * x_step), y_size - (j*300), 20 + ((x-1) * x_step), y_size - (old_y*300) )
                         x += 1
