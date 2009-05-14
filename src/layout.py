@@ -19,7 +19,7 @@ class MainWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.ag = agents
         self.space = space
-        self.setGeometry(300, 100, cfg.x_scale * 100,  cfg.y_scale * 100)
+        self.setGeometry(300, 100, cfg.x_scale * 140,  cfg.y_scale * 120)
         title = 'Categories'
         self.setWindowTitle(title)
         self.score = 0
@@ -33,8 +33,8 @@ class MainWindow(QtGui.QWidget):
 #            label = str(self.ag[1].get_n_concepts())
 #            paint.drawText(15, 50, label)  
             
-            x_size = (cfg.x_scale * 0.66) * 100
-            y_size = (cfg.y_scale * 0.9) * 100
+            x_size = cfg.x_scale * 100
+            y_size = cfg.y_scale * 100
             paint.drawLine(20,40, 20, y_size)
             paint.drawLine(20, y_size, x_size+20, y_size)
             text = str(cfg.n_training_datasets) + " Training interactions"
