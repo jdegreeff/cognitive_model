@@ -182,7 +182,7 @@ def calculate_distance(data_point1, data_point2, salience = "empty"):
                                     difference = (i2[1] - (j2[1] - j2[2]))/get_range(i2[0])
                                     dist += difference/len(i1[1])
                                 else:
-                                    difference = (i2[1] - (j2[1] + j2[2]))
+                                    difference = (i2[1] - (j2[1] + j2[2]))/get_range(i2[0])
                                     dist += difference/len(i1[1])
                             else:
                                 difference = (i2[1] - j2[1] )/get_range(i2[0])

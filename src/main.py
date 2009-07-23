@@ -23,6 +23,7 @@ def main():
     """ main in which various aspects of the program are initiated 
     """
     init()
+    print "sim initialised"
     StartLayout([gl.agent1, gl.agent2], cfg.space)
     
     # new concept class test
@@ -76,6 +77,7 @@ class MainThread(Thread):
         
     def run(self):
         gl.loop_running = True
+        print "start"
         while gl.current_loop < cfg.n_replicas:
             count = 0
             for i in gl.training_data:
