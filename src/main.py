@@ -97,7 +97,7 @@ class MainThread(Thread):
                 count += 1
                 if self.window is not None:
                     self.window.update()
-            print "replica " + str(gl.current_loop)
+            print "replica " + str(gl.current_loop + 1) + " done"
             if (gl.current_loop < cfg.n_replicas-1):
                 reset()  
             gl.current_loop += 1
@@ -110,6 +110,7 @@ class MainThread(Thread):
                 calculate_statistics()
         print "done"
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
+        io.save_cp_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
         
 
 

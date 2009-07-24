@@ -5,6 +5,7 @@ from __future__ import division
 import csv
 import numpy
 from lxml import etree
+from copy import deepcopy
 
 
 def open_datafile(mode, space):
@@ -52,7 +53,7 @@ def save_matrix(agent_name, lexicon):
     """
     filename = "matrix_" + agent_name + ".csv"
     out_file = csv.writer(open(filename, 'w'), delimiter=',', quotechar='|')
-    tags = lexicon.tags
+    tags = deepcopy(lexicon.tags)
     tags.insert(0,"")
     out_file.writerow(tags)
     for count, i in enumerate(lexicon.matrix):
@@ -68,19 +69,17 @@ def save_cp_to_xml(agent_name, cp, lex):
     root = etree.Element("root")
     etree.SubElement(root, "agent").text = agent_name
     for i in cp.concepts:
-        concept = etree.SubElement(root, "concept")
-        etree.SubElement(concept, "label").text = lex.get_label(i[0])
-        etree.SubElement(concept, "tag").text = str(i[0])
-        coors = etree.SubElement(concept, "coors")
-        for j in i[1]:
-            value = etree.SubElement(coors, "dimension")
-            etree.SubElement(value, "name").text = str(j[0])
-            etree.SubElement(value, "value").text = str(j[1])
-            etree.SubElement(value, "sd").text = str(j[2])
-        if len(i) > 2:
-            usage = etree.SubElement(concept, "usage")
-            etree.SubElement(usage, "use").text = str(i[2][0])
-            etree.SubElement(usage, "success").text = str(i[2][1])
+        concept = etree.SubElement(root, "concept", label = lex.get_label(i.tag), tag = str(i.tag))
+        domains = etree.SubElement(concept, "domains")
+        for j in i.domains:
+            domain = etree.SubElement(domains, "domain", name = str(j.name))
+            for l in j.dimensions:
+                dimension = etree.SubElement(domain, "dimension", dimension = str(l[0])) 
+                etree.SubElement(dimension, "value").text = str(l[1])
+                etree.SubElement(dimension, "sd").text = str(l[2])
+        usage = etree.SubElement(concept, "usage")
+        etree.SubElement(usage, "use").text = str(i.concept_use)
+        etree.SubElement(usage, "success").text = str(i.concept_success)
     out = open(filename,'w')
     out.write(etree.tostring(root))
     
