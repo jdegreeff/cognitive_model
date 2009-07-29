@@ -39,12 +39,12 @@ def makeSphere(name, passedMesh, passedScene, dims, coors):
 def createObject(dims, coors):
 	"""creates an object for given dimensions and places this in the scene
 	"""
-	localScene = Scene.GetCurrent() #Create a single sphere.
-	sphere = Mesh.Primitives.UVsphere()
-	mat1 = Blender.Material.New('Mat1') # create material
-	mat1.rgbCol = normalize(dims, coors) # set colour
+	localScene = Scene.GetCurrent()       
+	sphere = Mesh.Primitives.UVsphere()     #Create a single sphere.
+	mat1 = Blender.Material.New('Mat1')    # create material
+	mat1.rgbCol = normalize(dims, coors)   # set colour
 	sphere.materials = [mat1]
-	tempSphere = makeSphere("sphere", sphere, localScene, dims, coors)
+	makeSphere("sphere", sphere, localScene, dims, coors)
 	Redraw(-1)
 	
 
@@ -56,11 +56,7 @@ def parseCS(file_name):
 	tree = etree.parse(fileHandle)			# parse to ElementTree object
 	fileHandle.close()						# close file
 	root = tree.getroot()					# get root as Element object
-
-	#print(etree.tostring(tree))
-
-	listing = root.getchildren()
-	return listing
+	return root.getchildren()               # returns the content of root
 	
 
 def printAgentCS(agent_filename):
@@ -85,6 +81,21 @@ def printAgentCS(agent_filename):
 	                    print m.tag + ": " + m.text
 
 
+def setText(text_string, coors):
+	"""sets a given text in the current environment on the given coordinates
+	"""
+	localScene = Scene.GetCurrent()  
+	txt = Text3d.New() 
+	txt.setText(text_string)
+	txt.setSize(0.3)
+	msg = localScene.objects.new(txt) 
+	msg.setLocation(normalize(rgb_dim, coors, global_dim))
+	msg.rot = [1.57, 0.0, 0.0]     # set rotation
+	mat = Material.New('newMat')    # create a new Material called 'newMat' 
+	mat.rgbCol = normalize(rgb_dim, coors, global_dim)    # change its colour 
+	msg.setMaterials([mat])
+	Window.RedrawAll() 
+
 
 
 def loadAgentCS(agent_filename):
@@ -95,6 +106,7 @@ def loadAgentCS(agent_filename):
 	for i in agent_cs:
 		# collect concepts
 		if i.tag == "concept":
+			concept_label = i.values()
 			for j in i:
 				if j.tag == "domains":
 					domains = []
@@ -106,18 +118,16 @@ def loadAgentCS(agent_filename):
 									if m.tag == "value":
 										coors.append(float(m.text))
 						domains.append(["rgb", coors])
-			concepts.append(domains)
+			concepts.append([concept_label[1], domains])
 	
 	# create Blender objects from concepts
 	for i in concepts:
-		for j in i:
+		concept_label = i[0]
+		for j in i[1]:
 			if j[0] == "rgb":
 				createObject(rgb_dim, j[1])
+				setText(concept_label, [j[1][0] + 6.0, j[1][1], j[1][2] + 6.0])
+				
 
+loadAgentCS("CP_teacher.xml")
 
-loadAgentCS("CP_learner.xml")
-
-
-#for i in test_coors:
-#	createObject(rgb_dim, i)
-	
