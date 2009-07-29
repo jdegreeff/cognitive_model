@@ -26,32 +26,7 @@ def main():
     init()
     print "sim initialised"
     StartLayout([gl.agent1, gl.agent2], cfg.space)
-    
-    # new concept class test
-#    cs = cp.CS("test_space")
-#    cs.add_concept("234a", [["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
-#    cs.add_concept("asdf", [["rgb", [[ "r", 2], [ "g", 5], [ "b", 0]]]])
-#    cs.add_concept("asdf", [["rgb", [[ "r", 3], [ "g", 5], [ "b", 0]]]])
-#    cs.add_concept("asdf", [["rgb", [[ "r", 4], [ "g", 5], [ "b", 0]]]])
-#    cs.add_concept("awer", [["rgb", [[ "r", 0], [ "g", 0], [ "b", 0]]], ["shape", [["sh", 5]]]])
-#    print cs.get_n_concepts()
-#    print cs.get_concepts_data()
-#    print aux.calculate_distance([["rgb", [[ "r", 0], [ "g", 0], [ "b", 0]]]],
-#                                 [["rgb", [[ "r", 255], [ "g", 255], [ "b", 255]]]] )
 
-    # discrimination game test
-#    count = 0
-#    dat = []
-#    while count < cfg.n_replicas:
-#        for i in gl.training_data:
-#            topic_index = ran.randint(0, len(i)-1)
-#            gl.agent3.discrimination_game(i, topic_index)
-#        count += 1
-#        dat.append([gl.agent3.cs.get_n_concepts(), gl.agent3.discrimination_success])
-#        print count
-#        reset()
-#    io.write_output("test", dat)
-#    print "done"
 
 
 class StartLayout():
