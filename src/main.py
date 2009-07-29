@@ -63,10 +63,6 @@ class StartLayout():
             main_window = layout.MainWindow(agents, space)
             main_window.show()
             self.thread1 = MainThread(main_window)
-        elif cfg.show_game:
-            guessing_game = layout.GuessingGame(agents, space)
-            guessing_game.show()
-            self.thread1 = MainThread(guessing_game)
         else:
             self.thread1 = MainThread()
         self.thread1.start()

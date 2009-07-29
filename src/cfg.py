@@ -26,6 +26,5 @@ direct_instruction = 0          # if 1, direct instruction is used, otherwise la
 
 # graphical properties
 use_graphics = 0                # whether or not a graphic display should be shown
-show_game = 1                   # if 1, the language game is visually shown
 x_scale = 12
 y_scale = 7
