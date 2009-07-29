@@ -70,7 +70,10 @@ class MainThread(Thread):
                     gl.stats[count][0] += float(gl.agent2.get_n_concepts())
                     gl.stats[count][1] += measure_agents_concepts_dist(gl.agent1, gl.agent2)
                     if cfg.calc_all:
-                        gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
+                        if cfg.calc_gg_success: # store the guessing game success for each interaction
+                            gl.stats[count][2].append(gl.agent2.guessing_success)
+                        else: # store the test data for each interaction
+                            gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
                         gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
                 count += 1
