@@ -4,6 +4,7 @@ from __future__ import division
 import sys, random
 from PyQt4 import QtGui, QtCore
 #from qt import *
+from copy import deepcopy
 import globals as gl
 import cfg
 
@@ -139,3 +140,50 @@ class MainWindow(QtGui.QWidget):
         paint.end()
         
     
+class GuessingGame(QtGui.QWidget):
+    """displays the running guessing game
+    """
+    def __init__(self, agents, space, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.setGeometry(300, 100, cfg.x_scale * 100,  cfg.y_scale * 100)
+        title = 'Guessing Game'
+        self.setWindowTitle(title)
+        
+    def paintEvent(self, event):
+        paint = QtGui.QPainter()
+        paint.begin(self)
+        
+        y2 = 0
+        for i in self.agents:
+            text = 'Categories of "' + i.agent_name + '"'
+            paint.drawText(900, 20 + y2, text)
+            count = 0
+            x = 0
+            y = 0
+            y += y2
+            data_list = i.cp.get_all_concept_coordinates()
+            #label_list = i.get_labels()
+            while count < len(data_list):
+                r = data_list[count][0][1]
+                g = data_list[count][1][1]
+                b = data_list[count][2][1]
+                color = QtGui.QColor(r, g, b, 255)
+                paint.setPen(colour_black)
+                paint.setBrush(color)
+                paint.drawRect(15+x, 15+y, 30, 20)
+                try:
+                    label = i.get_label(i.cp.concepts[count][0])
+                    paint.drawText(15+x, 50+y, label)
+                except IndexError:
+                    pass                   
+                if x < 800:
+                    x += 60   
+                else:
+                    x = 0
+                    y += 50
+                count += 1
+            
+            y2 += 250
+        
+        paint.end()
+        

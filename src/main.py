@@ -15,6 +15,7 @@ from threading import *
 from math import *
 import copy
 import sys
+import csv
 import globals as gl
 import agent, agent2, data, cfg, layout, io, aux, concept, cp
 
@@ -62,6 +63,10 @@ class StartLayout():
             main_window = layout.MainWindow(agents, space)
             main_window.show()
             self.thread1 = MainThread(main_window)
+        elif cfg.show_game:
+            guessing_game = layout.GuessingGame(agents, space)
+            guessing_game.show()
+            self.thread1 = MainThread(guessing_game)
         else:
             self.thread1 = MainThread()
         self.thread1.start()
@@ -79,12 +84,14 @@ class MainThread(Thread):
         gl.loop_running = True
         print "start"
         while gl.current_loop < cfg.n_replicas:
+            print "running replica " + str(gl.current_loop + 1) + "..."
             count = 0
             for i in gl.training_data:
                 if cfg.direct_instruction:
                     direct_instruction(gl.agent1, gl.agent2)
                 else:
                     guessing_game(gl.agent1, gl.agent2, i)
+                    write_out_gg_success(gl.agent2.guessing_success)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -97,7 +104,6 @@ class MainThread(Thread):
                 count += 1
                 if self.window is not None:
                     self.window.update()
-            print "replica " + str(gl.current_loop + 1) + " done"
             if (gl.current_loop < cfg.n_replicas-1):
                 reset()  
             gl.current_loop += 1
@@ -111,6 +117,7 @@ class MainThread(Thread):
         print "done"
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         io.save_cp_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
+        io.save_cp_to_xml(gl.agent1.agent_name, gl.agent1.cs, gl.agent1.lex)
         
 
 
@@ -142,6 +149,14 @@ def calculate_statistics2():
     name = "_direct" + str(cfg.direct_instruction) +"_" + str(cfg.space) + "_" + str(cfg.dataset) + "_tr" + str(cfg.n_training_datasets) + "_l" + str(cfg.n_replicas) \
             + "_al" + str(cfg.active_learning) + "_cl" + str(cfg.contrastive_learning) + "_qk" + str(cfg.query_knowledge)
     io.write_output2(name, gl.stats)
+    
+    
+def write_out_gg_success(success_rate):
+    """write output file with guessing game success
+    """
+    filename = "gg_success.csv"
+    out_file = csv.writer(open(filename, 'a'), delimiter=',', quotechar='|')
+    out_file.writerow([success_rate])
     
     
     
@@ -176,7 +191,7 @@ def reset():
 
 
 
-def guessing_game(agent1, agent2, context, topic_index = False):
+def guessing_game(agent1, agent2, context, topic_index = False, window = None):
     """ Guessing game which is played by two agents. Agent1 knows the topic, finds the closest
         matching concept and communicates the label with the strongest association to agent2.
         Agent2 uses this label and the associated concept to identify the topic from the context.
@@ -251,8 +266,8 @@ def guessing_game(agent1, agent2, context, topic_index = False):
     agent1.concept_history.append(agent1.get_n_concepts())
     agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
-    
-    
+
+
     
 def direct_instruction(agent1, agent2):
     """ direct instruction involving a teacher (agent1) with a body of knowledge and a learner (agent2)

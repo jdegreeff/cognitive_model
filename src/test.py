@@ -80,18 +80,53 @@
 
 
 
+#from lxml import etree
+#
+#root = etree.Element("root")
+#etree.SubElement(root, "child").text = "Child 1"
+#etree.SubElement(root, "child").text = "Child 2"
+#another = etree.SubElement(root, "another")
+#another.text = "try"
+#
+#etree.SubElement(another, "test").text = "test 3"
+#
+#print(etree.tostring(root, pretty_print=True))
+#
+#out = open('output.xml','w')
+#out.write ( etree.tostring(root, xml_declaration=True,) )
+
+
+
+# -*- coding: utf-8 -*-
+# parser.py
+# parses agents cs xml
+
+from __future__ import division
 from lxml import etree
 
-root = etree.Element("root")
-etree.SubElement(root, "child").text = "Child 1"
-etree.SubElement(root, "child").text = "Child 2"
-another = etree.SubElement(root, "another")
-another.text = "try"
+fileHandle = open ('CP_teacher.xml')     # read file
+tree = etree.parse(fileHandle)        # parse to ElementTree object
+fileHandle.close()            # close file
+root = tree.getroot()            # get root as Element object
 
-etree.SubElement(another, "test").text = "test 3"
+#print(etree.tostring(tree))
 
-print(etree.tostring(root, pretty_print=True))
-
-out = open('output.xml','w')
-out.write ( etree.tostring(root, xml_declaration=True,) )
-
+listing = root.getchildren()
+#print len(listing)
+for i in listing:
+    if i.tag == "agent":
+        print i.text
+    elif i.tag == "concept":
+        print "concept: " + str(i.items())
+        for j in i:
+            if j.tag == "domains":
+                for l in j:
+                    print "domain: " + str(l.items())
+                    for k in l:
+                        print k.tag
+                        for n in k:
+                            print n.tag
+                            print n.text
+            else:
+                for m in j:
+                    print m.tag + ": " + m.text
