@@ -29,8 +29,15 @@ def normalize(space, coordinates, glob=None):
 
 def makeSphere(name, passedMesh, passedScene, dims, coors):
 	ob = Object.New("Mesh",name)
-	ob.setLocation(normalize(dims, coors, global_dim))
-	ob.setSize(0.2, 0.2, 0.2)
+	ob.setLocation(normalize(dims, [coors[0][0],coors[1][0],coors[2][0]], global_dim))
+	size = [coors[0][1],coors[1][1],coors[2][1]]
+	new_size = []
+	for i in size:
+		if i > 3.0:
+			new_size.append(normalize(dims, [i], global_dim)[0])
+		else:
+			new_size.append(0.1)
+	ob.setSize(new_size)
 	ob.link(passedMesh)
 	passedScene.link(ob)
 	return ob
@@ -42,7 +49,7 @@ def createObject(dims, coors):
 	localScene = Scene.GetCurrent()       
 	sphere = Mesh.Primitives.UVsphere()     #Create a single sphere.
 	mat1 = Blender.Material.New('Mat1')    # create material
-	mat1.rgbCol = normalize(dims, coors)   # set colour
+	mat1.rgbCol = normalize(dims, [coors[0][0],coors[1][0],coors[2][0]])   # set colour
 	sphere.materials = [mat1]
 	makeSphere("sphere", sphere, localScene, dims, coors)
 	Redraw(-1)
@@ -114,9 +121,10 @@ def loadAgentCS(agent_filename):
 						if k.values() == ["rgb"]:
 							coors = []
 							for l in k:
+								dim = []
 								for m in l:
-									if m.tag == "value":
-										coors.append(float(m.text))
+									dim.append(float(m.text))
+								coors.append(dim)
 						domains.append(["rgb", coors])
 			concepts.append([concept_label[1], domains])
 	
@@ -126,7 +134,7 @@ def loadAgentCS(agent_filename):
 		for j in i[1]:
 			if j[0] == "rgb":
 				createObject(rgb_dim, j[1])
-				setText(concept_label, [j[1][0] + 6.0, j[1][1], j[1][2] + 6.0])
+				setText(concept_label, [j[1][0][0] + 6.0, j[1][1][0], j[1][2][0] + 6.0])
 				
 
 loadAgentCS("CP_teacher.xml")
