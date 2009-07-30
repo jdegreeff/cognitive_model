@@ -73,6 +73,8 @@ class MainThread(Thread):
                     else:
                         gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
                 count += 1
+                if count%100 == 0:
+                    print "    guessing games done: " + str(count)
                 if self.window is not None:
                     self.window.update()
             if (gl.current_loop < cfg.n_replicas-1):
@@ -88,7 +90,6 @@ class MainThread(Thread):
         print "done"
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         io.save_cp_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
-        io.save_cp_to_xml(gl.agent1.agent_name, gl.agent1.cs, gl.agent1.lex)
         
 
 

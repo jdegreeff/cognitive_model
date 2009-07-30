@@ -3,6 +3,7 @@
 from __future__ import division
 import random as ran
 from math import sqrt
+import time
 import globals as gl
 import data, cfg, io
 
@@ -84,11 +85,11 @@ def posMin(list):
 
 def generateTrainingData(n_sets, context_size):
     """generates training datasets, based on the specified domains in cfg
-       minimum distance is not taken into account at the moment
        training data is generated with separated stimuli for each active domain
     """
     training_dataset = []
     count = 0
+    start_time = time.time()
     while count < n_sets:
         count2 = 0
         set = []
@@ -98,27 +99,23 @@ def generateTrainingData(n_sets, context_size):
                 stimulus = []
                 for i in cfg.space:
                     if i == "rgb":
-                        #if ran.randint(0,1) == 1:
                         stim = []
                         selection = gl.rgb_data_tony[ran.randint(0, 24999)]
                         for j in [["r", selection[0]*255], ["g", selection[1]*255], ["b", selection[2]*255]]:
                             stim.append(j)
                         stimulus.append([i,stim])
                     if i == "lab":
-                        #if ran.randint(0,1) == 1:
                         stim = []
                         selection = gl.lab_data_tony[ran.randint(0, 24999)]
                         for j in [["l", selection[0]], ["a", selection[1]], ["b", selection[2]]]:
                             stim.append(j)
                         stimulus.append([i,stim])
                     if i == "4df":
-                        #if ran.randint(0,1) == 1:
                         stim = []
                         for j in [["l", ran.randint(1, 5)], ["n", ran.randint(1, 5)], ["t", ran.randint(1, 5)], ["e", ran.randint(1, 5)]]:
                             stim.append(j)
                         stimulus.append([i,stim])
                     if i == "shape":
-                        #if ran.randint(0,1) == 1:
                         stimulus.append([i,[["sh", ran.randint(data.shape_range[0],data.shape_range[1])]]])
                 if set == []:
                     check = False
@@ -135,6 +132,9 @@ def generateTrainingData(n_sets, context_size):
             count2 += 1
         training_dataset.append(set)
         count += 1
+        if count % (n_sets/10) == 0:
+            print str((count/n_sets)*100) + "% of stimuli sets generated (" + str( time.time()-start_time) + ")"
+            start_time = time.time()
 #    for i in training_dataset:
 #        dist = []
 #        for j in i:

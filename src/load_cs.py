@@ -50,6 +50,7 @@ def createObject(dims, coors):
 	sphere = Mesh.Primitives.UVsphere()     #Create a single sphere.
 	mat1 = Blender.Material.New('Mat1')    # create material
 	mat1.rgbCol = normalize(dims, [coors[0][0],coors[1][0],coors[2][0]])   # set colour
+	mat1.setAlpha(0.8)
 	sphere.materials = [mat1]
 	makeSphere("sphere", sphere, localScene, dims, coors)
 	Redraw(-1)
@@ -134,8 +135,8 @@ def loadAgentCS(agent_filename):
 		for j in i[1]:
 			if j[0] == "rgb":
 				createObject(rgb_dim, j[1])
-				setText(concept_label, [j[1][0][0] + 6.0, j[1][1][0], j[1][2][0] + 6.0])
+				text_location = [j[1][0][0] + 6.0, j[1][1][0] - j[1][1][1], j[1][2][0] + j[1][2][1]]
+				setText(concept_label, text_location)
 				
 
-loadAgentCS("CP_teacher.xml")
-
+loadAgentCS("CP_learner.xml")
