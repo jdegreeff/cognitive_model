@@ -232,4 +232,83 @@ def calculate_distance_general(point1, point2, list_salience = "empty" ):
         
         
         
+def rgb_2_xyz(rgb):
+    """ takes a rgb point [r,g,b] as input and returns [x,y,z]
+        PAL/SECAM RGB, D65 conversion matrix
+    """
+    #matrix from Tony's paper
+    x_value = (rgb[0] * 0.430587  + rgb[1] * 0.341545 + rgb[2] * 0.178336)
+    y_value = (rgb[0] * 0.222021  + rgb[1] * 0.706645 + rgb[2] * 0.0713342)
+    z_value = (rgb[0] * 0.0201837 + rgb[1] * 0.129551 + rgb[2] * 0.939234)
+
+    #matrix from http://www.brucelindbloom.com/index.html?ColorCalcHelp.html
+#    x_value = (rgb[0] * 0.4306190  + rgb[1] * 0.2220379 + rgb[2] * 0.0201853)
+#    y_value = (rgb[0] * 0.3415419  + rgb[1] * 0.7066384 + rgb[2] * 0.1295504)
+#    z_value = (rgb[0] * 0.1783091 + rgb[1] * 0.0713236 + rgb[2] * 0.9390944)
+
+    return [x_value, y_value, z_value]
+
+
+def xyz_2_lab(xyz):
+    """ takes an xyz point [x,y,z] as input and returns [l,a,b]
+    """
+    xx = xyz[0]/0.9504682
+    yy = xyz[1]/1.0
+    zz = xyz[2]/1.08883
+    if yy > 0.008856:
+        l = (116 * pow(yy,(1/3.0))) - 16
+    else:
+        l = 903.3 * yy
+    a = 500 * ( f(xx) - f(yy) )
+    b = 200 * ( f(yy) - f(zz) )
+    return [l, a, b]
+    
+
+# help function for xyz_2_lab
+def f(x):
+    if x > 0.008856:        
+        return pow(x,(1/3.0))
+    else:
+        return (7.787 * x) + (16/116)
+    
+    
+    
+def lab_2_xyz(lab):
+    """ takes a lab point [l,a,b] as input and returns [x,y,z]
+    """
+    con = 6/29.0
+    fy = (lab[0] + 16)/116
+    fx = fy + lab[1]/500
+    fz = fy - lab[2]/200
+    if fy > con:
+        y = fy**3
+    else:
+        y = (fy - 16/116)*3*(con**2)
+    if fx > con:
+        x = fx**3
+    else:
+        x = (fx - 16/116)*3*(con**2)
+    if fz > con:
+        z = fz**3
+    else:
+        z = (fz - 16/116)*3*(con**2)
+    # normalisation seems to be possible afterwards    
+    x = x*0.9504682
+    z = z*1.08883
+    return [x,y,z]
+
+
+def xyz_2_rgb(xyz):
+    """ takes a xyz point [x,y,z] as input and returns [r,g,b]
+        PAL/SECAM RGB, D65 conversion matrix from http://www.brucelindbloom.com/index.html?ColorCalcHelp.html
+    """
+    r = (xyz[0] * 3.0628971  + xyz[1] * -0.9692660 + xyz[2] * 0.0678775)
+    g = (xyz[0] * -1.3931791  + xyz[1] * 1.8760108 + xyz[2] * -0.2288548)
+    b = (xyz[0] * -0.4757517 + xyz[1] * 0.0415560 + xyz[2] * 1.0693490)
+    return [r, g, b]
+
+#test = xyz_2_lab(rgb_2_xyz([1,0,0]))
+#print test
+#text_back = xyz_2_rgb(lab_2_xyz(test))
+#print text_back
     

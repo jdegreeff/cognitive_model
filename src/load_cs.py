@@ -1,5 +1,5 @@
 # load_cs.py
-# script to run from blender, allowing to visualise a agents CS
+# script to run from blender, allowing to visualise an agents CS
 
 from __future__ import division
 from lxml import etree
