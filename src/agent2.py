@@ -139,9 +139,18 @@ class LearningAgent():
     def get_label(self, tag, inaccuracy = None):
         return self.lex.get_label(tag, inaccuracy)
     
+    
     def get_n_concepts(self):
         """ returns the number of concepts currently in the agents CS """
         return self.cs.get_n_concepts()
+    
+    
+    def get_unsuccessful_concept(self):
+        """ returns the [label, concept_data] of the concept which is the must unsuccessful in guessing games """
+        concept_data = self.cs.get_unsuccessful_concept()
+        label = self.get_label(concept_data[0])
+        return [label, concept_data]
+
 
 
 class TeachingAgent():
@@ -234,6 +243,20 @@ class TeachingAgent():
             return self.cs.concept_tags[aux.posMin(distances)]
         else:
             return "----"
+        
+        
+    def answer_query(self, label_concept):
+        """ incoming concept = ["label", concept]
+            agent checks if the label and concept are associated in agent's own lexicon
+            if so, answer is True, otherwise False
+        """
+        coors = label_concept[1][1]
+        tag = self.get_matching_concept(coors)
+        label = self.get_label(tag)
+        if label == label_concept[0]:
+            return True
+        else:
+            return False
         
         
     def get_label(self, tag, inaccuracy = None):

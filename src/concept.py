@@ -46,7 +46,7 @@ class Concept():
                 
                   
     def get_data(self):
-        """ returns the data from all domains of the concept
+        """ returns the (tag, data) from all domains of the concept
         """
         answer = []
         for i in self.domains:

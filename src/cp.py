@@ -339,6 +339,24 @@ class CS():
         for i in self.concepts:
             if i.tag == tag:
                 i.usage(result)
+                
+                
+    def get_concept_use(self, tag):
+        """ returns the use and success of the concept in the guessing game
+        """
+        for i in self.cocepts:
+            if i.tag == tag:
+                return [i.concept_use, i.concept_success]
 
+
+    def get_unsuccessful_concept(self):
+        """ returns the (tag, data) of the concept which is the must unsuccessful in guessing games
+        """
+        concept = None
+        success = 1.0
+        for i in self.concepts:
+            if (1.0*i.concept_success)/(i.concept_use+1.0) < success:
+                concept = i.get_data()
+        return concept
 
             

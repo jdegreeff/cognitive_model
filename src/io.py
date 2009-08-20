@@ -6,6 +6,7 @@ import csv
 import numpy
 from lxml import etree
 from copy import deepcopy
+import cfg
 
 
 def open_datafile(mode, space):
@@ -69,17 +70,33 @@ def save_cp_to_xml(agent_name, cp, lex):
     root = etree.Element("root")
     etree.SubElement(root, "agent").text = agent_name
     for i in cp.concepts:
-        concept = etree.SubElement(root, "concept", label = lex.get_label(i.tag), tag = str(i.tag))
-        domains = etree.SubElement(concept, "domains")
-        for j in i.domains:
-            domain = etree.SubElement(domains, "domain", name = str(j.name))
-            for l in j.dimensions:
-                dimension = etree.SubElement(domain, "dimension", dimension = str(l[0])) 
-                etree.SubElement(dimension, "value").text = str(l[1])
-                etree.SubElement(dimension, "sd").text = str(l[2])
-        usage = etree.SubElement(concept, "usage")
-        etree.SubElement(usage, "use").text = str(i.concept_use)
-        etree.SubElement(usage, "success").text = str(i.concept_success)
+        # if pruning is done, only effective concepts are stored to xml
+        if cfg.prune_concepts_xml_output > 0:
+            concept_succ = (1.0*i.concept_success)/(i.concept_use+1)
+            if concept_succ > cfg.prune_concepts_xml_output:
+                concept = etree.SubElement(root, "concept", label = lex.get_label(i.tag), tag = str(i.tag))
+                domains = etree.SubElement(concept, "domains")
+                for j in i.domains:
+                    domain = etree.SubElement(domains, "domain", name = str(j.name))
+                    for l in j.dimensions:
+                        dimension = etree.SubElement(domain, "dimension", dimension = str(l[0])) 
+                        etree.SubElement(dimension, "value").text = str(l[1])
+                        etree.SubElement(dimension, "sd").text = str(l[2])
+                usage = etree.SubElement(concept, "usage")
+                etree.SubElement(usage, "use").text = str(i.concept_use)
+                etree.SubElement(usage, "success").text = str(i.concept_success)
+        else:
+            concept = etree.SubElement(root, "concept", label = lex.get_label(i.tag), tag = str(i.tag))
+            domains = etree.SubElement(concept, "domains")
+            for j in i.domains:
+                domain = etree.SubElement(domains, "domain", name = str(j.name))
+                for l in j.dimensions:
+                    dimension = etree.SubElement(domain, "dimension", dimension = str(l[0])) 
+                    etree.SubElement(dimension, "value").text = str(l[1])
+                    etree.SubElement(dimension, "sd").text = str(l[2])
+            usage = etree.SubElement(concept, "usage")
+            etree.SubElement(usage, "use").text = str(i.concept_use)
+            etree.SubElement(usage, "success").text = str(i.concept_success)
     out = open(filename,'w')
     out.write(etree.tostring(root))
     

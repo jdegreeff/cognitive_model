@@ -53,7 +53,6 @@ class MainThread(Thread):
         
     def run(self):
         gl.loop_running = True
-        print "start"
         while gl.current_loop < cfg.n_replicas:
             print "running replica " + str(gl.current_loop + 1) + "..."
             count = 0
@@ -63,7 +62,6 @@ class MainThread(Thread):
                 else:
                     guessing_game(gl.agent1, gl.agent2, i)
                     write_out_gg_success(gl.agent2.guessing_success)
-#                    gl.agent2.discrimination_game(i, ran.randint(0, len(i)-1))
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -88,9 +86,9 @@ class MainThread(Thread):
                 calculate_statistics2()
             else:
                 calculate_statistics()
-        print "done"
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         io.save_cp_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
+        print "done"
         
 
 
@@ -174,11 +172,10 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
     if not topic_index:
         if cfg.active_learning and (agent2.get_n_concepts() > 0):
             a2_context_distance = []
-            a2_known_concepts = agent2.cp.get_all_concept_coordinates()
             for i in context:
                 distances = []
-                for j in a2_known_concepts:
-                    distances.append(agent2.cp.calculate_distance(i, j))
+                for j in agent2.cs.concepts:
+                    distances.append(aux.calculate_distance(i, j.get_data()[1]))
                 a2_context_distance.append(min(distances))
             topic_index = aux.posMax(a2_context_distance)
         else:
@@ -248,7 +245,7 @@ def direct_instruction(agent1, agent2):
         expresses its associated label for the stimulus and the learner stores both label and
         stimulus into its knowledge body
     """
-    stimulus = aux.generateTrainingData(cfg.space, 1, 1)[0][0]
+    stimulus = aux.generateTrainingData(1, 1)[0][0]
     if cfg.teaching_inaccuracy:
         int = ran.randint(1,100)
         if int > (1-cfg.teaching_inaccuracy) * 100:
@@ -260,10 +257,11 @@ def direct_instruction(agent1, agent2):
     a2_tag = agent2.get_tag(a1_label)
     if a2_tag == "label_unknown":
         tag = aux.generateRandomTag(6)
-        agent2.add_exemplar(stimulus, tag)
+        agent2.add_concept(tag, stimulus)
         agent2.add_label(a1_label, tag)
     else:
-        agent2.add_exemplar(stimulus, a2_tag)
+        agent2.add_concept(a2_tag, stimulus)
+    
     
     
     
@@ -271,7 +269,7 @@ def query_knowledge(agent1, agent2):
     """ agent2 queries knowledge with agent1, 
         based on the answer, agent2 updates it's association matrix
     """
-    a2_label_concept = agent2.get_unsure_concept()
+    a2_label_concept = agent2.get_unsuccessful_concept()
     if a2_label_concept:
         a1_answer = agent1.answer_query(a2_label_concept)
         if a1_answer:
