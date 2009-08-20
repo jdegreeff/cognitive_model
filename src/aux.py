@@ -133,7 +133,7 @@ def generateTrainingData(n_sets, context_size):
         training_dataset.append(set)
         count += 1
         if count % (n_sets/10) == 0:
-            print str((count/n_sets)*100) + "% of stimuli sets generated (" + str( time.time()-start_time) + ")"
+            print str((count/n_sets)*100) + "% of stimuli sets generated (" + str( round(time.time()-start_time, 2)) + " sec)"
             start_time = time.time()
 #    for i in training_dataset:
 #        dist = []
@@ -179,16 +179,15 @@ def calculate_distance(data_point1, data_point2, salience = "empty"):
                         if i2[0] == j2[0]:  # if dimensions match
                             if cfg.prototype_distance:
                                 if i2[1] <= j2[1]:
-                                    difference = (i2[1] - (j2[1] - j2[2]))/get_range(i2[0])
-                                    dist += difference/len(i1[1])
+                                    distance += salience[count] * ((i2[1] - (j2[1] - j2[2]))**2) #/get_range(i2[0])
+                                    #dist += difference/len(i1[1])
                                 else:
-                                    difference = (i2[1] - (j2[1] + j2[2]))/get_range(i2[0])
-                                    dist += difference/len(i1[1])
+                                    distance += salience[count] * ((i2[1] - (j2[1] + j2[2]))**2) #/get_range(i2[0])
+                                    #dist += difference/len(i1[1])
                             else:
-                                difference = (i2[1] - j2[1] )/get_range(i2[0])
-                                dist += difference/len(i1[1])
-                dist = dist**2
-                distance += (salience[count] * dist)     # take salience for the dimension into account
+                                distance += salience[count] * ((i2[1] - j2[1] )**2) #/get_range(i2[0])
+                                #dist += difference/len(i1[1])
+                #distance += (salience[count] * dist)     # take salience for the dimension into account
     if distance == None:
         return distance
     else:

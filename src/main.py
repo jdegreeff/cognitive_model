@@ -63,6 +63,7 @@ class MainThread(Thread):
                 else:
                     guessing_game(gl.agent1, gl.agent2, i)
                     write_out_gg_success(gl.agent2.guessing_success)
+#                    gl.agent2.discrimination_game(i, ran.randint(0, len(i)-1))
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
