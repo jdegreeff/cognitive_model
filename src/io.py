@@ -40,12 +40,12 @@ def write_output2(name, output):
 
 
 
-def drop_cp(agent_name, cp):
-    """ saves the CP of an agent to a file
+def drop_cs(agent_name, cs):
+    """ saves the CS of an agent to a file
     """
-    filename = "CP_" + agent_name + ".csv"
+    filename = "CS_" + agent_name + ".csv"
     out_file = csv.writer(open(filename, 'w'), delimiter=',', quotechar='|')
-    for i in cp.concepts:
+    for i in cs.concepts:
         out_file.writerow(i)
         
         
@@ -62,14 +62,14 @@ def save_matrix(agent_name, lexicon):
         out_file.writerow(output)
     
 
-def save_cp_to_xml(agent_name, cp, lex):
-    """ saves the given cp and lexicon to an xml file
+def save_cs_to_xml(agent_name, cs, lex):
+    """ saves the given cs and lexicon to an xml file
     """
     #concept format: [ "tag", [ [ "d1", value, sd], [ "d2", value, sd], [ "d3", value, sd] ], [concept_use, concept_success] ]
-    filename = "CP_" + agent_name + ".xml"
+    filename = "CS_" + agent_name + ".xml"
     root = etree.Element("root")
     etree.SubElement(root, "agent").text = agent_name
-    for i in cp.concepts:
+    for i in cs.concepts:
         # if pruning is done, only effective concepts are stored to xml
         if cfg.prune_concepts_xml_output > 0:
             concept_succ = (1.0*i.concept_success)/(i.concept_use+1)

@@ -104,7 +104,7 @@
 from __future__ import division
 from lxml import etree
 
-fileHandle = open ('CP_teacher.xml')     # read file
+fileHandle = open ('CS_teacher.xml')     # read file
 tree = etree.parse(fileHandle)        # parse to ElementTree object
 fileHandle.close()            # close file
 root = tree.getroot()            # get root as Element object

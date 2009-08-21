@@ -57,7 +57,7 @@ class MainWindow(QtGui.QWidget):
                     x = 0
                     y = 0
                     y += y2
-                    data_list = i.cp.get_all_concept_coordinates()
+                    data_list = i.cs.get_all_concept_coordinates()
                     #label_list = i.get_labels()
                     while count < len(data_list):
                         r = data_list[count][0][1]
@@ -68,7 +68,7 @@ class MainWindow(QtGui.QWidget):
                         paint.setBrush(color)
                         paint.drawRect(15+x, 15+y, 30, 20)
                         try:
-                            label = i.get_label(i.cp.concepts[count][0])
+                            label = i.get_label(i.cs.concepts[count][0])
                             paint.drawText(15+x, 50+y, label)
                         except IndexError:
                             pass                   
@@ -91,7 +91,7 @@ class MainWindow(QtGui.QWidget):
                     y = 10
                     y += y2
                     count = 0                
-                    data_list = i.cp.get_all_concept_coordinates()
+                    data_list = i.cs.get_all_concept_coordinates()
                     label_list = i.get_labels()
                     paint.setBrush(colour_black)
                     while count < len(data_list):
@@ -161,7 +161,7 @@ class GuessingGame(QtGui.QWidget):
             x = 0
             y = 0
             y += y2
-            data_list = i.cp.get_all_concept_coordinates()
+            data_list = i.cs.get_all_concept_coordinates()
             #label_list = i.get_labels()
             while count < len(data_list):
                 r = data_list[count][0][1]
@@ -172,7 +172,7 @@ class GuessingGame(QtGui.QWidget):
                 paint.setBrush(color)
                 paint.drawRect(15+x, 15+y, 30, 20)
                 try:
-                    label = i.get_label(i.cp.concepts[count][0])
+                    label = i.get_label(i.cs.concepts[count][0])
                     paint.drawText(15+x, 50+y, label)
                 except IndexError:
                     pass                   

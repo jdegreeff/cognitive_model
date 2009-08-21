@@ -132,7 +132,7 @@ def generateTrainingData(n_sets, context_size):
             count2 += 1
         training_dataset.append(set)
         count += 1
-        if count % (n_sets/10) == 0:
+        if count % (n_sets/5) == 0:
             print str((count/n_sets)*100) + "% of stimuli sets generated (" + str( round(time.time()-start_time, 2)) + " sec)"
             start_time = time.time()
 #    for i in training_dataset:

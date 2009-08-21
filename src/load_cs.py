@@ -139,4 +139,4 @@ def loadAgentCS(agent_filename):
 				setText(concept_label, text_location)
 				
 
-loadAgentCS("CP_learner.xml")
+loadAgentCS("CS_learner.xml")

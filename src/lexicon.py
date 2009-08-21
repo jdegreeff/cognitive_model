@@ -14,7 +14,7 @@ class Lexicon():
     
     def __init__(self, name):
         """ initiate variables """
-        self.holder_name = name        # name of the agent holding this CP
+        self.holder_name = name        # name of the agent holding this CS
         self.labels = []               # list of labels
         self.tags = []                 # list of tags
         self.matrix = numpy.array([])  # associative matrix

@@ -6,8 +6,6 @@
 # main.py
 
 
-# TODO: implementation of manhattan distance calculation for discrete metric
-
 from __future__ import division
 from PyQt4 import QtGui, QtCore
 import random as ran
@@ -17,7 +15,8 @@ import copy
 import sys
 import csv
 import globals as gl
-import agent, agent2, data, cfg, layout, io, aux, concept, cp
+import agent, data, cfg, layout, io, aux, concept, cs
+
 
 
 def main():
@@ -43,6 +42,7 @@ class StartLayout():
         self.thread1.start()
         sys.exit(app.exec_())
     
+     
         
 class MainThread(Thread):
     """ main thread 
@@ -87,7 +87,7 @@ class MainThread(Thread):
             else:
                 calculate_statistics()
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
-        io.save_cp_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
+        io.save_cs_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
         print "done"
         
 
@@ -108,6 +108,7 @@ def calculate_statistics():
     io.write_output(name, gl.stats)
     
     
+    
 def calculate_statistics2():
     """ calculates statistics and writes output file in the source directory,
         typically called after all loops are finished, SD is included as well
@@ -122,6 +123,7 @@ def calculate_statistics2():
     io.write_output2(name, gl.stats)
     
     
+    
 def write_out_gg_success(success_rate):
     """write output file with guessing game success
     """
@@ -129,7 +131,7 @@ def write_out_gg_success(success_rate):
     out_file = csv.writer(open(filename, 'a'), delimiter=',', quotechar='|')
     out_file.writerow([success_rate])
     
-    
+ 
     
 def init():
     """ initialises various parameters and values 
@@ -137,8 +139,8 @@ def init():
     gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
     gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
-    gl.agent1 = agent2.TeachingAgent("teacher")
-    gl.agent2 = agent2.LearningAgent("learner")
+    gl.agent1 = agent.TeachingAgent("teacher")
+    gl.agent2 = agent.LearningAgent("learner")
     counter = 0
     while counter < cfg.n_training_datasets:
         if cfg.calc_all:
@@ -148,12 +150,12 @@ def init():
         counter += 1
 
 
-    
+
 def reset():
     """ resets all global variables
     """
-    gl.agent1 = agent2.TeachingAgent("teacher")
-    gl.agent2 = agent2.LearningAgent("learner")
+    gl.agent1 = agent.TeachingAgent("teacher")
+    gl.agent2 = agent.LearningAgent("learner")
     gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
@@ -238,7 +240,7 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
     gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
 
 
-    
+
 def direct_instruction(agent1, agent2):
     """ direct instruction involving a teacher (agent1) with a body of knowledge and a learner (agent2)
         a random stimulus is picked, and presented to both teacher and learner. The teacher 
@@ -261,7 +263,6 @@ def direct_instruction(agent1, agent2):
         agent2.add_label(a1_label, tag)
     else:
         agent2.add_concept(a2_tag, stimulus)
-    
     
     
     
@@ -296,58 +297,6 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
             correctness += 1
         count += 1
     return correctness/count
-    
-
-        
-        
-def measure_agents_lexicon():
-    """ calculates the percentage of agents lexicon which matches the lexicon of other agents
-        TODO: modify this function so that it counts only proper labels,
-        right now it is taking all labels into account, also the ones which have a very low connection
-    """
-    matching = 1
-    for i in gl.agent_set:
-        uniques = 0.0
-        for j in i.lex.labels:
-            check = 0
-            for k in gl.agent_set:
-                if i is not k:
-                    if j in k.lex.labels:
-                        check = 1
-            if not check:
-                uniques += 1
-        if len(i.lex.labels) == 0:
-            length = 1
-        else: 
-            length = len(i.lex.labels)
-        matching -= (uniques/length/len(gl.agent_set))
-    return int(matching * 100)
-            
-        
-        
-def measure_agents_concepts_dist(agent1, agent2):
-    """ measures the distance between the concepts of two given agents
-        for each concept of one agent, the closest concept of the second agent is found
-        and the difference is added to the overall distance, and this is done vice versa
-    """
-    agent1_concepts = agent1.get_all_concept_coordinates()
-    agent2_concepts = agent2.get_all_concept_coordinates()
-    concepts_distance = 0.0
-    for i in agent1_concepts:
-        distances = []
-        for j in agent2_concepts:
-            distance = aux.calculate_distance_general(i, j)
-            distances.append(distance)
-        if distances:
-            concepts_distance += min(distances)
-    for i in agent2_concepts:
-        distances = []
-        for j in agent1_concepts:
-            distance = aux.calculate_distance_general(i, j)
-            distances.append(distance)
-        if distances:
-            concepts_distance += min(distances)
-    return sqrt(concepts_distance)
         
         
 

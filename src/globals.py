@@ -1,8 +1,6 @@
 # globals.py
-#import globals as gl
 
 # global variables
-agent_set = []              # a collection of agents
 training_data = []          # training data
 rgb_data_tony =[]           # training data from Tony Belpaeme
 lab_data_tony =[]           # training data from Tony Belpaeme
