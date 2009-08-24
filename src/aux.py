@@ -162,6 +162,7 @@ def calculate_distance(data_point1, data_point2, salience = "empty"):
         data_point2 = [ [ "domain", [ ["d1", value, SD], ["d2", value, SD]]], ...] (if no SD, 0 is added)
         salience = [s1, s2,...,sn]
         for each domain, the maximum distance is 1
+        TODO: implement city-block distance calculation for separable dimensions
     """
     distance = None
     if salience == "empty":

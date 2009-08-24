@@ -1,5 +1,5 @@
 # load_cs.py
-# script to run from blender, allowing to visualise an agents CS
+# script to run from blender, allowing to visualise a agents CS
 
 from __future__ import division
 from lxml import etree
@@ -139,4 +139,4 @@ def loadAgentCS(agent_filename):
 				setText(concept_label, text_location)
 				
 
-loadAgentCS("CS_learner.xml")
+loadAgentCS("CS_learner_prototype.xml")

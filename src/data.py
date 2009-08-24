@@ -52,7 +52,6 @@ shape_data = [["empty", [["sh", 0.0]]],
               ["circle", [["sh", 10.0]]] ]
 
 
-
 # domain ranges
 rgb_range = [0, 255]
 shape_range = [0, 10]

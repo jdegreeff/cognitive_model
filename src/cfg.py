@@ -5,10 +5,10 @@
 adapt_threshold = 0.9
 lateral_inhibition = 0
 label_learning_rate = 0.01
-space = ["lab"]                 # "rgb", "lab", "4df", "shape"
+space = ["rgb"]                 # "rgb", "lab", "4df", "shape"
 dataset = "uniform"             # "natural" or "uniform"
 context_size = 4                # number of stimuli in the context, including the topic
-sample_minimum_distance = 50    # minimum distance between stimuli in the context
+sample_minimum_distance = 1    # minimum distance between stimuli in the context
 calc_statistics = 1             # specifies whether or not statistics are calculated after every guessing game
 calc_all = 0                     # specifies whether or not all values from every replica are stored in stats
 n_training_datasets = 2000      # number of training interactions
