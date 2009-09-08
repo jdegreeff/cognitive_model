@@ -37,6 +37,23 @@ basic_colour_set_small = [ ["blue",   [ ["r", 0.0], ["g", 0.0], ["b", 255.0]] ],
                            ["black",  [ ["r", 0.0], ["g", 0.0], ["b", 0.0]] ] ]
 
 
+generic_data = [["label0", [["dom0", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]],
+                            ["dom1", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]],
+                            ["dom2", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]]]],
+                ["label1", [["dom0", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]],
+                            ["dom1", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]],
+                            ["dom2", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]]]],
+                ["label2", [["dom0", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]],
+                            ["dom1", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]],
+                            ["dom2", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]]]],
+                ["label3", [["dom0", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]],
+                            ["dom1", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]],
+                            ["dom2", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]]]],
+                ["label4", [["dom0", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]],
+                            ["dom1", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.0]]],
+                            ["dom2", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]]]]]
+
+
 # shape domain:   0 = empty, 1 = point, 2 = line, 3 = triangle, 4 = square, 5 = pentagon, 
 #                 6 = hexagon, 7 = heptagon, 8 = octagon, 9 = enneagon, 10 = circle
 shape_data = [["empty", [["sh", 0.0]]],

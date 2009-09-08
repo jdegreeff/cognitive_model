@@ -1,3 +1,54 @@
+
+import time
+from numpy import *
+import Gnuplot, Gnuplot.funcutils
+
+
+g = Gnuplot.Gnuplot(debug=0)
+g.title('A simple example') # (optional)
+g('set data style linespoints') # give gnuplot an arbitrary command
+#
+#d = Gnuplot.Data([0.0, 0.0, 0.0], [0.0, 1.0, 2.0])
+#g.title('test')
+#g.xlabel('interactions')
+#g.ylabel('test')
+#g.set_range("xrange", (0.0, 3.0))
+#g.set_range("yrange", (0.0, 3.0))
+## Plot a function alongside the Data PlotItem defined above:
+#g.plot(d)
+#raw_input('Please press return to continue...\n')
+
+#x = [0.0, 0.5, 1.0]
+#y1 = [0.0, 1.0, 2.0]
+
+stop = 1000000
+count = 1
+x = range(count)
+y = range(count)
+g.set_range("yrange", (0.0, 100.0))
+g.set_range("xrange", (0.0, 100.0))
+d = Gnuplot.Data(x, y)
+g.plot(d)
+while count < stop:
+    x = range(count)
+    y = range(count)
+    g.refresh()
+    count += 1
+# Notice how this plotitem is created here but used later?  This
+# is convenient if the same dataset has to be plotted multiple
+# times.  It is also more efficient because the data need only be
+# written to a temporary file once.
+#d = Gnuplot.Data(x, y1,
+#                 title='calculated by python',
+#                 with_='points 3 3')
+#g.title('Data can be computed by python or gnuplot')
+#g.xlabel('x')
+#g.ylabel('x squared')
+## Plot a function alongside the Data PlotItem defined above:
+#g.plot(d)
+#raw_input('Please press return to continue...\n')
+
+
 #
 #i = 3
 #if i == (1 or 2):
@@ -100,33 +151,33 @@
 # -*- coding: utf-8 -*-
 # parser.py
 # parses agents cs xml
-
-from __future__ import division
-from lxml import etree
-
-fileHandle = open ('CS_teacher.xml')     # read file
-tree = etree.parse(fileHandle)        # parse to ElementTree object
-fileHandle.close()            # close file
-root = tree.getroot()            # get root as Element object
-
-#print(etree.tostring(tree))
-
-listing = root.getchildren()
-#print len(listing)
-for i in listing:
-    if i.tag == "agent":
-        print i.text
-    elif i.tag == "concept":
-        print "concept: " + str(i.items())
-        for j in i:
-            if j.tag == "domains":
-                for l in j:
-                    print "domain: " + str(l.items())
-                    for k in l:
-                        print k.tag
-                        for n in k:
-                            print n.tag
-                            print n.text
-            else:
-                for m in j:
-                    print m.tag + ": " + m.text
+#
+#from __future__ import division
+#from lxml import etree
+#
+#fileHandle = open ('CS_teacher.xml')     # read file
+#tree = etree.parse(fileHandle)        # parse to ElementTree object
+#fileHandle.close()            # close file
+#root = tree.getroot()            # get root as Element object
+#
+##print(etree.tostring(tree))
+#
+#listing = root.getchildren()
+##print len(listing)
+#for i in listing:
+#    if i.tag == "agent":
+#        print i.text
+#    elif i.tag == "concept":
+#        print "concept: " + str(i.items())
+#        for j in i:
+#            if j.tag == "domains":
+#                for l in j:
+#                    print "domain: " + str(l.items())
+#                    for k in l:
+#                        print k.tag
+#                        for n in k:
+#                            print n.tag
+#                            print n.text
+#            else:
+#                for m in j:
+#                    print m.tag + ": " + m.text

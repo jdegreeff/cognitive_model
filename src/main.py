@@ -1,4 +1,4 @@
-# basic model 0.8.7.13
+# basic model 0.8.8.10
 # CONCEPT project
 # University of Plymouth
 # Joachim de Greeff
@@ -8,9 +8,11 @@
 
 from __future__ import division
 from PyQt4 import QtGui, QtCore
-import random as ran
 from threading import *
 from math import *
+from numpy import *
+import Gnuplot, Gnuplot.funcutils
+import random as ran
 import copy
 import sys
 import csv
@@ -70,7 +72,7 @@ class MainThread(Thread):
                     if cfg.calc_all:
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
-                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)
+                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)                        
                 count += 1
                 if count%100 == 0:
                     print "    guessing games done: " + str(count)
@@ -90,6 +92,8 @@ class MainThread(Thread):
         io.save_cs_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
         print "done"
         
+        if cfg.gnuplot:
+            gnu_output()
 
 
 def calculate_statistics():
@@ -136,9 +140,9 @@ def write_out_gg_success(success_rate):
 def init():
     """ initialises various parameters and values 
     """
-    gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
-    gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
-    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
+#    gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
+#    gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
+    gl.training_data = aux.generate_training_data_general(cfg.n_training_datasets, cfg.context_size)
     gl.agent1 = agent.TeachingAgent("teacher")
     gl.agent2 = agent.LearningAgent("learner")
     counter = 0
@@ -156,11 +160,29 @@ def reset():
     """
     gl.agent1 = agent.TeachingAgent("teacher")
     gl.agent2 = agent.LearningAgent("learner")
-    gl.training_data = aux.generateTrainingData(cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generate_training_data_general(cfg.n_training_datasets, cfg.context_size)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
     gl.guessing_success = 0.0
     gl.loop_running = False
+    
+    
+def gnu_output():
+    """creates an output using gnuplot
+    """
+    g = Gnuplot.Gnuplot(debug=0)
+    g.title('A simple example') # (optional)
+    g('set data style linespoints') # give gnuplot an arbitrary command
+    d = Gnuplot.Data(range(cfg.n_training_datasets), gl.guessing_success_history)
+    #d = Gnuplot.Data([0.0, 0.5, 1.0],[0.0, 1.0, 2.0])
+    g.title('test')
+    g.xlabel('interactions')
+    g.ylabel('test')
+    g.set_range("yrange", (0.0, 1.0))
+    g.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
+    # Plot a function alongside the Data PlotItem defined above:
+    g.plot(d)
+    raw_input('Please press return to continue...\n')
 
 
 
@@ -238,6 +260,7 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
     agent1.concept_history.append(agent1.get_n_concepts())
     agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
+    gl.guessing_success_history.append(gl.guessing_success)
 
 
 
@@ -289,7 +312,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     count = 0
     correctness = 0.0
     while count < n_tests:
-        test_concept = aux.generateTrainingData(1, 1)[0][0]
+        test_concept = aux.generate_training_data_general(1, 1)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
         #a2_label = agent2.get_label(agent2.get_random_concept())

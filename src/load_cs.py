@@ -11,6 +11,7 @@ test_coors = [[255.0, 0.0, 0.0],[0.0, 255.0, 0.0],[0.0, 0.0, 255.0]]
 
 rgb_dim = [0.0, 255.0]
 global_dim = [0.0, 10.0]
+generic_dim = [0.0, 1.0]
 
 
 def normalize(space, coordinates, glob=None):
@@ -127,6 +128,14 @@ def loadAgentCS(agent_filename):
 									dim.append(float(m.text))
 								coors.append(dim)
 						domains.append(["rgb", coors])
+					if k.values() == ["generic0"]:
+						coors = []
+						for l in k:
+							dim = []
+							for m in l:
+								dim.append(float(m.text))
+							coors.append(dim)
+					domains.append(["generic0", coors])
 			concepts.append([concept_label[1], domains])
 	
 	# create Blender objects from concepts
@@ -137,6 +146,10 @@ def loadAgentCS(agent_filename):
 				createObject(rgb_dim, j[1])
 				text_location = [j[1][0][0] + 6.0, j[1][1][0] - j[1][1][1], j[1][2][0] + j[1][2][1]]
 				setText(concept_label, text_location)
+			if j[0] == "generic0":
+				createObject(generic_dim, j[1])
+				text_location = [j[1][0][0] + 0.06, j[1][1][0] - j[1][1][1], j[1][2][0] + j[1][2][1]]
+				setText(concept_label, text_location)
 				
 
-loadAgentCS("CS_learner_prototype.xml")
+loadAgentCS("CS_learner.xml")

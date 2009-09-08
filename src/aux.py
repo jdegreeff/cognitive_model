@@ -145,6 +145,49 @@ def generateTrainingData(n_sets, context_size):
     return training_dataset
 
 
+def generate_training_data_general(n_sets, context_size):
+    """generates training datasets, based on the specified number of domains and dimensions in cfg
+    """
+    training_dataset = []
+    count = 0
+    start_time = time.time()
+    while count < n_sets:
+        count2 = 0
+        set = []
+        while count2 < context_size:
+            check = True
+            while check:
+                stimulus = []
+                n_dom = 0
+                while n_dom < cfg.n_domains:
+                    stim = []
+                    n_dim = 0
+                    while n_dim < cfg.n_dimensions:
+                        stim.append(["dim" + str(n_dim), ran.random()])
+                        n_dim += 1
+                    stimulus.append(["dom" + str(n_dom) ,stim])
+                    n_dom += 1
+                if set == []:
+                    check = False
+                else:   # check if distance is big enough
+                    sequence = []
+                    for i in set:
+                        if cfg.sample_minimum_distance < calculate_distance(i, stimulus):
+                            sequence.append("1")
+                        else:
+                            sequence.append("0")
+                    if "0" not in sequence:
+                        check = False
+            set.append(stimulus)
+            count2 += 1
+        training_dataset.append(set)
+        count += 1
+        if count % (n_sets/5) == 0:
+            print str((count/n_sets)*100) + "% of stimuli sets generated (" + str( round(time.time()-start_time, 2)) + " sec)"
+            start_time = time.time()
+    return training_dataset
+
+
 
 def calculate_max_dis():
     """ calculates the maximum distance based on the range of the current space """
@@ -161,7 +204,6 @@ def calculate_distance(data_point1, data_point2, salience = "empty"):
         data_point1 = [ [ "domain", [ ["d1", value], ["d2", value]]], ...]
         data_point2 = [ [ "domain", [ ["d1", value, SD], ["d2", value, SD]]], ...] (if no SD, 0 is added)
         salience = [s1, s2,...,sn]
-        for each domain, the maximum distance is 1
         TODO: implement city-block distance calculation for separable dimensions
     """
     distance = None

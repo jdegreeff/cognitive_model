@@ -23,6 +23,7 @@ class LearningAgent():
         self.n_guessing_games = 0                   # number of guessing games played by the agent
         self.n_success_gg = 0                       # number of successful guessing games
         self.guessing_success = 0.0                 # agents guessing success ratio
+        self.guessing_success_history = []          # agents guessing success ratio history
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
         
         
@@ -170,6 +171,7 @@ class TeachingAgent():
         self.n_guessing_games = 0                   # number of guessing games played by the agent
         self.n_success_gg = 0                       # number of successful guessing games
         self.guessing_success = 0.0                 # agents guessing success ratio
+        self.guessing_success_history = []          # agents guessing success ratio history
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
         
     def add_concept(self, tag, concept_data):
@@ -191,13 +193,15 @@ class TeachingAgent():
         for i in cfg.space:
             if i == "rgb":
                 knowledge = data.basic_colour_rgb
-            if i == "lab":
+            elif i == "lab":
                 knowledge = data.basic_colour_lab
-            if i == "shape":
+            elif i == "shape":
                 knowledge = data.shape_data
+            else:
+                knowledge = data.generic_data
             for j in knowledge:
                 tag = aux.generateRandomTag(6)
-                self.add_concept(tag, [[i, j[1]]])
+                self.add_concept(tag, j[1])
                 self.add_label(j[0], tag)
             for count, j in enumerate(self.lex.matrix):     # increase connections strength to 1
                 j[count] = 1.0
