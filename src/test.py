@@ -21,19 +21,22 @@ g('set data style linespoints') # give gnuplot an arbitrary command
 #x = [0.0, 0.5, 1.0]
 #y1 = [0.0, 1.0, 2.0]
 
-stop = 1000000
-count = 1
+stop = 100000
+count = 50
 x = range(count)
 y = range(count)
-g.set_range("yrange", (0.0, 100.0))
-g.set_range("xrange", (0.0, 100.0))
-d = Gnuplot.Data(x, y)
-g.plot(d)
-while count < stop:
-    x = range(count)
-    y = range(count)
-    g.refresh()
-    count += 1
+w = range(50,0,-1)
+z = range(50,0,-1)
+g.set_range("yrange", (0.0, 50.0))
+g.set_range("xrange", (0.0, 50.0))
+d1 = Gnuplot.Data(x, y)
+d2 = Gnuplot.Data(x, z)
+g.plot(d1,d2)
+#while count < stop:
+#    x = range(count)
+#    y = range(count)
+#    g.refresh()
+#    count += 1
 # Notice how this plotitem is created here but used later?  This
 # is convenient if the same dataset has to be plotted multiple
 # times.  It is also more efficient because the data need only be
@@ -46,7 +49,7 @@ while count < stop:
 #g.ylabel('x squared')
 ## Plot a function alongside the Data PlotItem defined above:
 #g.plot(d)
-#raw_input('Please press return to continue...\n')
+raw_input('Please press return to continue...\n')
 
 
 #

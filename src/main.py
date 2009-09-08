@@ -72,7 +72,9 @@ class MainThread(Thread):
                     if cfg.calc_all:
                         gl.stats[count][2].append(measure_agent_knowledge(gl.agent1, gl.agent2, 100))
                     else:
-                        gl.stats[count][2] += measure_agent_knowledge(gl.agent1, gl.agent2, 100)                        
+                        measure = measure_agent_knowledge(gl.agent1, gl.agent2, 100)
+                        gl.agent2.knowledge_history.append(measure)
+                        gl.stats[count][2] += measure                        
                 count += 1
                 if count%100 == 0:
                     print "    guessing games done: " + str(count)
@@ -173,15 +175,14 @@ def gnu_output():
     g = Gnuplot.Gnuplot(debug=0)
     g.title('A simple example') # (optional)
     g('set data style linespoints') # give gnuplot an arbitrary command
-    d = Gnuplot.Data(range(cfg.n_training_datasets), gl.guessing_success_history)
-    #d = Gnuplot.Data([0.0, 0.5, 1.0],[0.0, 1.0, 2.0])
-    g.title('test')
+    d1 = Gnuplot.Data(range(cfg.n_training_datasets), gl.guessing_success_history)
+    d2 = Gnuplot.Data(range(cfg.n_training_datasets), gl.agent2.knowledge_history)
+    g.title('output')
     g.xlabel('interactions')
-    g.ylabel('test')
+    g.ylabel('success rate')
     g.set_range("yrange", (0.0, 1.0))
     g.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
-    # Plot a function alongside the Data PlotItem defined above:
-    g.plot(d)
+    g.plot(d1, d2)
     raw_input('Please press return to continue...\n')
 
 

@@ -25,7 +25,7 @@ class LearningAgent():
         self.guessing_success = 0.0                 # agents guessing success ratio
         self.guessing_success_history = []          # agents guessing success ratio history
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
-        
+        self.knowledge_history = []                 # list of the success rate of the knowledge test after each interaction
         
     def add_concept(self, tag, concept_data):
         """ adds concept data to the concept for the given tag """ 
