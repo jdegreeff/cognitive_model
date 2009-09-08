@@ -52,6 +52,11 @@ shape_data = [["empty", [["sh", 0.0]]],
               ["circle", [["sh", 10.0]]] ]
 
 
+fruit_data = [["apple", [["circle", 0.9], ["green", 0.6], ["red", 0.6], ["brown", 0.3]]],
+              ["banana", [["line", 0.6], ["yellow", 0.9], ["green", 0.2]]], 
+              ["orange", [["circle", 0.9], ["orange", 0.9], ["green", 0.2]]]]
+
+
 # domain ranges
 rgb_range = [0, 255]
 shape_range = [0, 10]
