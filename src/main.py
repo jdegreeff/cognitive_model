@@ -16,6 +16,7 @@ import random as ran
 import copy
 import sys
 import csv
+import time
 import globals as gl
 import agent, data, cfg, layout, io, aux, concept, cs
 
@@ -84,6 +85,7 @@ class MainThread(Thread):
                 reset()  
             gl.current_loop += 1
         gl.loop_running = False
+        
         # statistics
         if cfg.calc_statistics:
             if cfg.calc_all:
@@ -93,7 +95,6 @@ class MainThread(Thread):
         io.save_matrix(gl.agent2.agent_name, gl.agent2.lex)
         io.save_cs_to_xml(gl.agent2.agent_name, gl.agent2.cs, gl.agent2.lex)
         print "done"
-        
         if cfg.gnuplot:
             gnu_output()
 
@@ -172,18 +173,29 @@ def reset():
 def gnu_output():
     """creates an output using gnuplot
     """
-    g = Gnuplot.Gnuplot(debug=0)
-    g.title('A simple example') # (optional)
-    g('set data style linespoints') # give gnuplot an arbitrary command
+    g1 = Gnuplot.Gnuplot(debug=0)
+    g1('set data style linespoints') # give gnuplot an arbitrary command
     d1 = Gnuplot.Data(range(cfg.n_training_datasets), gl.guessing_success_history)
     d2 = Gnuplot.Data(range(cfg.n_training_datasets), gl.agent2.knowledge_history)
-    g.title('output')
-    g.xlabel('interactions')
-    g.ylabel('success rate')
-    g.set_range("yrange", (0.0, 1.0))
-    g.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
-    g.plot(d1, d2)
-    raw_input('Please press return to continue...\n')
+    g1.title('output')
+    g1.xlabel('interactions')
+    g1.ylabel('success rate')
+    g1.set_range("yrange", (0.0, 1.0))
+    g1.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
+    g1.plot(d1, d2)
+    g1.hardcopy('gp_test.ps', mode='eps', enhanced=1, color=1)
+    
+    g2 = Gnuplot.Gnuplot(debug=0)
+    g2('set data style linespoints') # give gnuplot an arbitrary command
+    d3 = Gnuplot.Data(range(cfg.n_training_datasets), gl.agent2.concept_history)
+    g2.title('output')
+    g2.xlabel('interactions')
+    g2.ylabel('number of concepts')
+    g2.set_range("yrange", (0.0, (1.1*gl.agent2.get_n_concepts())))
+    g2.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
+    g2.plot(d3)
+    
+    raw_input('showing plot...\n')
 
 
 
@@ -247,7 +259,7 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
             if a2_disc_result not in agent2.lex.tags:    # if a new concept is learnt, add this to the lexicon
                 agent2.add_label(a1_topic_label, a2_disc_result)
             agent2.concept_use(a2_guessing_game_answer[1]) # measure concept use
-    
+            
     # statistics
     gl.n_guessing_games += 1
     agent1.n_guessing_games += 1
@@ -262,7 +274,6 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
     agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
     gl.guessing_success_history.append(gl.guessing_success)
-
 
 
 def direct_instruction(agent1, agent2):

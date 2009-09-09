@@ -198,7 +198,7 @@ class TeachingAgent():
             elif i == "shape":
                 knowledge = data.shape_data
             else:
-                knowledge = data.generic_data
+                knowledge = data.generic_data1
             for j in knowledge:
                 tag = aux.generateRandomTag(6)
                 self.add_concept(tag, j[1])
