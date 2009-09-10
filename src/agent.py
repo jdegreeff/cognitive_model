@@ -46,8 +46,6 @@ class LearningAgent():
             The tag of the concept (either successful, shifted or new) is returned
             context = sets of data [  [ "domain", [ [d1, value], [d2, value], ..., [dn, value] ]], ..., ]
         """
-        if self.n_discrimination_games > 10:
-            pass
         context_new = copy.deepcopy(context)    # make a copy
         # if no concepts exits, create a new one on the topic coordinates
         if self.cs.get_n_concepts() == 0:
@@ -61,7 +59,7 @@ class LearningAgent():
                 distances = []
                 for j in self.cs.concepts:
                     data = j.get_data()
-                    distances.append(aux.calculate_distance(i, data[1]))
+                    distances.append(aux.calculate_distance(i, data[2]))
                 best_matching_concept = self.cs.concept_tags[aux.posMin(distances)]
                 best_matching_concepts.append(best_matching_concept)
             # determine the outcome of the guessing game
@@ -106,7 +104,8 @@ class LearningAgent():
         """
         distances = []
         for i in self.cs.concepts:
-            distances.append(aux.calculate_distance(coors, i.get_data()[1]))
+            data = i.get_data()
+            distances.append(aux.calculate_distance(coors, data[2], data[1]))
         if distances:
             return self.cs.concept_tags[aux.posMin(distances)]
         else:
@@ -190,21 +189,14 @@ class TeachingAgent():
             Knowledge is added as concepts
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
-        for i in cfg.space:
-            if i == "rgb":
-                knowledge = data.basic_colour_rgb
-            elif i == "lab":
-                knowledge = data.basic_colour_lab
-            elif i == "shape":
-                knowledge = data.shape_data
-            else:
-                knowledge = data.generic_data1
-            for j in knowledge:
-                tag = aux.generateRandomTag(6)
-                self.add_concept(tag, j[1])
-                self.add_label(j[0], tag)
-            for count, j in enumerate(self.lex.matrix):     # increase connections strength to 1
-                j[count] = 1.0
+        knowledge = data.basic_colour_rgb2
+        for j in knowledge:
+            tag = aux.generateRandomTag(6)
+            self.add_concept(tag, j[1])
+            self.add_label(j[0], tag)
+        for count, j in enumerate(self.lex.matrix):     # increase connections strength to 1
+            j[count] = 1.0
+                
                 
     def discrimination_game(self, context, topic_index):
         """ Discrimination game in which an agent has to distinguish the topic
@@ -222,7 +214,7 @@ class TeachingAgent():
             distances = []
             for j in self.cs.concepts:
                 data = j.get_data()
-                distances.append(aux.calculate_distance(i, data[1]))
+                distances.append(aux.calculate_distance(i, data[2], data[1]))
             best_matching_concept = self.cs.concept_tags[aux.posMin(distances)]
             best_matching_concepts.append(best_matching_concept)
         # determine the outcome of the guessing game
@@ -242,7 +234,8 @@ class TeachingAgent():
         """
         distances = []
         for i in self.cs.concepts:
-            distances.append(aux.calculate_distance(coors, i.get_data()[1]))
+            data = i.get_data()
+            distances.append(aux.calculate_distance(coors, data[2], data[1]))
         if distances:
             return self.cs.concept_tags[aux.posMin(distances)]
         else:

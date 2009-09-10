@@ -13,7 +13,7 @@ class Concept():
         """ initiate variables """
         self.tag = tag                  # concept tag
         self.domains = []               # domains in which the concepts has coordinates
-        self.domain_list = []           # list containing the names of the domains in which the concept has coors
+        self.domain_weights = []         # list containing the names and weights of the domains in which the concept has coors
         self.concept_use = 0            # n times the concept is used in language games
         self.concept_success = 0        # n times the concept is used successful
         self.initiate_new(concept_data) # initiates new data
@@ -24,9 +24,12 @@ class Concept():
             creates a new domain based on given coors
             coors = [ "d1", value], [ "d2", value], [ "d3", value]
         """
+        for count, i in enumerate(concept_data): # add dimension weight if not given
+            if len(i) == 2: 
+                concept_data[count] = [concept_data[count][0], 1.0, concept_data[count][1]]
         for i in concept_data:
-            self.domains.append(Domain(i[0], i[1]))
-            self.domain_list.append(i[0])
+            self.domains.append(Domain(i[0], i[2]))
+            self.domain_weights.append([i[0], i[1]])
     
 
     def add_exemplar_data(self, exemplar_data):
@@ -41,16 +44,16 @@ class Concept():
                     new = False
             if new:             # create new domain
                 self.domains.append(Domain(i[0], i[1]))
-                self.domain_list.append(i[0])
+                self.domain_list.append([i[0], 1.0])
                 
                   
     def get_data(self):
-        """ returns the (tag, data) from all domains of the concept
+        """ returns the (tag, [domain_weights], data) from all domains of the concept
         """
         answer = []
         for i in self.domains:
             answer.append(i.get_data())
-        return (self.tag, answer)
+        return (self.tag, self.domain_weights, answer)
     
     
     def get_prototype_data(self):

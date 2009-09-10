@@ -73,7 +73,7 @@ class CS():
         """
         for i in self.concepts:
             if i.tag == tag:
-                return i.get_data()[1]
+                return i.get_data()[2]
             
 
     def get_concepts(self):

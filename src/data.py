@@ -16,6 +16,21 @@ basic_colour_rgb = [ ["blue", [ ["r", 0.0], ["g", 0.0], ["b", 255.0]] ],
                      ["grey", [ ["r", 128.0], ["g", 128.0], ["b", 128.0]] ],
                      ["black", [ ["r", 0.0], ["g", 0.0], ["b", 0.0]] ] ]
 
+
+basic_colour_rgb2 = [ ["blue", [["rgb", 1.0, [["r", 0.0], ["g", 0.0], ["b", 1.0]] ]]],
+                     ["purple", [["rgb", 1.0, [ ["r", 0.5], ["g", 0.0], ["b", 1.0]] ]]],
+                     ["red", [["rgb", 1.0, [["r", 1.0], ["g", 0.0], ["b", 0.0]] ]]],
+                     ["orange", [["rgb", 1.0, [ ["r", 1.0], ["g", 0.5], ["b", 0.0]] ]]],
+                     ["yellow", [["rgb", 1.0, [ ["r", 1.0], ["g", 1.0], ["b", 0.0]] ]]],
+                     ["green", [["rgb", 1.0, [ ["r", 0.0], ["g", 1.0], ["b", 0.0]] ]]],
+                     ["pink", [["rgb", 1.0, [ ["r", 1.0], ["g", 0.0], ["b", 1.0]] ]]],
+                     ["brown", [["rgb", 1.0, [ ["r", 0.5], ["g", 0.0], ["b", 0.0]] ]]],
+                     ["white", [["rgb", 1.0, [ ["r", 1.0], ["g", 1.0], ["b", 1.0]] ]]],
+                     ["grey", [["rgb", 1.0, [ ["r", 0.5], ["g", 0.5], ["b", 0.5]] ]]],
+                     ["black", [["rgb", 1.0, [ ["r", 0.0], ["g", 0.0], ["b", 0.0]] ] ]]]
+
+
+
 basic_colour_lab = [ ["green", [["l", 41.22], ["a", -52.06], ["b", 11.92]] ],
                      ["blue", [["l", 51.58], ["a", -0.42], ["b", -52.65]] ],
                      ["yellow", [["l", 86.21], ["a", -0.05], ["b", 98.62]] ],
@@ -67,8 +82,10 @@ generic_data2 = [["label0", [["dom0", [["dim0", 0.0], ["dim1", 0.0], ["dim2", 0.
                             ["dom2", [["dim0", 1.0], ["dim1", 1.0], ["dim2", 1.0]]]]]]
 
 
-# shape domain:   0 = empty, 1 = point, 2 = line, 3 = triangle, 4 = square, 5 = pentagon, 
+# shape domain:   = # points/corners
+#                 0 = empty, 1 = point, 2 = line, 3 = triangle, 4 = square, 5 = pentagon, 
 #                 6 = hexagon, 7 = heptagon, 8 = octagon, 9 = enneagon, 10 = circle
+                  
 shape_data = [["empty", [["sh", 0.0]]],
               ["point", [["sh", 1.0]]],
               ["line", [["sh", 2.0]]],
@@ -85,6 +102,20 @@ shape_data = [["empty", [["sh", 0.0]]],
 fruit_data = [["apple", [["circle", 0.9], ["green", 0.6], ["red", 0.6], ["brown", 0.3]]],
               ["banana", [["line", 0.6], ["yellow", 0.9], ["green", 0.2]]], 
               ["orange", [["circle", 0.9], ["orange", 0.9], ["green", 0.2]]]]
+
+# format = ["label", [ ["domain0", weight, [["dim0", coors], ["dim1", coors], ["dim2", coors]] ],
+#                      ["domain1", weight, [["dim0", coors], ["dim1", coors], ["dim2", coors]] ]]
+
+object_data = [["apple", [["rgb", 0.6, [["r", 1.0], ["g", 1.0], ["b", 0.0]]],
+                            ["shape", 0.9, [["sh", 1.0] ]]]],
+                ["ball", [["rgb", 0.1, [["r", 0.5], ["g", 0.5], ["b", 0.5]]],
+                            ["shape", 1.0, [["sh", 1.0] ]]]],
+                ["cup", [["rgb", 0.5, [["r", 1.0], ["g", 1.0], ["b", 1.0]]],
+                            ["shape", 0.8, [["sh", 0.7]]]]],
+                ["orange", [["rgb", 0.9, [["r", 1.0], ["g", 0.5], ["b", 0.0]]],
+                            ["shape", 0.9, [["sh", 1.0] ]]]],
+                ["book", [["rgb", 0.3, [["r", 0.4], ["g", 0.4], ["b", 0.4]]],
+                            ["shape", 0.8, [["sh", 0.4] ]]]] ]
 
 
 # domain ranges

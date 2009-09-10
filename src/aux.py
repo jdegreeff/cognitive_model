@@ -145,8 +145,8 @@ def generateTrainingData(n_sets, context_size):
     return training_dataset
 
 
-def generate_training_data_general(n_sets, context_size):
-    """generates training datasets, based on the specified number of domains and dimensions in cfg
+def generate_training_data_general(n_sets, context_size, domains):
+    """generates training datasets, based on the specified domains and dimensions in cfg
     """
     training_dataset = []
     count = 0
@@ -159,13 +159,14 @@ def generate_training_data_general(n_sets, context_size):
             while check:
                 stimulus = []
                 n_dom = 0
-                while n_dom < cfg.n_domains:
+                while n_dom < len(domains):
                     stim = []
-                    n_dim = 0
-                    while n_dim < cfg.n_dimensions:
-                        stim.append(["dim" + str(n_dim), ran.random()])
-                        n_dim += 1
-                    stimulus.append(["dom" + str(n_dom) ,stim])
+                    n_dim = len(domains[n_dom][1])
+                    counter = 0
+                    while counter < n_dim:
+                        stim.append([domains[n_dom][1][counter], ran.random()])
+                        counter += 1
+                    stimulus.append([domains[n_dom][0] ,stim])
                     n_dom += 1
                 if set == []:
                     check = False
@@ -199,16 +200,17 @@ def calculate_max_dis():
 def calculate_distance(data_point1, data_point2, salience = "empty"):
     """ calculates the distance between two given data points
         at least one matching domain is required, only matching domains are taken into account
-        data_point1 is used as reference, list of salience should be according to the
-        domains of data_point1, if non given, default salience of 1.0 is used
+        data_point2 is used as reference, list of salience should be according to the
+        domains of data_point2, if non given, default salience of 1.0 is used
         data_point1 = [ [ "domain", [ ["d1", value], ["d2", value]]], ...]
         data_point2 = [ [ "domain", [ ["d1", value, SD], ["d2", value, SD]]], ...] (if no SD, 0 is added)
         salience = [s1, s2,...,sn]
         TODO: implement city-block distance calculation for separable dimensions
+        ALSO: put weights calculation on domain level, not dimension level
     """
     distance = None
     if salience == "empty":
-        salience = [1.0] * len(data_point1)
+        salience = [["nil",1.0]] * len(data_point1)
     for count, i1 in enumerate(data_point1):
         for j1 in data_point2:
             if i1[0] == j1[0]:          # if domains match
@@ -222,15 +224,15 @@ def calculate_distance(data_point1, data_point2, salience = "empty"):
                         if i2[0] == j2[0]:  # if dimensions match
                             if cfg.prototype_distance:
                                 if i2[1] <= j2[1]:
-                                    distance += salience[count] * ((i2[1] - (j2[1] - j2[2]))**2) #/get_range(i2[0])
+                                    dist += ((i2[1] - (j2[1] - j2[2]))**2) #/get_range(i2[0])
                                     #dist += difference/len(i1[1])
                                 else:
-                                    distance += salience[count] * ((i2[1] - (j2[1] + j2[2]))**2) #/get_range(i2[0])
+                                    dist += ((i2[1] - (j2[1] + j2[2]))**2) #/get_range(i2[0])
                                     #dist += difference/len(i1[1])
                             else:
-                                distance += salience[count] * ((i2[1] - j2[1] )**2) #/get_range(i2[0])
+                                dist += ((i2[1] - j2[1] )**2) #/get_range(i2[0])
                                 #dist += difference/len(i1[1])
-                #distance += (salience[count] * dist)     # take salience for the dimension into account
+                distance += (salience[count][1] * dist)     # take salience for the domain into account
     if distance == None:
         return distance
     else:

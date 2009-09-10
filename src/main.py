@@ -145,7 +145,7 @@ def init():
     """
 #    gl.rgb_data_tony = io.open_datafile(cfg.dataset, "rgb")
 #    gl.lab_data_tony = io.open_datafile(cfg.dataset, "lab")
-    gl.training_data = aux.generate_training_data_general(cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generate_training_data_general(cfg.n_training_datasets, cfg.context_size, cfg.space)
     gl.agent1 = agent.TeachingAgent("teacher")
     gl.agent2 = agent.LearningAgent("learner")
     counter = 0
@@ -163,7 +163,7 @@ def reset():
     """
     gl.agent1 = agent.TeachingAgent("teacher")
     gl.agent2 = agent.LearningAgent("learner")
-    gl.training_data = aux.generate_training_data_general(cfg.n_training_datasets, cfg.context_size)
+    gl.training_data = aux.generate_training_data_general(cfg.n_training_datasets, cfg.context_size, cfg.space)
     gl.n_guessing_games = 0
     gl.n_success_gg = 0
     gl.guessing_success = 0.0
@@ -183,7 +183,7 @@ def gnu_output():
     g1.set_range("yrange", (0.0, 1.0))
     g1.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
     g1.plot(d1, d2)
-    g1.hardcopy('gp_test.ps', mode='eps', enhanced=1, color=1)
+    #g1.hardcopy('gp_test.ps', mode='eps', enhanced=1, color=1)
     
     g2 = Gnuplot.Gnuplot(debug=0)
     g2('set data style linespoints') # give gnuplot an arbitrary command
@@ -324,7 +324,7 @@ def measure_agent_knowledge(agent1, agent2, n_tests):
     count = 0
     correctness = 0.0
     while count < n_tests:
-        test_concept = aux.generate_training_data_general(1, 1)[0][0]
+        test_concept = aux.generate_training_data_general(1, 1, cfg.space)[0][0]
         a1_label = agent1.get_label(agent1.get_matching_concept(test_concept))
         a2_label = agent2.get_label(agent2.get_matching_concept(test_concept))
         #a2_label = agent2.get_label(agent2.get_random_concept())
