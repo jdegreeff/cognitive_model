@@ -172,6 +172,15 @@ class TeachingAgent():
         self.guessing_success = 0.0                 # agents guessing success ratio
         self.guessing_success_history = []          # agents guessing success ratio history
         self.concept_history = []                   # list containing number of concepts agent has after each interaction (game)
+        #self.test()                                 # test function
+        
+    def test(self):
+        distances = []
+        for j in self.cs.concepts:
+            con_data = j.get_data()
+            distances.append(aux.calculate_distance(data.test_object, con_data[2], con_data[1]))
+        print distances
+        
         
     def add_concept(self, tag, concept_data):
         """ adds concept data to the concept for the given tag """ 
@@ -189,7 +198,7 @@ class TeachingAgent():
             Knowledge is added as concepts
             Format of knowledge structures is: [ "label", [ ["d1", value], ["d2", value], ..., ["dn", value] ] ]
         """
-        knowledge = data.basic_colour_rgb2
+        knowledge = data.basic_colour_rgb2 # data.object_data 
         for j in knowledge:
             tag = aux.generateRandomTag(6)
             self.add_concept(tag, j[1])

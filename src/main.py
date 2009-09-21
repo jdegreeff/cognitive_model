@@ -175,6 +175,8 @@ def gnu_output():
     """
     g1 = Gnuplot.Gnuplot(debug=0)
     g1('set data style linespoints') # give gnuplot an arbitrary command
+    if len(gl.guessing_success_history) == 0:
+        gl.guessing_success_history = [0.0]*cfg.n_training_datasets
     d1 = Gnuplot.Data(range(cfg.n_training_datasets), gl.guessing_success_history)
     d2 = Gnuplot.Data(range(cfg.n_training_datasets), gl.agent2.knowledge_history)
     g1.title('output')
@@ -183,7 +185,7 @@ def gnu_output():
     g1.set_range("yrange", (0.0, 1.0))
     g1.set_range("xrange", (0.0, (1.0*cfg.n_training_datasets)))
     g1.plot(d1, d2)
-    #g1.hardcopy('gp_test.ps', mode='eps', enhanced=1, color=1)
+    g1.hardcopy('gp_test.ps', mode='eps', enhanced=1, color=1)
     
     g2 = Gnuplot.Gnuplot(debug=0)
     g2('set data style linespoints') # give gnuplot an arbitrary command
@@ -282,7 +284,7 @@ def direct_instruction(agent1, agent2):
         expresses its associated label for the stimulus and the learner stores both label and
         stimulus into its knowledge body
     """
-    stimulus = aux.generateTrainingData(1, 1)[0][0]
+    stimulus = aux.generate_training_data_general(1, 1, cfg.space)[0][0]
     if cfg.teaching_inaccuracy:
         int = ran.randint(1,100)
         if int > (1-cfg.teaching_inaccuracy) * 100:
@@ -298,6 +300,10 @@ def direct_instruction(agent1, agent2):
         agent2.add_label(a1_label, tag)
     else:
         agent2.add_concept(a2_tag, stimulus)
+        
+    # statistics
+    agent1.concept_history.append(agent1.get_n_concepts())
+    agent2.concept_history.append(agent2.get_n_concepts())
     
     
     

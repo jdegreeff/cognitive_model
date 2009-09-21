@@ -276,6 +276,19 @@ def calculate_distance_general(point1, point2, list_salience = "empty" ):
         
         
         
+def calculate_similarity(self, point1, point2, sensitivity = 1.0):
+    """ calculates the similarity between two given points
+    based on the distance and the sensitivity
+    after Nosofsky (1986)
+    point = [ [d1, value], [d2, value], ..., [dn, value] ]
+    sensitivity = float
+    """
+    e = math.e
+    distance = self.calculate_distance(point1, point2)
+    return e**(-sensitivity * distance)
+
+    
+        
 def rgb_2_xyz(rgb):
     """ takes a rgb point [r,g,b] as input and returns [x,y,z]
         PAL/SECAM RGB, D65 conversion matrix
