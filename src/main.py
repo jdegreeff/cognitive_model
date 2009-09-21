@@ -36,7 +36,7 @@ class StartLayout():
     """
     def __init__(self, agents,  space):
         app = QtGui.QApplication(sys.argv)
-        if cfg.use_graphics:
+        if cfg.use_graphics == 1:
             main_window = layout.MainWindow(agents, space)
             main_window.show()
             self.thread1 = MainThread(main_window)
@@ -63,8 +63,11 @@ class MainThread(Thread):
                 if cfg.direct_instruction:
                     direct_instruction(gl.agent1, gl.agent2)
                 else:
-                    guessing_game(gl.agent1, gl.agent2, i)
-                    write_out_gg_success(gl.agent2.guessing_success)
+                    if cfg.human_teacher: # and count == 1000:
+                        guessing_game_human(gl.agent2, i)              
+                    else:
+                        guessing_game(gl.agent1, gl.agent2, i)
+                        write_out_gg_success(gl.agent2.guessing_success)
                 if cfg.query_knowledge > 0:
                     if gl.n_guessing_games % cfg.query_knowledge == 0:
                         query_knowledge(gl.agent1, gl.agent2)
@@ -220,7 +223,7 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
         else:
             topic_index = ran.randint(0, len(context)-1)
     # agent1 plays discrimination game
-    a1_disc_result = agent1.discrimination_game(context, topic_index) 
+    a1_disc_result = agent1.discrimination_game(context, topic_index)
     if a1_disc_result == "concept_shifted":
         guessing_game_result = 0
     # if agent1 discrimination game succeeds, i.e. the result is a string of 4 characters
@@ -271,8 +274,77 @@ def guessing_game(agent1, agent2, context, topic_index = False, window = None):
         agent2.n_success_gg += 1
         gl.n_success_gg += 1
     agent1.guessing_success = agent1.n_success_gg/agent1.n_guessing_games
-    agent2.guessing_success = agent1.n_success_gg/agent1.n_guessing_games
+    agent2.guessing_success = agent2.n_success_gg/agent2.n_guessing_games
     agent1.concept_history.append(agent1.get_n_concepts())
+    agent2.concept_history.append(agent2.get_n_concepts())
+    gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
+    gl.guessing_success_history.append(gl.guessing_success)
+    
+    
+    
+def guessing_game_human(agent2, context, topic_index = False, window = None):
+    """ Guessing game which is played by a human teacher and an agent.
+        Agent2 uses this label and the associated concept to identify the topic from the context.
+        If agent2 is able to identify the topic correctly, the guessing game succeeds.
+        context = sets of data [ [ [d1, value], [d2, value], ..., [dn, value] ], ....]
+    """
+    if not topic_index:
+        if cfg.active_learning and (agent2.get_n_concepts() > 0):
+            a2_context_distance = []
+            for i in context:
+                distances = []
+                for j in agent2.cs.concepts:
+                    distances.append(aux.calculate_distance(i, j.get_data()[1]))
+                a2_context_distance.append(min(distances))
+            topic_index = aux.posMax(a2_context_distance)
+        else:
+            topic_index = ran.randint(0, len(context)-1)
+    
+    if cfg.use_graphics == 2:
+        window = layout.Tk_window(context, topic_index)
+        window.root.mainloop()
+    print "topic index: " + str(topic_index)
+    for i in context:
+        print i
+    teacher_topic_label = raw_input("\n Give name for the topic:")
+    
+
+    a2_guessing_game_answer = agent2.answer_gg(teacher_topic_label, context)
+    print a2_guessing_game_answer, agent2.get_label(a2_guessing_game_answer[1])
+    # if agent2 correctly points to the topic the guessing game succeeds
+    if a2_guessing_game_answer[0] == topic_index:
+        guessing_game_result = 1
+        agent2.increase_strength(teacher_topic_label, a2_guessing_game_answer[1])
+        agent2.add_concept(a2_guessing_game_answer[1], context[topic_index])
+        agent2.concept_use(a2_guessing_game_answer[1], 1) # measure concept use
+        if cfg.contrastive_learning:
+            count = 0
+            for i in context:
+                if count is not topic_index:
+                    a2_matching_concept = agent2.get_matching_concept(context[count])
+                    agent2.decrease_strength(teacher_topic_label, a2_matching_concept)
+                count += 1
+    # if agent2 does not know the communicated label
+    elif a2_guessing_game_answer == "label_unknown":
+        guessing_game_result = 0
+        a2_disc_result = agent2.discrimination_game(context, topic_index)
+        agent2.add_label(teacher_topic_label, a2_disc_result)
+    # if agent2 knows the label, but points to the wrong topic
+    else:
+        guessing_game_result = 0
+        agent2.decrease_strength(teacher_topic_label, a2_guessing_game_answer[1])
+        a2_disc_result = agent2.discrimination_game(context, topic_index)   # possibly learn new concept
+        if a2_disc_result not in agent2.lex.tags:    # if a new concept is learnt, add this to the lexicon
+            agent2.add_label(teacher_topic_label, a2_disc_result)
+        agent2.concept_use(a2_guessing_game_answer[1]) # measure concept use
+            
+    # statistics
+    gl.n_guessing_games += 1
+    agent2.n_guessing_games += 1
+    if guessing_game_result:
+        agent2.n_success_gg += 1
+        gl.n_success_gg += 1
+    agent2.guessing_success = agent2.n_success_gg/agent2.n_guessing_games
     agent2.concept_history.append(agent2.get_n_concepts())
     gl.guessing_success = gl.n_success_gg/gl.n_guessing_games
     gl.guessing_success_history.append(gl.guessing_success)

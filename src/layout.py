@@ -3,6 +3,7 @@
 from __future__ import division
 import sys, random
 from PyQt4 import QtGui, QtCore
+from Tkinter import *
 #from qt import *
 from copy import deepcopy
 import globals as gl
@@ -186,4 +187,44 @@ class GuessingGame(QtGui.QWidget):
             y2 += 250
         
         paint.end()
+        
+        
+class Tk_window():
+    """ Tkinter window
+    """
+    
+    def __init__(self, context, topic_index):
+        """ initiate variables """
+        self.context = context                   
+        self.topic_index = topic_index
+        self.root = Tk()
+        self.draw()
+        
+    def draw(self):
+        
+        self.canvas = Canvas(width=600, height=300, bg='white')
+        self.canvas.bind("<Button-1>", self.callback)
+        self.canvas.pack(expand=YES, fill=BOTH)
+        text = self.canvas.create_text(70,20, text="Colour naming game")
+    
+        offset = 0
+        for count, i in enumerate(self.context):
+            colour = "#%02x%02x%02x" % ( float((i[0][1][0][1])*255), float((i[0][1][1][1])*255), float((i[0][1][2][1])*255) )
+            square = self.canvas.create_rectangle(20 + offset, 70, 120 + offset, 170, fill= colour)
+            if count == self.topic_index:
+                text2 = self.canvas.create_text(70 + offset, 190, text="Topic")
+            offset += 120
+
+        #self.root.mainloop()
+    
+    def drawcircle(self, canv,x,y,rad):
+        # changed this to return the ID
+        return canv.create_oval(x-rad,y-rad,x+rad,y+rad,width=0,fill='blue')
+    
+    def movecircle(self, canv, cir):
+        canv.move(cir,-1,-1)
+    
+    def callback(self, event):
+        self.movecircle(self.canvas, self.circ1)
+        self.movecircle(self.canvas, self.circ2)
         

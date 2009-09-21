@@ -1,12 +1,41 @@
+from Tkinter import *
 
-import time
-from numpy import *
-import Gnuplot, Gnuplot.funcutils
+root = Tk()
+
+# All of this would do better as a subclass of Canvas with specialize methods
+
+def drawcircle(canv,x,y,rad):
+    # changed this to return the ID
+    return canv.create_oval(x-rad,y-rad,x+rad,y+rad,width=0,fill='blue')
+
+def movecircle(canv, cir):
+    canv.move(cir,-1,-1)
+
+def callback(event):
+    movecircle(canvas, circ1)
+    movecircle(canvas, circ2)
+    
+canvas = Canvas(width=600, height=200, bg='white')
+canvas.bind("<Button-1>", callback)
+canvas.pack(expand=YES, fill=BOTH)
 
 
-g = Gnuplot.Gnuplot(debug=0)
-g.title('A simple example') # (optional)
-g('set data style linespoints') # give gnuplot an arbitrary command
+text = canvas.create_text(50,10, text="tk test")
+
+#i'd like to recalculate these coordinates every frame
+circ1=drawcircle(canvas,100,100,20)          
+circ2=drawcircle(canvas,500,100,20)
+
+root.mainloop()
+#
+#import time
+#from numpy import *
+#import Gnuplot, Gnuplot.funcutils
+#
+#
+#g = Gnuplot.Gnuplot(debug=0)
+#g.title('A simple example') # (optional)
+#g('set data style linespoints') # give gnuplot an arbitrary command
 #
 #d = Gnuplot.Data([0.0, 0.0, 0.0], [0.0, 1.0, 2.0])
 #g.title('test')
@@ -21,17 +50,17 @@ g('set data style linespoints') # give gnuplot an arbitrary command
 #x = [0.0, 0.5, 1.0]
 #y1 = [0.0, 1.0, 2.0]
 
-stop = 100000
-count = 50
-x = range(count)
-y = range(count)
-w = range(50,0,-1)
-z = range(50,0,-1)
-g.set_range("yrange", (0.0, 50.0))
-g.set_range("xrange", (0.0, 50.0))
-d1 = Gnuplot.Data(x, y)
-d2 = Gnuplot.Data(x, z)
-g.plot(d1,d2)
+#stop = 100000
+#count = 50
+#x = range(count)
+#y = range(count)
+#w = range(50,0,-1)
+#z = range(50,0,-1)
+#g.set_range("yrange", (0.0, 50.0))
+#g.set_range("xrange", (0.0, 50.0))
+#d1 = Gnuplot.Data(x, y)
+#d2 = Gnuplot.Data(x, z)
+#g.plot(d1,d2)
 #while count < stop:
 #    x = range(count)
 #    y = range(count)

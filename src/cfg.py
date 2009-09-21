@@ -21,8 +21,9 @@ teaching_inaccuracy = 0       # teaching inaccuracy
 direct_instruction = 0          # if 1, direct instruction is used, otherwise language game style
 prune_concepts_xml_output = 0.1   # if > 0, value determines the threshold for successful (used) concepts that are saved to xml
 gnuplot = 1                     # specify whether or not to use a gnuplot output
+human_teacher = 1               # whether or not a human teacher is present; if not, teacher is an artificial agent
 
 # graphical properties
-use_graphics = 0                # whether or not a graphic display should be shown
+use_graphics = 0                # 1 = QT graphics, 2 = Tkinter graphics
 x_scale = 12
 y_scale = 7
